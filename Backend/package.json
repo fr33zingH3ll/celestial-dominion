@@ -1,0 +1,22 @@
+{
+  "name": "space-war-backend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "concurrently \"npm run backend\" \"npm run dev\"",
+    "backend": "node src/api.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "express": "^4.18.2",
+    "matter-js": "^0.19.0",
+    "ws": "^8.15.1"
+  }
+}
