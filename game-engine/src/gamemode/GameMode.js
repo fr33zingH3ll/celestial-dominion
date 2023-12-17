@@ -25,10 +25,12 @@ class GameMode {
         this.engine.gravity.scale = 0;
 
         // create a renderer
+        /*
         this.render = this.Render.create({
             element: document.body,
             engine: this.engine
         });
+        */
         new StaticEntity(this, { x: 0, y: 600, height: 1600, width: 10, isStatic: true });
         new StaticEntity(this, { x: 0, y: 0, height: 10, width: 1200, isStatic: true });
         new StaticEntity(this, { x: 800, y: 0, height: 10, width: 1200, isStatic: true });
@@ -44,7 +46,7 @@ class GameMode {
         // add all of the bodies to the world
         this.Composite.add(this.engine.world, this.pool);
         // run the renderer
-        this.Render.run(this.render);
+        //this.Render.run(this.render);
 
         // create runner
         this.runner = this.Runner.create();
@@ -76,11 +78,7 @@ class GameMode {
         }
     }
 
-    update(delta) {
-        for(const entity of this.pool) {
-			entity.update();
-		}
-    }
+    update(delta) {}
 }
 
 /**
