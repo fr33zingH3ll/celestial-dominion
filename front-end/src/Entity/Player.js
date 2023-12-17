@@ -1,9 +1,10 @@
-import { PlayerEntity } from "../../../game-engine/src/entity/PlayerEntity";
+import { PlayerEntity } from '../../../game-engine/src/entity/PlayerEntity';
 import { Controller } from "../playercontroller/Controller";
 
 class Player extends PlayerEntity {
     constructor(game, options) {
         super(game, options);
+        this.setupController();
     }
 
     setupController() {
@@ -19,7 +20,7 @@ class Player extends PlayerEntity {
         // Multiplie par la vitesse
         const velocityX = cos * this.speed;
         const velocityY = sin * this.speed;
-
+        console.log(velocityX, velocityY);
         // Met à jour la vélocité du corps avec Matter.js
         this.body.setVelocity(this.body, Vector.create(velocityX, velocityY));
     }
