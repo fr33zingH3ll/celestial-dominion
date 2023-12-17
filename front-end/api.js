@@ -1,4 +1,4 @@
-import { MainGame } from './src/gameMode/MainGame.js'
+import { MainGame } from './src/gamemode/MainGame.js';
 
 class Socket {
     constructor(URL, app) {
