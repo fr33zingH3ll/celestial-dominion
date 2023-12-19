@@ -10,12 +10,7 @@ class LivingEntity extends Entity {
     }
 
     getMoveVector(x, y) {
-        var x = 0.5;
-        var y = -0.5;
-
-        // Calculer l'angle en radians
-        var angleRadians = Math.atan2(y, x);
-        console.log(angleRadians);
+        return Math.atan2(y, x) * this.speed;
     }
 }
 
