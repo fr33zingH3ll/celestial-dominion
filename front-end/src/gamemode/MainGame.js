@@ -15,11 +15,9 @@ class MainGame extends GameMode {
 
 
     update() {
-
-        for(const entity of this.pool) {
+        for (const entity of this.pool) {
             entity.update();
         }
-    
     }
     
 }

@@ -11,18 +11,9 @@ class Player extends PlayerEntity {
         this.controller = new Controller();
     }
 
-    update() {
+    update(delta) {
         const moveVector = this.controller.getMoveVector();
-
-        // Obtient les composantes x et y du vecteur de mouvement
-        const [cos, sin] = moveVector;
-
-        // Multiplie par la vitesse
-        const velocityX = cos * this.speed;
-        const velocityY = sin * this.speed;
-        console.log(velocityX, velocityY);
-        // Met à jour la vélocité du corps avec Matter.js
-        this.body.setVelocity(this.body, Vector.create(velocityX, velocityY));
+        this.getMoveVector(moveVector[0], moveVector[1]);
     }
 }
 

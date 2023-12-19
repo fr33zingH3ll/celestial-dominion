@@ -2,7 +2,7 @@ class Controller {
     constructor() {
         this.keybind = {right: 'ArrowRight', left: 'ArrowLeft', up: 'ArrowUp', down: 'ArrowDown'};
         this.control = {right: false, left: false, up: false, down: false};
-
+        this.setupEventListeners();
     }
     /**
     * Sets up event listeners for keyboard input.

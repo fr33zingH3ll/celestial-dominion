@@ -7,7 +7,7 @@ class Entity {
             this.body = this.game.Bodies.rectangle(options.x, options.y, options.height, options.width, { isStatic: options.isStatic });
         }
         
-        this.game.addPool(this.body);
+        this.game.addPool(this);
     }
 
     update(delta) {}

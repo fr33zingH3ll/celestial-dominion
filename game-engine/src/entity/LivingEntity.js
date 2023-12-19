@@ -9,9 +9,13 @@ class LivingEntity extends Entity {
         this.force = 1;
     }
 
-    setPosition(x, y) {
-        this.body.x = x;
-        this.body.y = y;
+    getMoveVector(x, y) {
+        var x = 0.5;
+        var y = -0.5;
+
+        // Calculer l'angle en radians
+        var angleRadians = Math.atan2(y, x);
+        console.log(angleRadians);
     }
 }
 
