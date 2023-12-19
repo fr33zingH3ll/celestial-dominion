@@ -8,8 +8,8 @@ class Player extends PlayerEntity {
     }
 
     update(delta) {
-        const moveVector = this.controller.getMoveVector();
-        this.setPosition(moveVector[0], moveVector[1]);
+        this.setPosition(this.controller.getMoveVector());
+        this.setAngle(this.controller.getRotateVector());
     }
 }
 

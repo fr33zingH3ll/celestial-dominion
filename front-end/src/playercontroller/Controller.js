@@ -1,6 +1,6 @@
 class Controller {
     constructor() {
-        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's'};
+        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', turnLeft: 'ArrowLeft', turnRight: 'ArrowRight'};
         this.control = {right: false, left: false, up: false, down: false};
         this.setupEventListeners();
     }
@@ -35,6 +35,11 @@ class Controller {
         } else if (event.key === this.keybind.down) {
             this.control.down = true;
         }
+        if (event.key === this.keybind.turnLeft) {
+            this.control.turnLeft = true;
+        } else if (event.key === this.keybind.turnRight) {
+            this.control.turnRight = true;
+        }
     }
 
     /**
@@ -52,33 +57,50 @@ class Controller {
         } else if (event.key === this.keybind.down) {
             this.control.down = false;
         }
+        if (event.key === this.keybind.turnLeft) {
+            this.control.turnLeft = false;
+        } else if (event.key === this.keybind.turnRight) {
+            this.control.turnRight = false;
+        }
+    }
+
+    getRotateVector() {
+        let angle = 0;
+
+        if (this.control.turnLeft) {
+            angle += -1;
+        }
+        if (this.control.turnRight) {
+            angle += 1;
+        }
+        return angle
     }
 
     getMoveVector() {
         // Initialise les composantes du vecteur à 0
-        let x = 0;
-        let y = 0;
+        let value_x = 0;
+        let value_y = 0;
 
         // Vérifie les touches enfoncées et met à jour les composantes du vecteur en conséquence
         if (this.control.left) {
-            x -= 1;
+            value_x -= 1;
         }
         if (this.control.right) {
-            x += 1;
+            value_x += 1;
         }
         if (this.control.up) {
-            y -= 1;
+            value_y -= 1;
         }
         if (this.control.down) {
-            y += 1;
+            value_y += 1;
         }
 
         // Assurez-vous que les valeurs sont comprises entre -1 et 1
-        x = Math.min(1, Math.max(-1, x));
-        y = Math.min(1, Math.max(-1, y));
+        value_x = Math.min(1, Math.max(-1, value_x));
+        value_y = Math.min(1, Math.max(-1, value_y));
 
         // Retourne le vecteur résultant
-        return [x, y];
+        return { x: value_x, y: value_y };
     }
 }
 
