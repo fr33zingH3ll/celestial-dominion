@@ -4,10 +4,10 @@ import { Entity } from "./Entity";
 class LivingEntity extends Entity {
     constructor(game, options) {
         super(game, options);
-        this.hp = 1;
-        this.max_hp = 1;
-        this.speed = 1500;
-        this.force = 1;
+        this.hp = options.stat.hp;
+        this.max_hp = options.stat.max_hp;
+        this.speed = options.stat.speed;
+        this.force = options.stat.force;
     }
 
     setPosition(vector) {
@@ -15,7 +15,7 @@ class LivingEntity extends Entity {
             return
         }
         const radians = Math.atan2(vector.x, vector.y);
-        const velocity = this.game.Vector.create(Math.sin(radians) / this.speed, Math.cos(radians) / this.speed);
+        const velocity = this.game.Vector.create(Math.sin(radians) / 1500 * this.speed, Math.cos(radians) / 1500 * this.speed);
         this.game.Body.applyForce(this.body, this.body.position, velocity);
     }
 
@@ -23,7 +23,7 @@ class LivingEntity extends Entity {
         if (angle === 0) {
             return;
         }
-        this.game.Body.setAngularVelocity(this.body, angle / 200);
+        this.game.Body.setAngularVelocity(this.body, angle / 50);
     }
 }
  
