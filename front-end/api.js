@@ -5,7 +5,16 @@ class Socket {
     constructor(url) {
         this.socket = new WebSocket(url);
 
-        this.sendHandshake("blabla");
+        this.sendHandshake("blabla", "handshakeRequest");
+        this.socket.addEventListener("message", (event) => {
+            try {
+                const msg = MessageWrapper.decode(message);
+                console.log(msg);
+            } catch (e) {
+                console.error(e);
+                ws.close();
+            }
+        });
     }
 
     async sendHandshake(token) {
@@ -13,7 +22,7 @@ class Socket {
 
         this.proto = await (new protobuf.Root().load("game.proto"));
 
-        const hs = this.proto.lookupType('HandshakeRequest');
+        const hs = this.proto.lookupType("handshakeRequest");
         const wrap = this.proto.lookupType('MessageWrapper');
 
         this.sendMessage(wrap.create({ handshakeRequest: hs.create({ token }) }), wrap);

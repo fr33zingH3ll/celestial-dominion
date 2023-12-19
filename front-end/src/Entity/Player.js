@@ -10,6 +10,14 @@ class Player extends PlayerEntity {
     update(delta) {
         this.setPosition(this.controller.getMoveVector());
         this.setAngle(this.controller.getRotateVector(), 50);
+
+        const position = this.body.position;
+        const angle = this.body.angle;
+
+        const hs = this.game.server.proto.lookupType("clientPlayerMove");
+        const wrap = this.game.server.proto.lookupType('MessageWrapper');
+
+        this.game.server.sendMessage(wrap.create({ clientPlayerMove: hs.create({ position, angle }) }), wrap);
     }
 }
 

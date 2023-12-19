@@ -14,6 +14,12 @@ message MessageWrapper {
 	oneof message {
 		HandshakeRequest handshakeRequest = 0;
 		HandshakeResponse handshakeResponse = 1;
+
+		ClientPlayerMove clientPlayerMove = 2;
+		ServerPlayerMove serverPlayerMove = 3;
+
+		ClientPlayerUpdate clientPlayerUpdate = 4;
+		ServerPlayerUpdate serverPlayerUpdate = 4;
 	}
 }
 
@@ -23,8 +29,35 @@ message HandshakeRequest {
 
 message HandshakeResponse {
 	string username = 1;
-	string uuid = 2; // TODO choisir format d'ID (pas forcément string)
+	int32 user_id = 2; // TODO choisir format d'ID (pas forcément string)
 	Vector initialPosition = 3;
 	/** in radians */
 	float initialRotation = 4;
+}
+
+message ClientPlayerMove {
+	Vector position = 1;
+	float rotation = 2;
+}
+
+message ServerPlayerMove {
+	int32 uder_id = 1;
+	Vector position = 2;
+	float rotation = 3;
+}
+
+message ClientPlayerUpdate {
+	Status status = 1;
+}
+
+message ServerPlayerUpdate {
+	int32 user_id = 1;
+	Status status = 2;
+}
+
+message Status {
+	float hp = 1;
+	float max_hp = 2;
+	float speed = 3;
+	float force = 4;
 }

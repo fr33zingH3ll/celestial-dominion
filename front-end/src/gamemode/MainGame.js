@@ -4,8 +4,9 @@ import { Player } from "../Entity/Player";
 import { Application } from "pixi.js";
 
 class MainGame extends GameMode {
-    constructor() {
+    constructor(server) {
         super();
+        this.server = server;
         // create two boxes and a ground
         new Player(this, {x: 400, y: 200, 
             vertices: 
