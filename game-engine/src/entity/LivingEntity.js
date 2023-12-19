@@ -1,3 +1,4 @@
+import { Vector } from "matter-js";
 import { Entity } from "./Entity";
 
 class LivingEntity extends Entity {
@@ -15,12 +16,14 @@ class LivingEntity extends Entity {
         }
         const radians = Math.atan2(vector.x, vector.y);
         const velocity = this.game.Vector.create(Math.sin(radians) / this.speed, Math.cos(radians) / this.speed);
-        console.log(velocity);
         this.game.Body.applyForce(this.body, this.body.position, velocity);
     }
 
     setAngle(angle) {
-        this.game.Body.setAngularSpeed(this.body, angle / 100);
+        if (angle === 0) {
+            return;
+        }
+        this.game.Body.setAngularVelocity(this.body, angle / 200);
     }
 }
  

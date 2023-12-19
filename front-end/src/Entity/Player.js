@@ -9,7 +9,7 @@ class Player extends PlayerEntity {
 
     update(delta) {
         this.setPosition(this.controller.getMoveVector());
-        this.setAngle(this.controller.getRotateVector());
+        this.setAngle(this.controller.getRotateVector(), 50);
     }
 }
 

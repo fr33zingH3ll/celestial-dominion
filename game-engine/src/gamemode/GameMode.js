@@ -2,6 +2,7 @@ import Matter from "matter-js";
 import { Entity } from "../entity/Entity";
 import { StaticEntity } from "../entity/StaticEntity";
 import { PlayerEntity } from "../entity/PlayerEntity";
+import * as decomp from 'poly-decomp';
 
 /**
  * Classe représentant un mode de jeu générique utilisant Matter.js et PIXI.js.
@@ -20,6 +21,7 @@ class GameMode {
         this.Vector = Matter.Vector;
         this.Composite = Matter.Composite;
         this.Events = Matter.Events;
+        this.decomp = decomp;
 
         this.pool_body = [];
         this.pool = [];
