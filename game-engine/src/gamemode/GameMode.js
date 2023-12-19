@@ -12,10 +12,12 @@ class GameMode {
      */
     constructor() {
         // module aliases
-        this.Engine = Matter.Engine,
-        this.Render = Matter.Render,
-        this.Runner = Matter.Runner,
-        this.Bodies = Matter.Bodies,
+        this.Engine = Matter.Engine;
+        this.Render = Matter.Render;
+        this.Runner = Matter.Runner;
+        this.Bodies = Matter.Bodies;
+        this.Body = Matter.Body;
+        this.Vector = Matter.Vector;
         this.Composite = Matter.Composite;
         this.Events = Matter.Events;
 
@@ -24,6 +26,7 @@ class GameMode {
 
         // create an engine
         this.engine = this.Engine.create();
+        this.engine.gravity.scale = 0;
 
         // create a renderer
         this.render = this.Render.create({

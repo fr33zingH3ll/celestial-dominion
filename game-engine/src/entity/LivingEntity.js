@@ -9,8 +9,13 @@ class LivingEntity extends Entity {
         this.force = 1;
     }
 
-    getMoveVector(x, y) {
-        return Math.atan2(y, x) * this.speed;
+    setPosition(x, y) {
+        if (x === 0 && y === 0) {
+            return
+        }
+        const radians = Math.atan2(x, y);
+        const offset = this.game.Vector.create(Math.sin(radians), Math.cos(radians));
+        this.game.Body.setPosition(this.body, this.game.Vector.add(this.body.position, offset));
     }
 }
 
