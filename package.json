@@ -1,4 +1,9 @@
 {
     "name": "galactik-seekers",
-    "private": true
+    "private": true,
+    "workspaces": [
+        "game-engine",
+        "front-end",
+        "back-end"
+    ]
 }
