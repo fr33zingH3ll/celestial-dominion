@@ -1,6 +1,6 @@
 class Controller {
     constructor() {
-        this.keybind = {right: 'ArrowRight', left: 'ArrowLeft', up: 'ArrowUp', down: 'ArrowDown'};
+        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's'};
         this.control = {right: false, left: false, up: false, down: false};
         this.setupEventListeners();
     }

@@ -5,7 +5,7 @@ class LivingEntity extends Entity {
         super(game, options);
         this.hp = 1;
         this.max_hp = 1;
-        this.speed = 10;
+        this.speed = 1500;
         this.force = 1;
     }
 
@@ -14,8 +14,9 @@ class LivingEntity extends Entity {
             return
         }
         const radians = Math.atan2(x, y);
-        const offset = this.game.Vector.create(Math.sin(radians), Math.cos(radians));
-        this.game.Body.setPosition(this.body, this.game.Vector.add(this.body.position, offset));
+        const velocity = this.game.Vector.create(Math.sin(radians) / this.speed, Math.cos(radians) / this.speed);
+        console.log(velocity);
+        this.game.Body.applyForce(this.body, this.body.position, velocity);
     }
 }
 
