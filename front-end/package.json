@@ -16,7 +16,6 @@
     "pixi.js": "^7.3.2",
     "poly-decomp": "^0.3.0",
     "protobufjs": "~7.2.5",
-    "protobufjs-cli": "~1.1.2",
     "ws": "^8.15.1",
     "game-engine": "file:../game-engine"
   }

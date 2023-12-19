@@ -1,6 +1,10 @@
 import Express from 'express';
 import http from 'http'; // Module http inclus avec Node.js
 import WebSocket, { WebSocketServer } from 'ws';
+import protobuf from 'protobufjs';
+
+const proto = protobuf.loadSync('../proto/game.proto');
+const MessageWrapper = proto.lookupType('MessageWrapper');
 
 class Server {
     constructor() {
@@ -34,15 +38,21 @@ class Server {
         res.json({ message: 'Hello from your API!' });
     }
 
+    /**
+     * @param {WebSocket} ws 
+     */
     handleWebSocketConnection(ws) {
         console.log('WebSocket connected');
 
         // Écoutez les messages WebSocket
         ws.on('message', (message) => {
-            console.log(`Received message: ${message}`);
-
-            // Envoyez un message de retour au client WebSocket
-            ws.send(`Server received: ${message}`);
+            try {
+                const msg = MessageWrapper.decode(message);
+                console.log(msg);
+            } catch (e) {
+                console.error(e);
+                ws.close();
+            }
         });
 
         // Gérez la fermeture de la connexion WebSocket
