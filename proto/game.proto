@@ -19,7 +19,7 @@ message MessageWrapper {
 		ServerPlayerMove serverPlayerMove = 3;
 
 		ClientPlayerUpdate clientPlayerUpdate = 4;
-		ServerPlayerUpdate serverPlayerUpdate = 4;
+		ServerPlayerUpdate serverPlayerUpdate = 5;
 	}
 }
 
@@ -31,8 +31,7 @@ message HandshakeResponse {
 	string username = 1;
 	int32 user_id = 2; // TODO choisir format d'ID (pas forcément string)
 	Vector initialPosition = 3;
-	/** in radians */
-	float initialRotation = 4;
+	float initialRotation = 4; // in radians
 }
 
 message ClientPlayerMove {
@@ -41,11 +40,11 @@ message ClientPlayerMove {
 }
 
 message ServerPlayerMove {
-	int32 uder_id = 1;
+	int32 user_id = 1;
 	Vector position = 2;
 	float rotation = 3;
 }
-
+02
 message ClientPlayerUpdate {
 	Status status = 1;
 }

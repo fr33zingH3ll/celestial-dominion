@@ -5,5 +5,11 @@
         "game-engine",
         "front-end",
         "back-end"
-    ]
+    ],
+    "scripts": {
+        "start:game-engine": "cd game-engine && npm run dev",
+        "start:front-end": "cd front-end && npm run dev",
+        "start:back-end": "cd back-end && npm start",
+        "start:all": "concurrently \"npm run start:game-engine\" \"npm run start:front-end\" \"npm run start:back-end\""
+    }
 }

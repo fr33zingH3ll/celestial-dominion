@@ -1,5 +1,4 @@
 import "./style.css";
-import { Application } from "pixi.js";
 import { MainGame } from "./src/gamemode/MainGame.js";
 import { Socket } from "./api";
 

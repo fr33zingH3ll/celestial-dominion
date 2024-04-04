@@ -14,7 +14,7 @@ class Player extends PlayerEntity {
         const position = this.body.position;
         const angle = this.body.angle;
 
-        const hs = this.game.server.proto.lookupType("clientPlayerMove");
+        const hs = this.game.server.proto.lookupType("ClientPlayerMove");
         const wrap = this.game.server.proto.lookupType('MessageWrapper');
 
         this.game.server.sendMessage(wrap.create({ clientPlayerMove: hs.create({ position, angle }) }), wrap);

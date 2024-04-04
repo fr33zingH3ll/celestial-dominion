@@ -48,6 +48,7 @@ class GameMode {
     start() {
         // add all of the bodies to the world
         this.Composite.add(this.engine.world, this.pool_body);
+        
         // run the renderer
         this.Render.run(this.render);
 

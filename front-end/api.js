@@ -22,7 +22,7 @@ class Socket {
 
         this.proto = await (new protobuf.Root().load("game.proto"));
 
-        const hs = this.proto.lookupType("handshakeRequest");
+        const hs = this.proto.lookupType("HandshakeRequest");
         const wrap = this.proto.lookupType('MessageWrapper');
 
         this.sendMessage(wrap.create({ handshakeRequest: hs.create({ token }) }), wrap);
