@@ -44,7 +44,7 @@ message ServerPlayerMove {
 	Vector position = 2;
 	float rotation = 3;
 }
-02
+
 message ClientPlayerUpdate {
 	Status status = 1;
 }
