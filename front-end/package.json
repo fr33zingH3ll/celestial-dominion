@@ -12,11 +12,12 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
+    "game-engine": "file:../game-engine",
     "matter-js": "^0.19.0",
     "pixi.js": "^7.3.2",
     "poly-decomp": "^0.3.0",
     "protobufjs": "~7.2.5",
-    "ws": "^8.15.1",
-    "game-engine": "file:../game-engine"
+    "three": "^0.163.0",
+    "ws": "^8.15.1"
   }
 }
