@@ -2,6 +2,8 @@ import { GameMode } from "../../../game-engine/src/gamemode/GameMode";
 import { Asteriode } from "../Entity/Asteroide";
 import { Player } from "../Entity/Player";
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 class MainGame extends GameMode {
     constructor(server) {
@@ -11,24 +13,45 @@ class MainGame extends GameMode {
         // Création de la scène
         this.scene = new THREE.Scene();
 
-        // Création d'une caméra
-        const aspectRatio = window.innerWidth / window.innerHeight;
-        this.camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
-        this.camera.position.z = 5;
-
         // Création d'un rendu WebGL
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
 
+        // Création d'une caméra
+        const aspectRatio = window.innerWidth / window.innerHeight;
+        this.camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
+
+        this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+
+        //controls.update() must be called after any manual changes to the camera's transform
+        this.camera.position.set( 0, 20, 100 );
+        this.controls.update();
+
+        
+
         // Création d'un fond noir pour la scène
         this.scene.background = new THREE.Color(0x000000);
 
-        // Création d'une sphère
-        this.geometry = new THREE.SphereGeometry(1, 32, 32);
-        this.material = new THREE.MeshBasicMaterial({ color: 0xffffff }); // Blanc
-        this.sphere = new THREE.Mesh(this.geometry, this.material);
-        this.scene.add(this.sphere);
+        const light = new THREE.AmbientLight( 0x404040 ); // soft white light
+        this.scene.add( light );
+
+        // Chargement du modèle JSON
+        var loader = new GLTFLoader();
+        loader.load(
+            // Chemin du fichier JSON
+            '/assets/models/vaisseau_heal.glb',
+            // Callback appelé lorsque le chargement est terminé
+            (gltf) => {
+                this.scene.add(gltf.scene);
+            },undefined,
+            // called when loading has errors
+            ( error ) => {
+
+                console.log( 'An error happened' );
+
+            }
+        );
 
 
         // create two boxes and a ground
@@ -52,10 +75,8 @@ class MainGame extends GameMode {
             entity.update();
         }
     
-        this.sphere.rotation.x += 0.01;
-        this.sphere.rotation.y += 0.01;
-    
         this.renderer.render(this.scene, this.camera);
+        this.controls.update();
     }
     
     start() {
