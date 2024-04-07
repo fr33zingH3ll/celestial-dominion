@@ -21,23 +21,42 @@ class MainGame extends GameMode {
         // Création d'une caméra
         const aspectRatio = window.innerWidth / window.innerHeight;
         this.camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
+        this.controls = new OrbitControls( this.camera, this.renderer.domElement );
 
         //controls.update() must be called after any manual changes to the camera's transform
         this.camera.position.set( 0, 20, 100 );
+        this.controls.update();
 
         
 
         // Création d'un fond noir pour la scène
-        this.scene.background = new THREE.Color(0x000000);
+        this.scene.background = new THREE.Color(0xFFFFFF);
 
         const light = new THREE.AmbientLight( 0x404040 ); // soft white light
         this.scene.add( light );
 
-        // Chargement du modèle JSON
-        var loader = new GLTFLoader();
-        loader.load(
+        // Chargement du modèle GLB
+        var vaisseau_heal = new GLTFLoader();
+        vaisseau_heal.load(
             // Chemin du fichier JSON
             '/assets/models/vaisseau_heal.glb',
+            // Callback appelé lorsque le chargement est terminé
+            (gltf) => {
+                this.scene.add(gltf.scene);
+            },undefined,
+            // called when loading has errors
+            ( error ) => {
+
+                console.log( 'An error happened' );
+
+            }
+        );
+
+        // Chargement du modèle GLB
+        var tank = new GLTFLoader();
+        tank.load(
+            // Chemin du fichier JSON
+            '/assets/models/tank.glb',
             // Callback appelé lorsque le chargement est terminé
             (gltf) => {
                 this.scene.add(gltf.scene);
@@ -73,6 +92,7 @@ class MainGame extends GameMode {
         }
     
         this.renderer.render(this.scene, this.camera);
+        this.controls.update();
     }
     
     start() {
