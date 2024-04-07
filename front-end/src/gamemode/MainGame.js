@@ -22,11 +22,8 @@ class MainGame extends GameMode {
         const aspectRatio = window.innerWidth / window.innerHeight;
         this.camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 
-        this.controls = new OrbitControls( this.camera, this.renderer.domElement );
-
         //controls.update() must be called after any manual changes to the camera's transform
         this.camera.position.set( 0, 20, 100 );
-        this.controls.update();
 
         
 
@@ -76,7 +73,6 @@ class MainGame extends GameMode {
         }
     
         this.renderer.render(this.scene, this.camera);
-        this.controls.update();
     }
     
     start() {
