@@ -1,5 +1,5 @@
 
-import { Entity } from "../entity/Entity";
+import { Entity } from "../entity/Entity.js";
 
 
 /**

@@ -1,4 +1,4 @@
-import { GameMode } from "./GameMode";
+import { GameMode } from "./GameMode.js";
 import Matter from "matter-js";
 import * as decomp from 'poly-decomp';
 
