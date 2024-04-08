@@ -1,7 +1,10 @@
 import { GameMode } from "./GameMode";
+import Matter from "matter-js";
+import * as decomp from 'poly-decomp';
 
 class GameMaster extends GameMode {
     constructor () {
+        super();
         // module aliases
         this.Engine = Matter.Engine;
         this.Render = Matter.Render;

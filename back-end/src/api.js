@@ -7,7 +7,8 @@ const proto = protobuf.loadSync('../proto/game.proto');
 const MessageWrapper = proto.lookupType('MessageWrapper');
 
 class Server {
-    constructor() {
+    constructor(game_master) {
+        this.gamemaster = game_master;
         this.app = Express();
         // Middleware pour ajouter l'en-tête CSP
         this.app.use((req, res, next) => {

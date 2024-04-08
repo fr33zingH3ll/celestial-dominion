@@ -1,9 +1,9 @@
 import Matter from "matter-js";
+import { GameMaster } from "../../game-engine/src/gamemode/GameMaster";
 
-class GameMaster {
-    constructor(server) {
+class BackGameMaster extends GameMaster {
+    constructor() {
 
-        this.server = server;
         // Utilisation de Matter.js pour la simulation physique
         this.matter = Matter;
 
@@ -27,4 +27,4 @@ class GameMaster {
     }
 }
 
-export { GameMaster };
+export { BackGameMaster };

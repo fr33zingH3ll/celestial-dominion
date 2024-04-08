@@ -1,7 +1,6 @@
-import Matter from "matter-js";
+
 import { Entity } from "../entity/Entity";
-import { StaticEntity } from "../entity/StaticEntity";
-import * as decomp from 'poly-decomp';
+
 
 /**
  * Classe représentant un mode de jeu générique utilisant Matter.js et PIXI.js.

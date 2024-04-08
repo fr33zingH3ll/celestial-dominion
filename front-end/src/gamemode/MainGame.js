@@ -1,11 +1,11 @@
-import { GameMode } from "../../../game-engine/src/gamemode/GameMode";
 import { Asteriode } from "../Entity/Asteroide";
 import { Player } from "../Entity/Player";
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GameMaster } from "../../../game-engine/src/gamemode/GameMaster";
 
-class MainGame extends GameMode {
+class MainGame extends GameMaster {
     constructor(server) {
         super();
         this.server = server;
