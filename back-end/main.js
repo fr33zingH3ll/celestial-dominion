@@ -1,5 +1,5 @@
-import { GameMaster } from "./src/gamemaster.js";
-import { server } from "./src/api.js";
+import { BackGameMaster } from "./src/gamemaster.js";
+import { Server } from "./src/api.js";
 
 
-const gamemaster = new GameMaster(server);
+const server = new Server(new BackGameMaster);

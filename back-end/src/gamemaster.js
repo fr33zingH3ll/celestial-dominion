@@ -1,8 +1,9 @@
 import Matter from "matter-js";
-import { GameMaster } from "../../game-engine/src/gamemode/GameMaster";
+import { GameMaster } from "game-engine/src/gamemode/GameMaster.js";
 
 class BackGameMaster extends GameMaster {
     constructor() {
+        super();
 
         // Utilisation de Matter.js pour la simulation physique
         this.matter = Matter;

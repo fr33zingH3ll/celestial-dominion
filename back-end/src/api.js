@@ -18,7 +18,7 @@ class Server {
         this.server = http.createServer(this.app); // Créez un serveur HTTP
         this.wss = new WebSocketServer({ server: this.server }); // Créez un serveur WebSocket
 
-        this.port = 3001;
+        this.port = 3000;
 
         // Middleware pour traiter le corps des requêtes en JSON
         this.app.use(Express.json());
@@ -63,6 +63,4 @@ class Server {
     }
 }
 
-// Créez une instance de la classe pour lancer le serveur
-const server = new Server();
-export { server };
+export { Server };
