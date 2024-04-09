@@ -14,10 +14,6 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
     constructor(server) { // Constructeur de la classe MainGame avec le paramètre 'server'
         super(); // Appel du constructeur de la classe parente GameMaster
         this.server = server; // Assignation du paramètre 'server' à la propriété 'server' de MainGame
-class MainGame extends GameMaster {
-    constructor(server) {
-        super();
-        this.server = server;
 
         // Création de la scène Three.js
         this.scene = new THREE.Scene();
