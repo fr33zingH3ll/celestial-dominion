@@ -1,4 +1,4 @@
-import { GameMode } from "./src/gamemode/GameMode";
+import { GameMaster } from "./src/gamemode/GameMaster";
 
-const gamemode = new GameMode();
-gamemode.start();
+const gamemaster = new GameMaster();
+gamemaster.start();

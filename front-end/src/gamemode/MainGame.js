@@ -1,14 +1,9 @@
-import { Asteriode } from "../Entity/Asteroide"; // Importation de la classe Asteroide depuis le fichier correspondant
+import { Asteriode } from "../Entity/Asteroide.js"; // Importation de la classe Asteroide depuis le fichier correspondant
 import { Player } from "../Entity/Player"; // Importation de la classe Player depuis le fichier correspondant
 import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; // Importation du chargeur GLTFLoader de Three.js
-import { GameMaster } from "../../../game-engine/src/gamemode/GameMaster"; // Importation de la classe GameMaster depuis le chemin spécifié
-import { Asteriode } from "../Entity/Asteroide";
-import { Player } from "../Entity/Player";
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GameMaster } from "../../../game-engine/src/gamemode/GameMaster";
+import { GameMaster } from "game-engine/src/gamemode/GameMaster"; // Importation de la classe GameMaster depuis le chemin spécifié
+
 
 class MainGame extends GameMaster { // Définition de la classe MainGame qui étend GameMaster
     constructor(server) { // Constructeur de la classe MainGame avec le paramètre 'server'
@@ -29,37 +24,12 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
         this.camera.position.set( 0, 20, 100 ); // Positionnement de la caméra
 
         // Création d'un fond noir pour la scène
-        this.scene.background = new THREE.Color(0xFFFFFF);
+        this.scene.background = new THREE.Color(0xc8ad7f);
 
         // Ajout d'une lumière ambiante à la scène
         const light = new THREE.AmbientLight( 0x404040 ); // Lumière blanche douce
         this.scene.add( light );
 
-        // Chargement du modèle GLB 'vaisseau_heal.glb'
-        var vaisseau_heal = new GLTFLoader();
-        vaisseau_heal.load(
-            '/assets/models/vaisseau_heal.glb', // Chemin du fichier GLB
-            (gltf) => {
-                this.scene.add(gltf.scene); // Ajout du modèle à la scène lorsque le chargement est terminé
-            },
-            undefined,
-            ( error ) => {
-                console.log( 'An error happened' ); // Gestionnaire d'erreur
-            }
-        );
-
-        // Chargement du modèle GLB 'tank.glb'
-        var tank = new GLTFLoader();
-        tank.load(
-            '/assets/models/tank.glb', // Chemin du fichier GLB
-            (gltf) => {
-                this.scene.add(gltf.scene); // Ajout du modèle à la scène lorsque le chargement est terminé
-            },
-            undefined,
-            ( error ) => {
-                console.log( 'An error happened' ); // Gestionnaire d'erreur
-            }
-        );
 
         // Création d'une instance de Player avec des paramètres spécifiques et ajout à la scène
         new Player(this, {
@@ -72,7 +42,8 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
                 max_hp: 1,
                 speed: 10,
                 force: 10
-            }
+            },
+            model: "vaisseau_heal.glb"
         });
 
         // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
@@ -80,8 +51,10 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
             x: 450,
             y: 50,
             height: 80,
-            width: 80
+            width: 80,
+            model: "vaisseau_heal.glb"
         });
+        
     }
 
     update() {

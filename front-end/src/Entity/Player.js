@@ -1,5 +1,6 @@
-import { PlayerEntity } from '../../../game-engine/src/entity/PlayerEntity';
+import { PlayerEntity } from 'game-engine/src/entity/PlayerEntity';
 import { Controller } from "../playercontroller/Controller";
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 class Player extends PlayerEntity {
     constructor(game, options) {
@@ -7,6 +8,7 @@ class Player extends PlayerEntity {
         this.controller = new Controller();
         this.timeSinceLastSend = 0;
         this.timeBetweenSends = 1000; // 1000 ms = 1 seconde
+ 
     }
 
     update(delta) {

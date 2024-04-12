@@ -8,6 +8,22 @@ class Entity {
         }
         
         this.game.addPool(this);
+        this.model = options.model;
+        this.loader = new GLTFLoader();
+        this.load();
+    }
+
+    load() {
+        this.loader.load(
+            '/assets/models/' + this.model, // Chemin du fichier GLB
+            (gltf) => {
+                this.game.scene.add(gltf.scene); // Ajout du modèle à la scène lorsque le chargement est terminé
+            },
+            undefined,
+            ( error ) => {
+                console.log( 'An error happened' ); // Gestionnaire d'erreur
+            }   
+        );
     }
 
     update(delta) {}

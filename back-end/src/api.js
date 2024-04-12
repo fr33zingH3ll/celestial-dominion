@@ -12,7 +12,7 @@ class Server {
         this.app = Express();
         // Middleware pour ajouter l'en-tête CSP
         this.app.use((req, res, next) => {
-            res.append('Access-Control-Allow-Origin', "http://localhost:5174");
+            res.append('Access-Control-Allow-Origin', "http://localhost:5173");
             next();
         });
         this.server = http.createServer(this.app); // Créez un serveur HTTP
