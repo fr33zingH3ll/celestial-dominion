@@ -9,7 +9,6 @@ class Entity {
         } else {
             this.body = this.game.Bodies.rectangle(options.x, options.y, options.height, options.width, { isStatic: options.isStatic });
         }
-        
         this.game.addPool(this);
         this.model = options.model;
         this.loader = new GLTFLoader();
@@ -27,7 +26,7 @@ class Entity {
                 this.modelObject.add(gltf.scene);
 
                 // Position initiale du modèle
-                this.modelObject.position.set(0, 5, 60); // Mettez les coordonnées x, y, z que vous souhaitez
+                this.modelObject.position.set(0, 0, 0); // Mettez les coordonnées x, y, z que vous souhaitez
 
                 // Rotation initiale du modèle
                 this.modelObject.rotation.set(0, Math.PI / 2, 0); // Mettez les angles d'Euler que vous souhaitez

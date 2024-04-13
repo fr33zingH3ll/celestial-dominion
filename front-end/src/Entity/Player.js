@@ -1,6 +1,6 @@
 import { PlayerEntity } from 'game-engine/src/entity/PlayerEntity';
 import { Controller } from "../playercontroller/Controller";
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 
 class Player extends PlayerEntity {
     constructor(game, options) {
@@ -13,7 +13,7 @@ class Player extends PlayerEntity {
     update(delta) {
         // Mettez à jour la position et l'angle selon votre logique
         this.setPosition(this.controller.getMoveVector());
-        this.setAngle(this.controller.getRotateVector(), 50);
+        this.setAngle(this.controller.getRotateVector());
     
         // Mettez à jour le temps écoulé depuis la dernière exécution
         this.timeSinceLastSend += delta;
@@ -34,7 +34,10 @@ class Player extends PlayerEntity {
         // Mettre à jour la position et l'angle du modèle en fonction des changements dans votre jeu
         // Exemple de mise à jour de l'angle
         if (this.modelObject) {
-            this.modelObject.rotation.set(0, this.rotation, 0); // Mettez la logique de mise à jour de l'angle ici
+            this.modelObject.rotation.set(0, -this.body.angle, 0); // Mettez la logique de mise à jour de l'angle ici
+            this.modelObject.position.set(this.body.position.x, 0, this.body.position.y);
+            this.game.camera.position.set( this.body.position.x, 50, this.body.position.y+100 );
+            //this.controls.target(this.modelObject.position);
         }
         
     }

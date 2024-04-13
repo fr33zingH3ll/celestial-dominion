@@ -20,23 +20,24 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
         this.scene.background = new THREE.Color(0xc8ad7f);
 
         // Création d'une caméra PerspectiveCamera
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.camera.position.set( 0, 20, 100 ); // Positionnement de la caméra
+        this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera.rotation.set( 0.2, 0, 0 );
 
         // Ajout d'une lumière ambiante à la scène
         this.scene.add( new THREE.AmbientLight( 0x404040 ) );
 
 
+
         // Création d'une instance de Player avec des paramètres spécifiques et ajout à la scène
         new Player(this, {
-            x: 400,
-            y: 200,
+            x: 0,
+            y: 0,
             vertices: [{x: 0, y: 0},{x: -50, y: 200},{x: 0, y: 150},{x: 50, y: 200}],
             restitution: 0.5,
             stat: {
                 hp: 1,
                 max_hp: 1,
-                speed: 10,
+                speed: 2,
                 force: 10
             },
             model: "vaisseau_heal.glb"
@@ -44,8 +45,8 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
 
         // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
         new Asteriode(this, {
-            x: 450,
-            y: 50,
+            x: 0,
+            y: 0,
             height: 80,
             width: 80,
             model: "Asteroid_1.glb"
@@ -57,9 +58,8 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
         super.update(); // Appel de la méthode update() de la classe parente GameMaster
         for (const entity of this.pool) {
             entity.update(); // Appel de la méthode update() pour chaque entité dans le pool
-            if (entity instanceof Player) console.log("hello"); this.renderer.render(this.scene, this.camera); // Rendu de la scène avec la caméra
+            if (entity instanceof Player) this.renderer.render(this.scene, this.camera); // Rendu de la scène avec la caméra
         }
-        
     }
     
     start() {

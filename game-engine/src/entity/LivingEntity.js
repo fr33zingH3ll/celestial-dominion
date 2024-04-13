@@ -8,7 +8,6 @@ class LivingEntity extends Entity {
         this.max_hp = options.stat.max_hp;
         this.speed = options.stat.speed;
         this.force = options.stat.force;
-        this.rotation = 0;
     }
 
     setPosition(vector) {
@@ -24,7 +23,7 @@ class LivingEntity extends Entity {
         if (angle === 0) {
             return;
         }
-        this.rotation += angle;
+        this.game.Body.setAngularVelocity(this.body, angle / 50);
     }
 }
  
