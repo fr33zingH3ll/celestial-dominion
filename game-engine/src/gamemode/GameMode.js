@@ -1,4 +1,3 @@
-
 import { Entity } from "../entity/Entity.js";
 
 
@@ -10,7 +9,6 @@ class GameMode {
      * Crée une instance de GameMode.
      */
     constructor() {
-        this.pool_body = [];
         this.pool = [];
     }
 

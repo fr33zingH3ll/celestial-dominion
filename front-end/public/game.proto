@@ -15,9 +15,6 @@ message MessageWrapper {
 		HandshakeRequest handshakeRequest = 0;
 		HandshakeResponse handshakeResponse = 1;
 
-		ClientPlayerMove clientPlayerMove = 2;
-		ServerPlayerMove serverPlayerMove = 3;
-
 		ClientPlayerUpdate clientPlayerUpdate = 4;
 		ServerPlayerUpdate serverPlayerUpdate = 5;
 	}
@@ -34,24 +31,20 @@ message HandshakeResponse {
 	float initialRotation = 4; // in radians
 }
 
-message ClientPlayerMove {
-	Vector position = 1;
-	float rotation = 2;
-}
-
-message ServerPlayerMove {
-	int32 user_id = 1;
-	Vector position = 2;
-	float rotation = 3;
-}
-
 message ClientPlayerUpdate {
 	Status status = 1;
+	PlayerMove player_move = 2;
 }
 
 message ServerPlayerUpdate {
 	int32 user_id = 1;
 	Status status = 2;
+	PlayerMove player_move = 3;
+}
+
+message PlayerMove {
+	Vector position = 1;
+	float rotation = 2;
 }
 
 message Status {

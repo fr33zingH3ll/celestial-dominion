@@ -27,11 +27,7 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
         // Ajout d'une lumière ambiante à la scène
         this.scene.add( new THREE.AmbientLight( 0x404040 ) );
 
-
-
-
-        // Création d'une instance de Player avec des paramètres spécifiques et ajout à la scène
-        new Player(this, {
+        this.addPool(new Player(this, {
             x: 0,
             y: 0,
             vertices: [{x: 0, y: 0},{x: -50, y: 200},{x: 0, y: 150},{x: 50, y: 200}],
@@ -43,23 +39,41 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
                 force: 10
             },
             model: "vaisseau_heal.glb"
-        });
+        }));
+
+        this.addPool(new Player(this, {
+            x: 0,
+            y: 0,
+            vertices: [{x: 0, y: 0},{x: -50, y: 200},{x: 0, y: 150},{x: 50, y: 200}],
+            restitution: 0.5,
+            stat: {
+                hp: 1,
+                max_hp: 1,
+                speed: 4,
+                force: 10
+            },
+            model: "vaisseau_heal.glb"
+        }));
 
         // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
-        new Asteriode(this, {
+        this.addPool(new Asteriode(this, {
             x: 0,
             y: 0,
             height: 80,
             width: 80,
             model: "Asteroid_1.glb"
-        });
-        
+        }));
     }
 
-    update() {
+    addPool(entity) {
+        super.addPool(entity);
+        entity.load();
+    }
+
+    update(delta) {
         super.update(); // Appel de la méthode update() de la classe parente GameMaster
         for (const entity of this.pool) {
-            entity.update(); // Appel de la méthode update() pour chaque entité dans le pool
+            entity.update(delta); // Appel de la méthode update() pour chaque entité dans le pool
             if (entity instanceof Player) this.renderer.render(this.scene, this.camera); // Rendu de la scène avec la caméra
         }
     }

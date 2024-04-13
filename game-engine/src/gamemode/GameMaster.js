@@ -5,6 +5,7 @@ import * as decomp from 'poly-decomp';
 class GameMaster extends GameMode {
     constructor () {
         super();
+        this.pool_body = [];
         // module aliases
         this.Engine = Matter.Engine;
         this.Render = Matter.Render;

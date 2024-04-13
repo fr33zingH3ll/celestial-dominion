@@ -9,10 +9,8 @@ class Entity {
         } else {
             this.body = this.game.Bodies.rectangle(options.x, options.y, options.height, options.width, { isStatic: options.isStatic });
         }
-        this.game.addPool(this);
         this.model = options.model;
         this.loader = new GLTFLoader();
-        this.load();
     }
 
     load() {

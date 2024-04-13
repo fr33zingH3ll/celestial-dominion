@@ -6,8 +6,9 @@ class Player extends PlayerEntity {
     constructor(game, options) {
         super(game, options);
         this.controller = new Controller();
+
         this.timeSinceLastSend = 0;
-        this.timeBetweenSends = 1000; // 1000 ms = 1 seconde
+        this.timeBetweenSends = 20; // 1000 ms = 1 seconde
     }
 
     update(delta) {
@@ -23,14 +24,32 @@ class Player extends PlayerEntity {
             const position = this.body.position;
             const angle = this.body.angle;
     
-            const hs = this.game.server.proto.lookupType("ClientPlayerMove");
+            const hs = this.game.server.proto.lookupType("ClientPlayerUpdate");
             const wrap = this.game.server.proto.lookupType('MessageWrapper');
     
-            this.game.server.sendMessage(wrap.create({ clientPlayerMove: hs.create({ position, angle }) }), wrap);
-    
+            this.game.server.sendMessage(
+                wrap.create(
+                    { clientPlayerUpdate: hs.create(
+                        { Status: 
+                            { 
+                                hp: this.hp, 
+                                max_hp: this.max_hp, 
+                                speed: this.speed, 
+                                force: this.force
+                            }, 
+                            PlayerMove: { 
+                                position, 
+                                angle
+                            } 
+                        }) 
+                    }), 
+                wrap
+            );
+            
             // Réinitialisez le temps écoulé
             this.timeSinceLastSend = 0;
         }
+        console.log(delta);
         // Mettre à jour la position et l'angle du modèle en fonction des changements dans votre jeu
         // Exemple de mise à jour de l'angle
         if (this.modelObject) {
