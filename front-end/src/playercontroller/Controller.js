@@ -68,10 +68,10 @@ class Controller {
         let angle = 0;
 
         if (this.control.turnLeft) {
-            angle += -1;
+            angle += -0.1;
         }
         if (this.control.turnRight) {
-            angle += 1;
+            angle += 0.1;
         }
         return angle
     }

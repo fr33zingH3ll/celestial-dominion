@@ -1,9 +1,7 @@
 import { Asteriode } from "../Entity/Asteroide.js"; // Importation de la classe Asteroide depuis le fichier correspondant
 import { Player } from "../Entity/Player"; // Importation de la classe Player depuis le fichier correspondant
 import * as THREE from 'three'; // Importation de la bibliothèque Three.js
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; // Importation du chargeur GLTFLoader de Three.js
 import { GameMaster } from "game-engine/src/gamemode/GameMaster"; // Importation de la classe GameMaster depuis le chemin spécifié
-
 
 class MainGame extends GameMaster { // Définition de la classe MainGame qui étend GameMaster
     constructor(server) { // Constructeur de la classe MainGame avec le paramètre 'server'
@@ -18,17 +16,15 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
 
-        // Création d'une caméra PerspectiveCamera
-        const aspectRatio = window.innerWidth / window.innerHeight;
-        this.camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
-        this.camera.position.set( 0, 20, 100 ); // Positionnement de la caméra
-
         // Création d'un fond noir pour la scène
         this.scene.background = new THREE.Color(0xc8ad7f);
 
+        // Création d'une caméra PerspectiveCamera
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera.position.set( 0, 20, 100 ); // Positionnement de la caméra
+
         // Ajout d'une lumière ambiante à la scène
-        const light = new THREE.AmbientLight( 0x404040 ); // Lumière blanche douce
-        this.scene.add( light );
+        this.scene.add( new THREE.AmbientLight( 0x404040 ) );
 
 
         // Création d'une instance de Player avec des paramètres spécifiques et ajout à la scène
@@ -52,7 +48,7 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
             y: 50,
             height: 80,
             width: 80,
-            model: "vaisseau_heal.glb"
+            model: "Asteroid_1.glb"
         });
         
     }
@@ -61,8 +57,9 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
         super.update(); // Appel de la méthode update() de la classe parente GameMaster
         for (const entity of this.pool) {
             entity.update(); // Appel de la méthode update() pour chaque entité dans le pool
+            if (entity instanceof Player) console.log("hello"); this.renderer.render(this.scene, this.camera); // Rendu de la scène avec la caméra
         }
-        this.renderer.render(this.scene, this.camera); // Rendu de la scène avec la caméra
+        
     }
     
     start() {

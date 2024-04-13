@@ -1,8 +1,11 @@
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; // Importation du chargeur GLTFLoader de Three.js
+import * as THREE from 'three'; // Importation de la bibliothèque Three.js
+
 class Entity {
     constructor(game, options) {
         this.game = game;
         if (options.vertices) {
-            this.body = this.game.Bodies.fromVertices(options.x, options.y, options.vertices, {retitutions: options.retitutions} );
+            this.body = this.game.Bodies.fromVertices(options.x, options.y, options.vertices, {restitution: options.restitution} );
         } else {
             this.body = this.game.Bodies.rectangle(options.x, options.y, options.height, options.width, { isStatic: options.isStatic });
         }
@@ -17,11 +20,24 @@ class Entity {
         this.loader.load(
             '/assets/models/' + this.model, // Chemin du fichier GLB
             (gltf) => {
-                this.game.scene.add(gltf.scene); // Ajout du modèle à la scène lorsque le chargement est terminé
+                // Créez un nouvel objet Object3D
+                this.modelObject = new THREE.Object3D();
+
+                // Ajoutez la scène chargée à l'objet Object3D
+                this.modelObject.add(gltf.scene);
+
+                // Position initiale du modèle
+                this.modelObject.position.set(0, 5, 60); // Mettez les coordonnées x, y, z que vous souhaitez
+
+                // Rotation initiale du modèle
+                this.modelObject.rotation.set(0, Math.PI / 2, 0); // Mettez les angles d'Euler que vous souhaitez
+
+                // Ajoutez l'objet Object3D à la scène
+                this.game.scene.add(this.modelObject);
             },
             undefined,
             ( error ) => {
-                console.log( 'An error happened' ); // Gestionnaire d'erreur
+                console.log(error); // Gestionnaire d'erreur
             }   
         );
     }

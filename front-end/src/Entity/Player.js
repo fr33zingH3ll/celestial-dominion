@@ -8,7 +8,6 @@ class Player extends PlayerEntity {
         this.controller = new Controller();
         this.timeSinceLastSend = 0;
         this.timeBetweenSends = 1000; // 1000 ms = 1 seconde
- 
     }
 
     update(delta) {
@@ -32,6 +31,12 @@ class Player extends PlayerEntity {
             // Réinitialisez le temps écoulé
             this.timeSinceLastSend = 0;
         }
+        // Mettre à jour la position et l'angle du modèle en fonction des changements dans votre jeu
+        // Exemple de mise à jour de l'angle
+        if (this.modelObject) {
+            this.modelObject.rotation.set(0, this.rotation, 0); // Mettez la logique de mise à jour de l'angle ici
+        }
+        
     }
 }
 
