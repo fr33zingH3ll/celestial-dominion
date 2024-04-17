@@ -1,6 +1,6 @@
 import { PlayerEntity } from 'game-engine/src/entity/PlayerEntity';
 import { Controller } from "../playercontroller/Controller";
-import * as THREE from 'three'; // Importation de la bibliothèque Three.js
+import protobuf from 'protobufjs';
 
 class Player extends PlayerEntity {
     constructor(game, options) {
@@ -8,7 +8,7 @@ class Player extends PlayerEntity {
         this.controller = new Controller();
 
         this.timeSinceLastSend = 0;
-        this.timeBetweenSends = 20; // 1000 ms = 1 seconde
+        this.timeBetweenSends = 2000; // 1000 ms = 1 seconde
     }
 
     update(delta) {
@@ -21,35 +21,11 @@ class Player extends PlayerEntity {
     
         // Vérifiez si le temps écoulé est supérieur au temps entre les envois
         if (this.timeSinceLastSend >= this.timeBetweenSends) {
-            const position = this.body.position;
-            const angle = this.body.angle;
-    
-            const hs = this.game.server.proto.lookupType("ClientPlayerUpdate");
-            const wrap = this.game.server.proto.lookupType('MessageWrapper');
-    
-            this.game.server.sendMessage(
-                wrap.create(
-                    { clientPlayerUpdate: hs.create(
-                        { Status: 
-                            { 
-                                hp: this.hp, 
-                                max_hp: this.max_hp, 
-                                speed: this.speed, 
-                                force: this.force
-                            }, 
-                            PlayerMove: { 
-                                position, 
-                                angle
-                            } 
-                        }) 
-                    }), 
-                wrap
-            );
-            
+
+            this.sendStatus();
             // Réinitialisez le temps écoulé
             this.timeSinceLastSend = 0;
         }
-        console.log(delta);
         // Mettre à jour la position et l'angle du modèle en fonction des changements dans votre jeu
         // Exemple de mise à jour de l'angle
         if (this.modelObject) {
@@ -58,6 +34,30 @@ class Player extends PlayerEntity {
             this.game.camera.position.set(this.body.position.x, 50, this.body.position.y+100);
         }
         
+    }
+
+    sendStatus() {
+
+        const position = this.body.position;
+        const angle = this.body.angle;
+
+
+        const vector = this.game.server.proto.lookupType("Vector");
+        const status = this.game.server.proto.lookupType("Status");
+        const player_move = this.game.server.proto.lookupType("PlayerMove");
+        const hs = this.game.server.proto.lookupType("ClientPlayerUpdate");
+        const wrap = this.game.server.proto.lookupType('MessageWrapper');
+        
+        console.log(hs);
+        this.game.server.sendMessage(
+            wrap.create({ 
+                clientPlayerUpdate: hs.create({
+                    status: status.create({ hp: this.hp, hpMax: this.hp_max, speed: this.speed, force: this.force }), 
+                    playerMove: player_move.create({ position: { x: position.x, y: position.y }, rotation: angle })
+                })
+                }), 
+            wrap
+        );
     }
 }
 

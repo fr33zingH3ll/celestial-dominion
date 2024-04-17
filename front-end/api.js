@@ -4,8 +4,6 @@ import protobuf from 'protobufjs';
 class Socket {
     constructor(url) {
         this.socket = new WebSocket(url);
-
-        this.sendHandshake("blabla", "handshakeRequest");
         this.socket.addEventListener("message", (event) => {
             try {
                 const msg = MessageWrapper.decode(message);
@@ -17,11 +15,12 @@ class Socket {
         });
     }
 
-    async sendHandshake(token) {
+    async init() {
+        this.proto = await (new protobuf.Root().load("/game.proto"));
         await this.awaitOpen();
+    }
 
-        this.proto = await (new protobuf.Root().load("game.proto"));
-
+    async sendHandshake(token) {
         const hs = this.proto.lookupType("HandshakeRequest");
         const wrap = this.proto.lookupType('MessageWrapper');
 

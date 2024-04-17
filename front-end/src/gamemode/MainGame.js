@@ -8,7 +8,7 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
     constructor(server) { // Constructeur de la classe MainGame avec le paramètre 'server'
         super(); // Appel du constructeur de la classe parente GameMaster
         this.server = server; // Assignation du paramètre 'server' à la propriété 'server' de MainGame
-
+        
         // Création de la scène Three.js
         this.scene = new THREE.Scene();
 
@@ -34,21 +34,7 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
             restitution: 0.5,
             stat: {
                 hp: 1,
-                max_hp: 1,
-                speed: 2,
-                force: 10
-            },
-            model: "vaisseau_heal.glb"
-        }));
-
-        this.addPool(new Player(this, {
-            x: 0,
-            y: 0,
-            vertices: [{x: 0, y: 0},{x: -50, y: 200},{x: 0, y: 150},{x: 50, y: 200}],
-            restitution: 0.5,
-            stat: {
-                hp: 1,
-                max_hp: 1,
+                hp_max: 2,
                 speed: 4,
                 force: 10
             },

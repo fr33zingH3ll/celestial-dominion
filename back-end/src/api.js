@@ -2,6 +2,7 @@ import Express from 'express';
 import http from 'http'; // Module http inclus avec Node.js
 import WebSocket, { WebSocketServer } from 'ws';
 import protobuf from 'protobufjs';
+import { EventEmitter } from 'events';
 
 const proto = protobuf.loadSync('../proto/game.proto');
 const MessageWrapper = proto.lookupType('MessageWrapper');
@@ -9,10 +10,15 @@ const MessageWrapper = proto.lookupType('MessageWrapper');
 class Server {
     constructor(game_master) {
         this.gamemaster = game_master;
+        this.players = {};
+        this.message_queues = [];
+        // Créez un émetteur d'événements personnalisé
+        this.emitter = new EventEmitter();
+
         this.app = Express();
         // Middleware pour ajouter l'en-tête CSP
         this.app.use((req, res, next) => {
-            res.append('Access-Control-Allow-Origin', "http://localhost:5173");
+            res.append('Access-Control-Allow-Origin', "http://192.168.1.82:5174");
             next();
         });
         this.server = http.createServer(this.app); // Créez un serveur HTTP
@@ -49,7 +55,10 @@ class Server {
         ws.on('message', (message) => {
             try {
                 const msg = MessageWrapper.decode(message);
-                console.log(msg);
+                const keys = Object.keys(msg);
+                const firstKey = keys[0];
+                this.emitter.emit(firstKey, msg[firstKey]);
+                console.log(msg)
             } catch (e) {
                 console.error(e);
                 ws.close();

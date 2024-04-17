@@ -5,7 +5,7 @@ class LivingEntity extends Entity {
     constructor(game, options) {
         super(game, options);
         this.hp = options.stat.hp;
-        this.max_hp = options.stat.max_hp;
+        this.hp_max = options.stat.hp_max;
         this.speed = options.stat.speed;
         this.force = options.stat.force;
     }
