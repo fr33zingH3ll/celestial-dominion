@@ -41,23 +41,14 @@ class Player extends PlayerEntity {
         const position = this.body.position;
         const angle = this.body.angle;
 
-
-        const vector = this.game.server.proto.lookupType("Vector");
-        const status = this.game.server.proto.lookupType("Status");
-        const player_move = this.game.server.proto.lookupType("PlayerMove");
-        const hs = this.game.server.proto.lookupType("ClientPlayerUpdate");
         const wrap = this.game.server.proto.lookupType('MessageWrapper');
         
-        console.log(hs);
-        this.game.server.sendMessage(
-            wrap.create({ 
-                clientPlayerUpdate: hs.create({
-                    status: status.create({ hp: this.hp, hpMax: this.hp_max, speed: this.speed, force: this.force }), 
-                    playerMove: player_move.create({ position: { x: position.x, y: position.y }, rotation: angle })
-                })
-                }), 
-            wrap
-        );
+        this.game.server.sendMessage({ 
+            clientPlayerUpdate: {
+                status: { hp: this.hp, hpMax: this.hp_max, speed: this.speed, force: this.force }, 
+                playerMove: { position: { x: position.x, y: position.y }, rotation: angle }
+            }
+        }, wrap );
     }
 }
 

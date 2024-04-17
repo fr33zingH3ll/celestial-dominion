@@ -11,6 +11,7 @@ class Entity {
         }
         this.model = options.model;
         this.loader = new GLTFLoader();
+        this.target = new EventTarget();
     }
 
     load() {
@@ -38,6 +39,15 @@ class Entity {
             }   
         );
     }
+
+    initListener() {
+        this.game.emitter.on('clientPlayerUpdate', (event) => {
+            console.log('Événement Node.js déclenché:', event.detail.message);
+        });
+    }
+
+    // Méthode pour nettoyer l'écouteur d'événements lorsque l'entité est détruite
+    destroy() {}
 
     update(delta) {}
 }
