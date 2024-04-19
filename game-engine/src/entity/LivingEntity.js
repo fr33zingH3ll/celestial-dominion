@@ -5,7 +5,7 @@ class LivingEntity extends Entity {
     constructor(game, options) {
         super(game, options);
         this.hp = options.stat.hp;
-        this.hp_max = options.stat.hp_max;
+        this.hpMax = options.stat.hpMax;
         this.speed = options.stat.speed;
         this.force = options.stat.force;
     }
@@ -24,6 +24,17 @@ class LivingEntity extends Entity {
             return;
         }
         this.game.Body.setAngularVelocity(this.body, angle / 50);
+    }
+
+    serializeState() {
+        return {
+            hp: this.hp,
+            hpMax: this.hpMax,
+            speed: this.speed,
+            force: this.force,
+
+            ...super.serializeState(),
+        };
     }
 }
  

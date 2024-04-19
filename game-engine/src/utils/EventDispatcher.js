@@ -23,7 +23,7 @@ class EventDispatcher {
 			}
 		}
     }
-  
+
     removeEventListener(type, listener) {
 		const listeners = this.listeners.get(type);
 

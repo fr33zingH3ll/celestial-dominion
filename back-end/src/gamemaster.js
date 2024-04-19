@@ -1,5 +1,6 @@
 import Matter from "matter-js";
 import { GameMaster } from "game-engine/src/gamemode/GameMaster.js";
+import { Player } from "./Entity/Player";
 
 class BackGameMaster extends GameMaster {
     constructor() {
@@ -25,6 +26,29 @@ class BackGameMaster extends GameMaster {
 				const pair = pairs[i];
 			}
 		});
+
+        this.addPool(new Player(this, {
+            x: 0,
+            y: 0,
+            vertices: [{x: 0, y: 0},{x: -50, y: 200},{x: 0, y: 150},{x: 50, y: 200}],
+            restitution: 0.5,
+            stat: {
+                hp: 1,
+                hpMax: 2,
+                speed: 4,
+                force: 10
+            },
+            model: "vaisseau_heal.glb"
+        }));
+
+        // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
+        this.addPool(new Asteriode(this, {
+            x: 0,
+            y: 0,
+            height: 80,
+            width: 80,
+            model: "Asteroid_1.glb"
+        }));
     }
 }
 

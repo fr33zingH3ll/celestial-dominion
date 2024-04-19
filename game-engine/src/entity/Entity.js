@@ -49,7 +49,16 @@ class Entity {
     // Méthode pour nettoyer l'écouteur d'événements lorsque l'entité est détruite
     destroy() {}
 
+    serializeState() {
+        return {
+            position: this.body.position,
+            angle: this.body.angle,
+            velocity: this.body.velocity,
+        };
+    }
+
     update(delta) {}
 }
 
 export { Entity };
+ 

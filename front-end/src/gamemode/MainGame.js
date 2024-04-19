@@ -1,8 +1,5 @@
-import { Asteriode } from "../Entity/Asteroide.js"; // Importation de la classe Asteroide depuis le fichier correspondant
-import { Player } from "../Entity/Player"; // Importation de la classe Player depuis le fichier correspondant
 import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 import { GameMaster } from "game-engine/src/gamemode/GameMaster"; // Importation de la classe GameMaster depuis le chemin spécifié
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 class MainGame extends GameMaster { // Définition de la classe MainGame qui étend GameMaster
     constructor(server) { // Constructeur de la classe MainGame avec le paramètre 'server'
@@ -26,29 +23,6 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
 
         // Ajout d'une lumière ambiante à la scène
         this.scene.add( new THREE.AmbientLight( 0x404040 ) );
-
-        this.addPool(new Player(this, {
-            x: 0,
-            y: 0,
-            vertices: [{x: 0, y: 0},{x: -50, y: 200},{x: 0, y: 150},{x: 50, y: 200}],
-            restitution: 0.5,
-            stat: {
-                hp: 1,
-                hp_max: 2,
-                speed: 4,
-                force: 10
-            },
-            model: "vaisseau_heal.glb"
-        }));
-
-        // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
-        this.addPool(new Asteriode(this, {
-            x: 0,
-            y: 0,
-            height: 80,
-            width: 80,
-            model: "Asteroid_1.glb"
-        }));
     }
 
     addPool(entity) {

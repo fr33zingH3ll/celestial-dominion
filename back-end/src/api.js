@@ -7,6 +7,10 @@ import { Event } from 'game-engine/src/utils/Event.js';
 const proto = protobuf.loadSync('../proto/game.proto');
 const MessageWrapper = proto.lookupType('MessageWrapper');
 
+class PlayerConnection {
+    
+}
+
 class Server {
     constructor(game_master) {
         this.game = game_master;
@@ -49,6 +53,8 @@ class Server {
     handleWebSocketConnection(ws) {
         console.log('WebSocket connected');
 
+        let connection;
+
         // Écoutez les messages WebSocket
         ws.on('message', (message) => {
             try {
@@ -56,7 +62,14 @@ class Server {
                 console.debug('Got message', msg);
                 const keys = Object.keys(msg);
                 const firstKey = keys[0];
-                this.game.emitter.dispatchEvent(new Event(firstKey, msg[firstKey]));
+
+                if (firstKey === 'handshakeRequest') {
+                    connection = {username: msg[firstkey].token};
+                }
+
+                if (connection) {
+                    this.game.emitter.dispatchEvent(new Event(firstKey, msg[firstKey]));
+                }
             } catch (e) {
                 console.error(e);
                 ws.close();
