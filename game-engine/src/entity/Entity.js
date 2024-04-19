@@ -11,7 +11,7 @@ class Entity {
         }
         this.model = options.model;
         this.loader = new GLTFLoader();
-        this.target = new EventTarget();
+        
     }
 
     load() {

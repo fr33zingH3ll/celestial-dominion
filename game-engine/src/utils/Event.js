@@ -1,7 +1,8 @@
 class Event {
 
-    constructor(type) {
+    constructor(type, message) {
         this.type = type;
+		this.message = message;
         this.cancelable = true;
         this.cancelled = false;
     }
@@ -33,3 +34,5 @@ class Event {
 		return "Event [type=" + this.type + ", cancelable=" + this.cancelable + ", cancelled=" + this.cancelled + "]";
 	}
 }
+
+export { Event };

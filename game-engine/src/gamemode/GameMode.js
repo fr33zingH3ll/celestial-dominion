@@ -1,4 +1,5 @@
 import { Entity } from "../entity/Entity.js";
+import { EventDispatcher } from "../utils/EventDispatcher.js";
 
 
 /**
@@ -10,6 +11,7 @@ class GameMode {
      */
     constructor() {
         this.pool = [];
+        this.emitter = new EventDispatcher();
     }
 
     /**

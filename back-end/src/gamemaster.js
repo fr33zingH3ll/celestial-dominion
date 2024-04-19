@@ -1,17 +1,9 @@
 import Matter from "matter-js";
 import { GameMaster } from "game-engine/src/gamemode/GameMaster.js";
-import { EventEmitter } from 'events';
 
 class BackGameMaster extends GameMaster {
     constructor() {
         super();
-
-        // Créez un émetteur d'événements personnalisé
-        this.emitter = new EventEmitter();
-
-        //this.emitter.on('clientPlayerUpdate',(data) => {
-        //    console.log('Événement déclenché avec les données:', data);
-        //});
 
         // Utilisation de Matter.js pour la simulation physique
         this.matter = Matter;

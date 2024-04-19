@@ -2,13 +2,14 @@ import Express from 'express';
 import http from 'http'; // Module http inclus avec Node.js
 import WebSocket, { WebSocketServer } from 'ws';
 import protobuf from 'protobufjs';
+import { Event } from 'game-engine/src/utils/Event.js';
 
 const proto = protobuf.loadSync('../proto/game.proto');
 const MessageWrapper = proto.lookupType('MessageWrapper');
 
 class Server {
     constructor(game_master) {
-        this.gamemaster = game_master;
+        this.game = game_master;
         this.players = {};
         this.message_queues = [];
 
@@ -52,11 +53,10 @@ class Server {
         ws.on('message', (message) => {
             try {
                 const msg = MessageWrapper.decode(message);
+                console.debug('Got message', msg);
                 const keys = Object.keys(msg);
                 const firstKey = keys[0];
-                new CustomEvent(firstKey, {
-                    detail: { message: msg[firstKey] }
-                });
+                this.game.emitter.dispatchEvent(new Event(firstKey, msg[firstKey]));
             } catch (e) {
                 console.error(e);
                 ws.close();
