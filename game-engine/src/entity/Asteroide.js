@@ -1,4 +1,4 @@
-import { StaticEntity } from "game-engine/src/entity/StaticEntity";
+import { StaticEntity } from "game-engine/src/entity/StaticEntity.js";
 
 class Asteriode extends StaticEntity {
     constructor(game, options) {

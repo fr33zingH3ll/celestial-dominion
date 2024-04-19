@@ -1,4 +1,4 @@
-import { LivingEntity } from "./LivingEntity";
+import { LivingEntity } from "./LivingEntity.js";
 
 class PlayerEntity extends LivingEntity {
     constructor(game, options) {

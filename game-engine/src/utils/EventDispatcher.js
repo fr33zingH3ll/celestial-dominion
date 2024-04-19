@@ -3,7 +3,6 @@ class EventDispatcher {
 		// Key: event type
 		// Value: listener
 		this.listeners = new Map();
-		console.trace();
     }
   
     addEventListener(type, listener) {

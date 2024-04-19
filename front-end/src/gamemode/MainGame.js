@@ -32,10 +32,12 @@ class MainGame extends GameMaster { // Définition de la classe MainGame qui ét
 
     update(delta) {
         super.update(); // Appel de la méthode update() de la classe parente GameMaster
+
         for (const entity of this.pool) {
             entity.update(delta); // Appel de la méthode update() pour chaque entité dans le pool
-            if (entity instanceof Player) this.renderer.render(this.scene, this.camera); // Rendu de la scène avec la caméra
         }
+
+        this.renderer.render(this.scene, this.camera); // Rendu de la scène avec la caméra
     }
     
     start() {

@@ -1,5 +1,6 @@
-import { Vector } from "matter-js";
-import { Entity } from "./Entity";
+import matter from "matter-js";
+const { Vector } = matter;
+import { Entity } from "./Entity.js";
 
 class LivingEntity extends Entity {
     constructor(game, options) {
@@ -37,5 +38,5 @@ class LivingEntity extends Entity {
         };
     }
 }
- 
+
 export { LivingEntity };

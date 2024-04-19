@@ -4,13 +4,6 @@ import WebSocket, { WebSocketServer } from 'ws';
 import protobuf from 'protobufjs';
 import { Event } from 'game-engine/src/utils/Event.js';
 
-const proto = protobuf.loadSync('../proto/game.proto');
-const MessageWrapper = proto.lookupType('MessageWrapper');
-
-class PlayerConnection {
-    
-}
-
 class Server {
     constructor(game_master) {
         this.game = game_master;
@@ -36,8 +29,11 @@ class Server {
 
         // Gérez les connexions WebSocket
         this.wss.on('connection', this.handleWebSocketConnection.bind(this));
+    }
 
-        // Lance le serveur
+    async start() {
+        this.proto = await protobuf.load('../proto/game.proto');
+
         this.server.listen(this.port, () => {
             console.log(`Server is running at http://localhost:${this.port}`);
         });
@@ -52,23 +48,36 @@ class Server {
      */
     handleWebSocketConnection(ws) {
         console.log('WebSocket connected');
+        const wrap = this.proto.lookupType('MessageWrapper');
 
         let connection;
 
         // Écoutez les messages WebSocket
         ws.on('message', (message) => {
             try {
-                const msg = MessageWrapper.decode(message);
+                const msg = wrap.decode(message);
                 console.debug('Got message', msg);
                 const keys = Object.keys(msg);
                 const firstKey = keys[0];
 
                 if (firstKey === 'handshakeRequest') {
-                    connection = {username: msg[firstkey].token};
+                    connection = {
+                        username: msg[firstKey].token,
+                        webSocket: ws,
+                    };
+
+                    // FIXME id in jwt as key
+                    this.players[connection.username] = connection;
                 }
 
                 if (connection) {
                     this.game.emitter.dispatchEvent(new Event(firstKey, msg[firstKey]));
+                } else {
+                    console.warn("Closing connection for invalid handshake");
+                    const error = this.proto.lookupType('Error');
+                    this.sendMessage(ws, { error }, () => {
+                        ws.close();
+                    });
                 }
             } catch (e) {
                 console.error(e);
@@ -80,6 +89,12 @@ class Server {
         ws.on('close', () => {
             console.log('WebSocket disconnected');
         });
+    }
+
+    sendMessage(ws, msg, cb) {
+        const wrap = this.proto.lookupType('MessageWrapper');
+
+        ws.send(wrap.encode(wrap.create(msg)).finish(), cb);
     }
 }
 

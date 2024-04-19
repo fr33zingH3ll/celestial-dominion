@@ -1,6 +1,7 @@
 import Matter from "matter-js";
 import { GameMaster } from "game-engine/src/gamemode/GameMaster.js";
-import { Player } from "./Entity/Player";
+import { PlayerEntity } from "game-engine/src/entity/PlayerEntity.js";
+import { Asteriode } from "game-engine/src/entity/Asteroide.js";
 
 class BackGameMaster extends GameMaster {
     constructor() {
@@ -27,7 +28,7 @@ class BackGameMaster extends GameMaster {
 			}
 		});
 
-        this.addPool(new Player(this, {
+        this.addPool(new PlayerEntity(this, {
             x: 0,
             y: 0,
             vertices: [{x: 0, y: 0},{x: -50, y: 200},{x: 0, y: 150},{x: 50, y: 200}],

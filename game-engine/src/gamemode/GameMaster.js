@@ -15,7 +15,7 @@ class GameMaster extends GameMode {
         this.Vector = Matter.Vector;
         this.Composite = Matter.Composite;
         this.Events = Matter.Events;
-        this.decomp = decomp;
+        Matter.Common.setDecomp(decomp);
 
         // create an engine
         this.engine = this.Engine.create();

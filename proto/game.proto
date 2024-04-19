@@ -7,11 +7,13 @@ message Error {
 
 message MessageWrapper {
 	oneof message {
-		HandshakeRequest handshakeRequest = 0;
-		HandshakeResponse handshakeResponse = 1;
+		Error error = 0;
 
-		ClientPlayerUpdate clientPlayerUpdate = 4;
-		ServerPlayerUpdate serverPlayerUpdate = 5;
+		HandshakeRequest handshakeRequest = 1;
+		HandshakeResponse handshakeResponse = 2;
+
+		ClientPlayerUpdate clientPlayerUpdate = 3;
+		ServerPlayerUpdate serverPlayerUpdate = 4;
 	}
 }
 
