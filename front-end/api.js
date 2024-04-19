@@ -4,13 +4,15 @@ import protobuf from 'protobufjs';
 class Socket {
     constructor(url) {
         this.socket = new WebSocket(url);
+        this.socket.binaryType = 'arraybuffer';
         this.socket.addEventListener("message", (event) => {
             try {
-                const msg = MessageWrapper.decode(message);
+                const wrap = this.proto.lookupType('MessageWrapper');
+                const msg = wrap.decode(new Uint8Array(event.data));
                 console.log(msg);
             } catch (e) {
                 console.error(e);
-                ws.close();
+                this.socket.close();
             }
         });
     }
@@ -22,17 +24,18 @@ class Socket {
 
     async sendHandshake(token) {
         const hs = this.proto.lookupType("HandshakeRequest");
-        const wrap = this.proto.lookupType('MessageWrapper');
 
-        this.sendMessage(wrap.create({ handshakeRequest: hs.create({ token }) }), wrap);
+        this.sendMessage({ handshakeRequest: hs.create({ token })});
     }
 
     /**
      * @param {protobuf.Message} msg 
      * @param {protobuf.Type} type
      */
-    sendMessage(msg, type) {
-        this.socket.send(type.encode(msg).finish());
+    sendMessage(msg) {
+        const wrap = this.proto.lookupType('MessageWrapper');
+
+        this.socket.send(wrap.encode(wrap.create(msg)).finish());
     }
 
     awaitOpen() {

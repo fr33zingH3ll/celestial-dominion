@@ -1,17 +1,35 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; // Importation du chargeur GLTFLoader de Three.js
 import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 
+var ID_COUNTER = 0;
+
 class Entity {
+    /**
+     * Indique si l'état de l'entité a été modifié durant ce tick.
+     *
+     * @type boolean
+     */
+    dirty;
+
     constructor(game, options) {
         this.game = game;
+
+        if (options.id) {
+            // Client-side: we obey IDs as we are told
+            this.id = options.id;
+        } else {
+            // Server-side: we generate IDs
+            this.id = ID_COUNTER++;
+        }
+
         if (options.vertices) {
             this.body = this.game.Bodies.fromVertices(options.x, options.y, options.vertices, {restitution: options.restitution} );
         } else {
             this.body = this.game.Bodies.rectangle(options.x, options.y, options.height, options.width, { isStatic: options.isStatic });
         }
+
         this.model = options.model;
         this.loader = new GLTFLoader();
-        
     }
 
     load() {
@@ -41,7 +59,7 @@ class Entity {
     }
 
     initListener() {
-        this.game.emitter.on('clientPlayerUpdate', (event) => {
+        this.game.emitter.on('clientPlayerMove', (event) => {
             console.log('Événement Node.js déclenché:', event.detail.message);
         });
     }

@@ -29,10 +29,12 @@ class LivingEntity extends Entity {
 
     serializeState() {
         return {
-            hp: this.hp,
-            hpMax: this.hpMax,
-            speed: this.speed,
-            force: this.force,
+            livingEntity: {
+                hp: this.hp,
+                hpMax: this.hpMax,
+                speed: this.speed,
+                force: this.force,
+            },
 
             ...super.serializeState(),
         };

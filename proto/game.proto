@@ -1,8 +1,26 @@
 syntax = "proto3";
 import "google/protobuf/any.proto";
 
-message Error {
-	string message = 1;
+message Vector {
+	float x = 1;
+	float y = 2;
+}
+
+message EntityState {
+	Vector position = 1;
+	float angle = 2;
+	Vector velocity = 3;
+
+	oneof child_entity {
+		LivingEntityState livingEntity = 4;
+	}
+}
+
+message LivingEntityState {
+	float hp = 1;
+	float hpMax = 2;
+	float speed = 3;
+	float force = 4;
 }
 
 message MessageWrapper {
@@ -12,9 +30,13 @@ message MessageWrapper {
 		HandshakeRequest handshakeRequest = 1;
 		HandshakeResponse handshakeResponse = 2;
 
-		ClientPlayerUpdate clientPlayerUpdate = 3;
-		ServerPlayerUpdate serverPlayerUpdate = 4;
+		ClientPlayerMove clientPlayerMove = 3;
+		ServerEntityUpdate serverEntityUpdate = 4;
 	}
+}
+
+message Error {
+	string message = 1;
 }
 
 message HandshakeRequest {
@@ -28,30 +50,12 @@ message HandshakeResponse {
 	float initialRotation = 4; // in radians
 }
 
-message ClientPlayerUpdate {
-	Status status = 1;
-	PlayerMove playerMove = 2;
-}
-
-message ServerPlayerUpdate {
-	int32 userId = 1;
-	Status status = 2;
-	PlayerMove playerMove = 3;
-}
-
-message PlayerMove {
+message ClientPlayerMove {
 	Vector position = 1;
 	float rotation = 2;
 }
 
-message Status {
-	float hp = 1;
-	float hpMax = 2;
-	float speed = 3;
-	float force = 4;
-}
-
-message Vector {
-	float x = 1;
-	float y = 2;
+message ServerEntityUpdate {
+	int32 entityId = 1;
+	EntityState state = 2;
 }

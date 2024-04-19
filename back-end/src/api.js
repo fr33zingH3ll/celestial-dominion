@@ -68,6 +68,14 @@ class Server {
 
                     // FIXME id in jwt as key
                     this.players[connection.username] = connection;
+
+                    const res = this.proto.lookupType('HandshakeResponse');
+                    this.sendMessage(ws, {handshakeResponse: res.create({
+                        username: connection.username,
+                        userId: 69,
+                        initialPosition: {x: 0, y: 0},
+                        initialRotation: 0,
+                    })});
                 }
 
                 if (connection) {
