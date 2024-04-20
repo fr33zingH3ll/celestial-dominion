@@ -76,6 +76,7 @@ class Server {
                         initialPosition: {x: 0, y: 0},
                         initialRotation: 0,
                     })});
+                    this.sendUpdates(ws, this.game.pool);
                 }
 
                 if (connection) {
@@ -97,6 +98,16 @@ class Server {
         ws.on('close', () => {
             console.log('WebSocket disconnected');
         });
+    }
+
+    sendUpdates(ws, entities) {
+        const toSend = [];
+        const datum = this.proto.lookupType('ServerEntityUpdateDatum');
+        const data = this.proto.lookupType('ServerEntityUpdate');
+        for (const entity of entities) {
+            toSend.push(datum.create({ entityId: entity.id, state: entity.serializeState()}));
+        }
+        this.sendMessage(ws, { serverEntityUpdate: data.create({ data: toSend })});
     }
 
     sendMessage(ws, msg, cb) {
