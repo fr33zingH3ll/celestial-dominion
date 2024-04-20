@@ -1,4 +1,3 @@
-import { MainGame } from './src/gamemode/MainGame.js';
 import protobuf from 'protobufjs';
 
 class Socket {

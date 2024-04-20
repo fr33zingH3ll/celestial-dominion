@@ -1,7 +1,7 @@
-import * as THREE from 'three'; // Importation de la bibliothèque Three.js
-import { Scene } from "game-engine/src/gamemode/Scene.js";
+import * as THREE from 'three';
+import { GameMaster } from './GameMaster.js';
 
-class Scene2D extends Scene{
+class Scene2D extends GameMaster {
     constructor() {
         super();
         // Création de la scène Three.js
@@ -20,7 +20,13 @@ class Scene2D extends Scene{
         this.camera.rotation.set( 0.2, 0, 0 );
 
         // Ajout d'une lumière ambiante à la scène
-        this.scene.add( new THREE.AmbientLight( 0x404040 ) );        
+        this.scene.add( new THREE.AmbientLight( 0x404040 ) );
+
+        // Création d'un rectangle transparent
+        const geometry = new THREE.PlaneGeometry(5, 3); // Dimensions du rectangle
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.5 }); // Matériau transparent
+        const rectangle = new THREE.Mesh(geometry, material);
+        this.scene.add(rectangle);
     }
 
     update(delta) {

@@ -4,9 +4,7 @@ import { Scene3D } from 'game-engine/src/gamemode/Scene3D.js';
 class MainGame extends Scene3D { // Définition de la classe MainGame qui étend GameMaster
     constructor(server) { // Constructeur de la classe MainGame avec le paramètre 'server'
         super(); // Appel du constructeur de la classe parente GameMaster
-        this.server = server; // Assignation du paramètre 'server' à la propriété 'server' de MainGame
-        
-        
+        this.server = server; // Assignation du paramètre 'server' à la propriété 'server' de MainGame 
     }
 
     addPool(entity) {
