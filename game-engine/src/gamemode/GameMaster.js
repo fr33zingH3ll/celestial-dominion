@@ -1,8 +1,9 @@
-import { GameMode } from "./GameMode.js";
+import { Scene } from "./Scene.js";
 import Matter from "matter-js";
 import * as decomp from 'poly-decomp';
+import { Entity } from "../entity/Entity.js";
 
-class GameMaster extends GameMode {
+class GameMaster extends Scene {
     constructor () {
         super();
         this.pool_body = [];
@@ -20,21 +21,12 @@ class GameMaster extends GameMode {
         // create an engine
         this.engine = this.Engine.create();
         this.engine.gravity.scale = 0;
-
-        // create a renderer
-        //this.render = this.Render.create({
-        //    element: document.body,
-        //    engine: this.engine
-        //});
     }
 
     start() {
         super.start();
         // add all of the bodies to the world
         this.Composite.add(this.engine.world, this.pool_body);
-        
-        // run the renderer
-        //this.Render.run(this.render);
         
         // create runner
         this.runner = this.Runner.create();
@@ -47,7 +39,17 @@ class GameMaster extends GameMode {
         this.Runner.run(this.runner, this.engine);
     }
 
+    destroy() {
+        super.destroy();
+
+        for (const body of this.pool_body) {
+            this.removePool(body, this.pool_body);
+        }
+    }
+
     update(delta) {
+        super.update(delta);
+
         this.Engine.update(this.engine, delta);
     }
 }

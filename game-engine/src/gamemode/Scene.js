@@ -5,7 +5,7 @@ import { EventDispatcher } from "../utils/EventDispatcher.js";
 /**
  * Classe représentant un mode de jeu générique utilisant Matter.js et PIXI.js.
  */
-class GameMode {
+class Scene {
     /**
      * Crée une instance de GameMode.
      */
@@ -36,17 +36,20 @@ class GameMode {
      * Supprime une entité du pool (non implémenté dans cet exemple).
      * @param {Entity} entity - Entité à supprimer du pool.
      */
-    removePool(entity) {
-        const index = this.pool.indexOf(entity);
+    removePool(entity, pool) {
+        const index = pool.indexOf(entity);
         if (index !== -1) {
-            this.pool.splice(index, 1);
+            pool.splice(index, 1);
         }
-        if (index !== -1) {
-            this.pool_body.splice(index, 1);
+    }
+
+    destroy(pool) {
+        for (const entity of pool) {
+            this.removePool(entity, pool);
         }
     }
 
     update(delta) {}
 }
 
-export { GameMode };
+export { Scene };
