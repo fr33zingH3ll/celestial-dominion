@@ -3,10 +3,11 @@ import http from 'http'; // Module http inclus avec Node.js
 import WebSocket, { WebSocketServer } from 'ws';
 import protobuf from 'protobufjs';
 import { Event } from 'game-engine/src/utils/Event.js';
+import { EventDispatcher } from 'game-engine/src/utils/EventDispatcher.js';
 
 class Server {
-    constructor(game_master) {
-        this.game = game_master;
+    constructor() {
+        this.emitter = new EventDispatcher();
         this.players = {};
         this.message_queues = [];
 
@@ -76,11 +77,11 @@ class Server {
                         initialPosition: {x: 0, y: 0},
                         initialRotation: 0,
                     })});
-                    this.sendInitialPool(ws, this.game.pool);
+                    this.emitter.dispatchEvent(new Event('loginSuccess', connection));
                 }
 
                 if (connection) {
-                    this.game.emitter.dispatchEvent(new Event(firstKey, msg[firstKey]));
+                    this.emitter.dispatchEvent(new Event(firstKey, msg[firstKey]));
                 } else {
                     console.warn("Closing connection for invalid handshake");
                     const error = this.proto.lookupType('Error');
@@ -108,6 +109,12 @@ class Server {
             toSend.push(datum.create({ entityId: entity.id, type: entity.constructor.name, state: entity.serializeState()}));
         }
         this.sendMessage(ws, { serverEntityCreate: data.create({ data: toSend })});
+    }
+
+    broadcastMessage(msg) {
+        for (const player of Object.values(this.players)) {
+            this.sendMessage(player.webSocket, msg);
+        }
     }
 
     sendMessage(ws, msg, cb) {

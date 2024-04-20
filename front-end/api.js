@@ -26,7 +26,7 @@ class Socket {
         await this.awaitOpen();
     }
 
-    async sendHandshake(token) {
+    sendHandshake(token) {
         const hs = this.proto.lookupType("HandshakeRequest");
 
         this.sendMessage({ handshakeRequest: hs.create({ token })});

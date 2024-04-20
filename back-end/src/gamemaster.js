@@ -2,10 +2,13 @@ import Matter from "matter-js";
 import { GameMaster } from "game-engine/src/gamemode/GameMaster.js";
 import { PlayerEntity } from "game-engine/src/entity/PlayerEntity.js";
 import { Asteroide } from "game-engine/src/entity/Asteroide.js";
+import { Server } from "./api.js";
 
 class BackGameMaster extends GameMaster {
     constructor() {
         super();
+
+        this.server = new Server();
 
         // Utilisation de Matter.js pour la simulation physique
         this.matter = Matter;
@@ -50,6 +53,23 @@ class BackGameMaster extends GameMaster {
             width: 80,
             model: "Asteroid_1.glb"
         }));
+
+        this.server.emitter.addEventListener('loginSuccess', (event) => {
+            this.server.sendInitialPool(event.message.webSocket, this.pool);
+        });
+    }
+
+    async start() {
+        await this.server.start();
+    }
+
+    update(delta) {
+        super.update(delta);
+        const entitiesToUpdate = this.pool.filter((e) => e.dirty);
+        this.server.broadcastUpdates(entitiesToUpdate);
+        entitiesToUpdate.forEach((e) => {
+            e.dirty = false;
+        });
     }
 }
 
