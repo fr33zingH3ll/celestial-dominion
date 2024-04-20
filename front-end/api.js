@@ -8,6 +8,7 @@ class Socket {
             try {
                 const wrap = this.proto.lookupType('MessageWrapper');
                 const msg = wrap.decode(new Uint8Array(event.data));
+                
                 console.log(msg);
             } catch (e) {
                 console.error(e);

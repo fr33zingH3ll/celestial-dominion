@@ -37,6 +37,7 @@ message MessageWrapper {
 
 		ClientPlayerMove clientPlayerMove = 3;
 		ServerEntityUpdate serverEntityUpdate = 4;
+		ServerEntityCreate serverEntityCreate = 5;
 	}
 }
 
@@ -61,5 +62,9 @@ message ClientPlayerMove {
 }
 
 message ServerEntityUpdate {
+	repeated ServerEntityUpdateDatum data = 1;
+}
+
+message ServerEntityCreate {
 	repeated ServerEntityUpdateDatum data = 1;
 }
