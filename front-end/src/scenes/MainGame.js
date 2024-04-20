@@ -13,6 +13,12 @@ class MainGame extends Scene3D { // Définition de la classe MainGame qui étend
                 this.addPool(entity);
             }
         });
+        this.server.emitter.addEventListener('serverEntityUpdate', (event) => {
+            for (const datum of event.message.data) {
+                const entity = this.pool.filter((e) => e.id === datum.entityId)[0];
+                entity.deserializeState(datum.state);
+            }
+        });
     }
 
     addPool(entity) {

@@ -111,6 +111,16 @@ class Server {
         this.sendMessage(ws, { serverEntityCreate: data.create({ data: toSend })});
     }
 
+    broadcastUpdates(entities) {
+        const toSend = [];
+        const datum = this.proto.lookupType('ServerEntityUpdateDatum');
+        const data = this.proto.lookupType('ServerEntityUpdate');
+        for (const entity of entities) {
+            toSend.push(datum.create({ entityId: entity.id, state: entity.serializeState()}));
+        }
+        this.broadcastMessage({ serverEntityUpdate: data.create({ data: toSend })});
+    }
+
     broadcastMessage(msg) {
         for (const player of Object.values(this.players)) {
             this.sendMessage(player.webSocket, msg);

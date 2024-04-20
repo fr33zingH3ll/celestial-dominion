@@ -65,10 +65,12 @@ class BackGameMaster extends GameMaster {
 
     update(delta) {
         super.update(delta);
+        console.log(delta)
         const entitiesToUpdate = this.pool.filter((e) => e.dirty);
         this.server.broadcastUpdates(entitiesToUpdate);
-        entitiesToUpdate.forEach((e) => {
-            e.dirty = false;
+
+        this.pool.forEach((e) => {
+            e.dirty = true;
         });
     }
 }
