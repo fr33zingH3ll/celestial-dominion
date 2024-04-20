@@ -75,6 +75,12 @@ class Entity {
         };
     }
 
+    deserializeState(state) {
+        this.game.Body.setPosition(this.body, state.position);
+        this.game.Body.setAngle(this.body, state.angle);
+        this.game.Body.setVelocity(this.body, state.angle);
+    }
+
     update(delta) {}
 }
 

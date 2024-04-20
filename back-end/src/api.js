@@ -102,10 +102,10 @@ class Server {
 
     sendInitialPool(ws, entities) {
         const toSend = [];
-        const datum = this.proto.lookupType('ServerEntityUpdateDatum');
+        const datum = this.proto.lookupType('ServerEntityCreateDatum');
         const data = this.proto.lookupType('ServerEntityCreate');
         for (const entity of entities) {
-            toSend.push(datum.create({ entityId: entity.id, state: entity.serializeState()}));
+            toSend.push(datum.create({ entityId: entity.id, type: entity.constructor.name, state: entity.serializeState()}));
         }
         this.sendMessage(ws, { serverEntityCreate: data.create({ data: toSend })});
     }

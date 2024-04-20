@@ -1,7 +1,7 @@
 import Matter from "matter-js";
 import { GameMaster } from "game-engine/src/gamemode/GameMaster.js";
 import { PlayerEntity } from "game-engine/src/entity/PlayerEntity.js";
-import { Asteriode } from "game-engine/src/entity/Asteroide.js";
+import { Asteroide } from "game-engine/src/entity/Asteroide.js";
 
 class BackGameMaster extends GameMaster {
     constructor() {
@@ -43,7 +43,7 @@ class BackGameMaster extends GameMaster {
         }));
 
         // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
-        this.addPool(new Asteriode(this, {
+        this.addPool(new Asteroide(this, {
             x: 0,
             y: 0,
             height: 80,

@@ -1,15 +1,19 @@
 import protobuf from 'protobufjs';
+import { EventDispatcher } from 'game-engine/src/utils/EventDispatcher';
+import { Event } from 'game-engine/src/utils/Event';
 
 class Socket {
     constructor(url) {
         this.socket = new WebSocket(url);
+        this.emitter = new EventDispatcher();
         this.socket.binaryType = 'arraybuffer';
         this.socket.addEventListener("message", (event) => {
             try {
                 const wrap = this.proto.lookupType('MessageWrapper');
                 const msg = wrap.decode(new Uint8Array(event.data));
-                
-                console.log(msg);
+                const type = Object.keys(msg)[0];
+                const message = msg[type];
+                this.emitter.dispatchEvent(new Event(type, message));
             } catch (e) {
                 console.error(e);
                 this.socket.close();

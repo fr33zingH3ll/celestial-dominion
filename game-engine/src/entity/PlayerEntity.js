@@ -28,8 +28,8 @@ class PlayerEntity extends LivingEntity {
     update(delta) {
         // Mettez à jour la position et l'angle selon votre logique
         if (this.controller) {
-            this.setPosition(this.controller.getMoveVector());
-            this.setAngle(this.controller.getRotateVector());
+            this.move(this.controller.getMoveVector());
+            this.setAngularVelocity(this.controller.getRotateVector());
         }
 
         // Mettre à jour la position et l'angle du modèle en fonction des changements dans votre jeu

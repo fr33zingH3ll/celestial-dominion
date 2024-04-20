@@ -5,13 +5,9 @@ import { Entity } from "./Entity.js";
 class LivingEntity extends Entity {
     constructor(game, options) {
         super(game, options);
-        this.hp = options.stat.hp;
-        this.hpMax = options.stat.hpMax;
-        this.speed = options.stat.speed;
-        this.force = options.stat.force;
     }
 
-    setPosition(vector) {
+    move(vector) {
         if (vector.x === 0 && vector.y === 0) {
             return
         }
@@ -20,7 +16,7 @@ class LivingEntity extends Entity {
         this.game.Body.applyForce(this.body, this.body.position, velocity);
     }
 
-    setAngle(angle) {
+    setAngularVelocity(angle) {
         if (angle === 0) {
             return;
         }
@@ -38,6 +34,14 @@ class LivingEntity extends Entity {
 
             ...super.serializeState(),
         };
+    }
+
+    deserializeState(state) {
+        super.deserializeState(state);
+        this.hp = state.livingEntity.hp;
+        this.hpMax = state.livingEntity.hpMax;
+        this.speed = state.livingEntity.speed;
+        this.force = state.livingEntity.force;
     }
 }
 

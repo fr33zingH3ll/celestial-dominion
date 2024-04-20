@@ -1,10 +1,18 @@
-import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 import { Scene3D } from 'game-engine/src/gamemode/Scene3D.js';
+import { entityNames } from 'game-engine/src/entity/EntityList';
 
 class MainGame extends Scene3D { // Définition de la classe MainGame qui étend GameMaster
     constructor(server) { // Constructeur de la classe MainGame avec le paramètre 'server'
         super(); // Appel du constructeur de la classe parente GameMaster
-        this.server = server; // Assignation du paramètre 'server' à la propriété 'server' de MainGame 
+        this.server = server; // Assignation du paramètre 'server' à la propriété 'server' de MainGame
+
+        this.server.emitter.addEventListener('serverEntityCreate', (event) => {
+            for (const datum of event.message.data) {
+                const entity = new entityNames[datum.type](this, {id: datum.entityId});
+                entity.deserializeState(datum.state);
+                this.addPool(entity);
+            }
+        });
     }
 
     addPool(entity) {
