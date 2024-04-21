@@ -12,11 +12,6 @@ class Server {
         this.message_queues = [];
 
         this.app = Express();
-        // Middleware pour ajouter l'en-tête CSP
-        this.app.use((req, res, next) => {
-            res.append('Access-Control-Allow-Origin', "http://192.168.1.82:5174");
-            next();
-        });
         this.server = http.createServer(this.app); // Créez un serveur HTTP
         this.wss = new WebSocketServer({ server: this.server }); // Créez un serveur WebSocket
 
@@ -35,7 +30,7 @@ class Server {
     async start() {
         this.proto = await protobuf.load('../proto/game.proto');
 
-        this.server.listen(this.port, () => {
+        this.server.listen(this.port, '127.0.0.1', () => {
             console.log(`Server is running at http://localhost:${this.port}`);
         });
     }
