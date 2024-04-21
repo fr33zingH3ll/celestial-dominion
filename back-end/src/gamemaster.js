@@ -43,7 +43,12 @@ class BackGameMaster extends GameMaster {
             newPlayer.body.position = { x: Math.random() * 100, y: Math.random() * 100 };
 
             newPlayer.connection = event.message;
+            event.message.entity = newPlayer;
             this.addPool(newPlayer);
+        });
+
+        this.server.emitter.addEventListener('playerDisconnected', event => {
+            this.removePool(event.message.entity);
         });
     }
 
@@ -68,6 +73,12 @@ class BackGameMaster extends GameMaster {
 
             newbornEntities.forEach(e => e.newborn = false);
         }
+    }
+
+    removePool(entity) {
+        super.removePool(entity);
+
+        this.server.broadcastRemovedEntity(entity);
     }
 }
 

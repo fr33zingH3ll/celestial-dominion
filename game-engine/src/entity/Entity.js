@@ -72,7 +72,9 @@ class Entity {
     }
 
     // Méthode pour nettoyer l'écouteur d'événements lorsque l'entité est détruite
-    destroy() { }
+    destroy() {
+        this.game.scene.remove(this.modelObject);
+    }
 
     serializeState() {
         return {

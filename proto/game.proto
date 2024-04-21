@@ -45,6 +45,7 @@ message MessageWrapper {
 		ClientPlayerMove clientPlayerMove = 3;
 		ServerEntityUpdate serverEntityUpdate = 4;
 		ServerEntityCreate serverEntityCreate = 5;
+		ServerEntityDelete serverEntityDelete = 6;
 	}
 }
 
@@ -74,4 +75,8 @@ message ServerEntityUpdate {
 
 message ServerEntityCreate {
 	repeated ServerEntityCreateDatum data = 1;
+}
+
+message ServerEntityDelete {
+	int32 entityId = 1;
 }

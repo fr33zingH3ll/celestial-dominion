@@ -21,6 +21,17 @@ class MainGame extends Scene3D { // Définition de la classe MainGame qui étend
                 entity.deserializeState(datum.state);
             }
         });
+
+        this.server.emitter.addEventListener('serverEntityDelete', event => {
+            const entity = this.getEntityById(event.message.id);
+            
+            if (entity) {
+                this.removePool(entity);
+                entity.destroy();
+            } else {
+                console.warn("Told to delete unknown entity", event.message.id);
+            }
+        });
     }
 
     addPool(entity) {
@@ -35,7 +46,7 @@ class MainGame extends Scene3D { // Définition de la classe MainGame qui étend
             entity.update(delta); // Appel de la méthode update() pour chaque entité dans le pool
         }
     }
-    
+
     start() {
         super.start(); // Appel de la méthode start() de la classe parente GameMaster
     }

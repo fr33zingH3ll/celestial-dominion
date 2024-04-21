@@ -100,7 +100,17 @@ class Server {
         // Gérez la fermeture de la connexion WebSocket
         ws.on('close', () => {
             console.log('WebSocket disconnected');
+
+            if (connection) {
+                this.emitter.dispatchEvent(new Event('playerDisconnected', connection));
+                delete this.players[connection.username];
+            }
         });
+    }
+
+    broadcastRemovedEntity(entity) {
+        const del = this.proto.lookupType('ServerEntityDelete');
+        this.broadcastMessage({ serverEntityDelete: del.create({ entityId: entity.id }) });
     }
 
     broadcastNewEntities(entities) {

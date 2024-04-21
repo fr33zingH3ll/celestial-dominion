@@ -39,14 +39,6 @@ class GameMaster extends Scene {
         this.Runner.run(this.runner, this.engine);
     }
 
-    destroy() {
-        super.destroy();
-
-        for (const body of this.pool_body) {
-            this.removePool(body, this.pool_body);
-        }
-    }
-
     update(delta) {
         super.update(delta);
 

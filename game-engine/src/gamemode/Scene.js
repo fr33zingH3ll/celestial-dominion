@@ -17,7 +17,7 @@ class Scene {
     /**
      * Démarre le mode de jeu en ajoutant une fonction de mise à jour à la boucle de rendu.
      */
-    start() {}
+    start() { }
 
     /**
      * Ajoute une entité au pool et son corps physique à la liste des corps.
@@ -25,31 +25,40 @@ class Scene {
      */
     addPool(entity) {
         this.pool.push(entity);
-        this.pool_body.push(entity.body);
-    }
 
-    getPool(entity) {
-        return this.pool.indexOf(entity);
-    }
-
-    /**
-     * Supprime une entité du pool (non implémenté dans cet exemple).
-     * @param {Entity} entity - Entité à supprimer du pool.
-     */
-    removePool(entity, pool) {
-        const index = pool.indexOf(entity);
-        if (index !== -1) {
-            pool.splice(index, 1);
+        if (entity.body) {
+            this.pool_body.push(entity.body);
         }
     }
 
-    destroy(pool) {
-        for (const entity of pool) {
-            this.removePool(entity, pool);
+    getEntityById(id) {
+        const entities = this.pool.filter(e => e.id);
+        return entities.length ? entities[0] : null;
+    }
+
+    removePool(entity) {
+        const indexEntity = this.pool.indexOf(entity);
+
+        if (indexEntity !== -1) {
+            this.pool.splice(indexEntity, 1);
+        }
+
+        if (!entity.body) return;
+
+        const indexBody = this.pool_body.indexOf(entity.body);
+
+        if (indexBody !== -1) {
+            this.pool_body.splice(entity.body, 1);
         }
     }
 
-    update(delta) {}
+    destroy() {
+        for (const entity of this.pool) {
+            this.removePool(entity);
+        }
+    }
+
+    update(delta) { }
 }
 
 export { Scene };
