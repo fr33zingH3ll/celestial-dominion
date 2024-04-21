@@ -1,8 +1,8 @@
 import { LivingEntity } from "./LivingEntity.js";
 
 class PlayerEntity extends LivingEntity {
-    constructor(game, options) {
-        super(game, options);
+    constructor(game, prototypeName) {
+        super(game, prototypeName);
         this.addEventListener();
     }
 
@@ -41,6 +41,14 @@ class PlayerEntity extends LivingEntity {
         }
     }
 
+    static getPrototypes() {
+        return {
+            base: {
+                hpMax: 100,
+                model: "vaisseau_heal.glb",
+            },
+        };
+    }
 }
 
 export { PlayerEntity };

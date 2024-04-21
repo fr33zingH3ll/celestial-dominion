@@ -71,12 +71,14 @@ class Server {
                     this.players[connection.username] = connection;
 
                     const res = this.proto.lookupType('HandshakeResponse');
-                    this.sendMessage(ws, {handshakeResponse: res.create({
-                        username: connection.username,
-                        userId: 69,
-                        initialPosition: {x: 0, y: 0},
-                        initialRotation: 0,
-                    })});
+                    this.sendMessage(ws, {
+                        handshakeResponse: res.create({
+                            username: connection.username,
+                            userId: 69,
+                            initialPosition: { x: 0, y: 0 },
+                            initialRotation: 0,
+                        })
+                    });
                     this.emitter.dispatchEvent(new Event('loginSuccess', connection));
                 }
 
@@ -101,16 +103,27 @@ class Server {
         });
     }
 
-    sendInitialPool(ws, entities) {
+    broadcastNewEntities(entities) {
+        for (const player of Object.values(this.players)) {
+            this.sendNewEntities(player.webSocket, entities);
+        }
+    }
+
+    sendNewEntities(ws, entities) {
         const toSend = [];
         const datum = this.proto.lookupType('ServerEntityCreateDatum');
         const data = this.proto.lookupType('ServerEntityCreate');
 
         for (const entity of entities) {
-            toSend.push(datum.create({ entityId: entity.id, type: entity.constructor.name, state: entity.serializeState()}));
+            toSend.push(datum.create({
+                entityId: entity.id,
+                type: entity.constructor.name,
+                prototype: entity.prototypeName,
+                state: entity.serializeState(),
+            }));
         }
 
-        this.sendMessage(ws, { serverEntityCreate: data.create({ data: toSend })});
+        this.sendMessage(ws, { serverEntityCreate: data.create({ data: toSend }) });
     }
 
     broadcastUpdates(entities) {
@@ -119,10 +132,13 @@ class Server {
         const data = this.proto.lookupType('ServerEntityUpdate');
 
         for (const entity of entities) {
-            toSend.push(datum.create({ entityId: entity.id, state: entity.serializeState()}));
+            toSend.push(datum.create({
+                entityId: entity.id,
+                state: entity.serializeState(),
+            }));
         }
-        
-        this.broadcastMessage({ serverEntityUpdate: data.create({ data: toSend })});
+
+        this.broadcastMessage({ serverEntityUpdate: data.create({ data: toSend }) });
     }
 
     broadcastMessage(msg) {

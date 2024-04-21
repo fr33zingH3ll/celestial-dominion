@@ -31,7 +31,8 @@ message ServerEntityUpdateDatum {
 message ServerEntityCreateDatum {
 	int32 entityId = 1;
 	string type = 2;
-	EntityState state = 3;
+	string prototype = 3;
+	EntityState state = 4;
 }
 
 message MessageWrapper {

@@ -54,10 +54,4 @@ class GameMaster extends Scene {
     }
 }
 
-/**
- * Représente une entité générique dans le jeu.
- * @typedef {Object} Entity
- * @property {Matter.Body} body - Corps physique associé à l'entité.
- */
-
 export { GameMaster };

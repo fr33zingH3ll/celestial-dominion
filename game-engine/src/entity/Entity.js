@@ -1,5 +1,6 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; // Importation du chargeur GLTFLoader de Three.js
 import * as THREE from 'three'; // Importation de la bibliothèque Three.js
+import Matter from 'matter-js';
 
 var ID_COUNTER = 0;
 
@@ -7,55 +8,61 @@ class Entity {
     /**
      * Indique si l'état de l'entité a été modifié durant ce tick.
      *
-     * @type boolean
+     * @type {boolean}
      */
     dirty;
 
-    constructor(game, options) {
+    /**
+     * Indique si l'entitée est nouvelle et doit être envoyée aux clients.
+     * 
+     * @type {boolean}
+     */
+    newborn = true;
+
+    /**
+     * @type {THREE.Object3D}
+     */
+    modelObject;
+
+    /**
+     * @type {Matter.Body}
+     */
+    body;
+
+    constructor(game, prototypeName) {
         this.game = game;
+        this.prototypeName = prototypeName;
+        this.prototype = this.constructor.getPrototypes()[prototypeName];
+        console.assert(this.prototype, `prototype ${prototypeName} not found`);
 
-        if (options.id) {
-            // Client-side: we obey IDs as we are told
-            this.id = options.id;
+        this.id = ID_COUNTER++;
+
+        if (this.prototype.vertices) {
+            this.body = this.game.Bodies.fromVertices(0, 0, this.prototype.vertices, { restitution: this.prototype.restitution });
         } else {
-            // Server-side: we generate IDs
-            this.id = ID_COUNTER++;
+            this.body = this.game.Bodies.rectangle(0, 0, this.prototype.height, this.prototype.width, { static: this.prototype.static });
         }
 
-        if (options.vertices) {
-            this.body = this.game.Bodies.fromVertices(options.x, options.y, options.vertices, {restitution: options.restitution} );
-        } else {
-            this.body = this.game.Bodies.rectangle(options.x, options.y, options.height, options.width, { isStatic: options.isStatic });
-        }
-
-        this.model = options.model;
+        this.model = this.prototype.model;
         this.loader = new GLTFLoader();
     }
 
     load() {
-        this.loader.load(
-            '/assets/models/' + this.model, // Chemin du fichier GLB
-            (gltf) => {
-                // Créez un nouvel objet Object3D
-                this.modelObject = new THREE.Object3D();
+        if (this.model) {
+            this.loader.load(
+                '/assets/models/' + this.model, // Chemin du fichier glTF/GLB
+                (gltf) => {
+                    this.modelObject = gltf.scene;
 
-                // Ajoutez la scène chargée à l'objet Object3D
-                this.modelObject.add(gltf.scene);
-
-                // Position initiale du modèle
-                this.modelObject.position.set(0, 0, 0); // Mettez les coordonnées x, y, z que vous souhaitez
-
-                // Rotation initiale du modèle
-                this.modelObject.rotation.set(0, Math.PI / 2, 0); // Mettez les angles d'Euler que vous souhaitez
-
-                // Ajoutez l'objet Object3D à la scène
-                this.game.scene.add(this.modelObject);
-            },
-            undefined,
-            ( error ) => {
-                console.log(error); // Gestionnaire d'erreur
-            }   
-        );
+                    // Ajoutez l'objet Group à la scène
+                    this.game.scene.add(this.modelObject);
+                },
+                undefined,
+                (error) => {
+                    console.log(error); // Gestionnaire d'erreur
+                }
+            );
+        }
     }
 
     initListener() {
@@ -65,7 +72,7 @@ class Entity {
     }
 
     // Méthode pour nettoyer l'écouteur d'événements lorsque l'entité est détruite
-    destroy() {}
+    destroy() { }
 
     serializeState() {
         return {
@@ -81,8 +88,14 @@ class Entity {
         this.game.Body.setVelocity(this.body, state.angle);
     }
 
-    update(delta) {}
+    update(delta) {
+        if (!this.body || !this.modelObject) return;
+
+        const { x, y } = this.body.position;
+        // dans le monde de Three, y est le haut, mais dans le monde de Matter, y est l'horizontal
+        this.modelObject.position = new THREE.Vector3(x, 0, y);
+        this.modelObject.setRotationFromEuler(new THREE.Euler(this.body.angle, 0, 0)); // TODO vérifier si l'ordre est correct
+    }
 }
 
 export { Entity };
- 

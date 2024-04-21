@@ -31,31 +31,19 @@ class BackGameMaster extends GameMaster {
             }
         });
 
-        this.addPool(new PlayerEntity(this, {
-            x: 0,
-            y: 0,
-            vertices: [{ x: 0, y: 0 }, { x: -50, y: 200 }, { x: 0, y: 150 }, { x: 50, y: 200 }],
-            restitution: 0.5,
-            stat: {
-                hp: 1,
-                hpMax: 2,
-                speed: 4,
-                force: 10
-            },
-            model: "vaisseau_heal.glb"
-        }));
-
         // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
-        this.addPool(new Asteroide(this, {
-            x: 0,
-            y: 0,
-            height: 80,
-            width: 80,
-            model: "Asteroid_1.glb"
-        }));
+        const asteroid = new Asteroide(this, "asteroide_1");
+        this.addPool(asteroid);
 
         this.server.emitter.addEventListener('loginSuccess', (event) => {
-            this.server.sendInitialPool(event.message.webSocket, this.pool);
+            this.server.sendNewEntities(event.message.webSocket, this.pool);
+
+            const newPlayer = new PlayerEntity(this, "base");
+
+            newPlayer.body.position = { x: Math.random() * 100, y: Math.random() * 100 };
+
+            newPlayer.connection = event.message;
+            this.addPool(newPlayer);
         });
     }
 
@@ -70,9 +58,15 @@ class BackGameMaster extends GameMaster {
         if (entitiesToUpdate.length !== 0) {
             this.server.broadcastUpdates(entitiesToUpdate);
 
-            entitiesToUpdate.forEach((e) => {
-                e.dirty = false;
-            });
+            entitiesToUpdate.forEach(e => e.dirty = false);
+        }
+
+        const newbornEntities = this.pool.filter((e) => e.newborn);
+
+        if (newbornEntities.length !== 0) {
+            this.server.broadcastNewEntities(newbornEntities);
+
+            newbornEntities.forEach(e => e.newborn = false);
         }
     }
 }
