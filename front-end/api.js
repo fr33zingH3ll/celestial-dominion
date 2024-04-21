@@ -26,10 +26,16 @@ class Socket {
         await this.awaitOpen();
     }
 
+    sendPlayerMove(position, rotation) {
+        const move = this.proto.lookupType("ClientPlayerMove");
+
+        this.sendMessage({ clientPlayerMove: move.create({ position, rotation }) });
+    }
+
     sendHandshake(token) {
         const hs = this.proto.lookupType("HandshakeRequest");
 
-        this.sendMessage({ handshakeRequest: hs.create({ token })});
+        this.sendMessage({ handshakeRequest: hs.create({ token }) });
     }
 
     /**

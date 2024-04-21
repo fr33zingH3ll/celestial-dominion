@@ -1,9 +1,23 @@
 import { Scene3D } from 'game-engine/src/gamemode/Scene3D.js';
 import { entityNames } from 'game-engine/src/entity/EntityList';
 import { Controller } from '../playercontroller/Controller';
+import { Socket } from '../../api';
+import { PlayerEntity } from 'game-engine/src/entity/PlayerEntity';
 
 class MainGame extends Scene3D { // Définition de la classe MainGame qui étend GameMaster
+    /**
+     * @type {Socket}
+     */
+    server;
+
+    /**
+     * @type {number}
+     */
     playerId;
+
+    /**
+     * @type {PlayerEntity}
+     */
     playerEntity;
 
     constructor(server) { // Constructeur de la classe MainGame avec le paramètre 'server'
@@ -32,8 +46,13 @@ class MainGame extends Scene3D { // Définition de la classe MainGame qui étend
 
         this.server.emitter.addEventListener('serverEntityUpdate', (event) => {
             for (const datum of event.message.data) {
-                const entity = this.pool.filter((e) => e.id === datum.entityId)[0];
-                entity.deserializeState(datum.state);
+                if (datum.entityId === this.playerId) {
+                    datum.state.position = { ...this.playerEntity.body.position };
+                    datum.state.angle = this.playerEntity.body.angle;
+                } else {
+                    const entity = this.pool.filter((e) => e.id === datum.entityId)[0];
+                    entity.deserializeState(datum.state);
+                }
             }
         });
 
@@ -57,6 +76,10 @@ class MainGame extends Scene3D { // Définition de la classe MainGame qui étend
     update(delta) {
         // this.#moveCamera();
         super.update(delta); // Appel de la méthode update() de la classe parente GameMaster
+
+        if (this.playerEntity) {
+            this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle);
+        }
     }
 
     #moveCamera() {

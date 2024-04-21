@@ -74,7 +74,7 @@ class Server {
                 }
 
                 if (connection) {
-                    this.emitter.dispatchEvent(new Event(firstKey, msg[firstKey]));
+                    this.emitter.dispatchEvent(new Event(firstKey, { message: msg[firstKey], connection }));
                 } else {
                     console.warn("Closing connection for invalid handshake");
                     const error = this.proto.lookupType('Error');

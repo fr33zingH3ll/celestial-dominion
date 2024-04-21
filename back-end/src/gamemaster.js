@@ -39,6 +39,14 @@ class BackGameMaster extends GameMaster {
         this.server.emitter.addEventListener('playerDisconnected', event => {
             this.removePool(event.message.entity);
         });
+
+        this.server.emitter.addEventListener('clientPlayerMove', event => {
+            const { message: { position, rotation }, connection: { entity } } = event.message;
+
+            this.Body.setPosition(entity.body, position);
+            this.Body.setAngle(entity.body, rotation);
+            entity.dirty = true;
+        });
     }
 
     async start() {

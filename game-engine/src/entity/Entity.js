@@ -67,12 +67,6 @@ class Entity {
         }
     }
 
-    initListener() {
-        this.game.emitter.on('clientPlayerMove', (event) => {
-            console.log('Événement Node.js déclenché:', event.detail.message);
-        });
-    }
-
     // Méthode pour nettoyer l'écouteur d'événements lorsque l'entité est détruite
     destroy() {
         this.game.scene.remove(this.modelObject);
@@ -87,7 +81,6 @@ class Entity {
     }
 
     deserializeState(state) {
-        console.log(state);
         this.game.Body.setPosition(this.body, state.position);
         this.game.Body.setAngle(this.body, state.angle);
         this.game.Body.setVelocity(this.body, state.velocity);
