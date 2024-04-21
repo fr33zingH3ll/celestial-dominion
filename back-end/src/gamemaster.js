@@ -15,7 +15,7 @@ class BackGameMaster extends GameMaster {
 
         // Création d'un moteur Matter.js
         this.engine = Matter.Engine.create();
-        
+
         // Accès au monde physique dans Matter.js
         this.world = this.engine.world;
 
@@ -23,18 +23,18 @@ class BackGameMaster extends GameMaster {
         this.engine.gravity.scale = 0;
 
         // Écouteur d'événement pour la détection de collision
-		this.matter.Events.on(this.engine, 'collisionStart', (event) => {
-			const pairs = event.pairs;
-		
-			for (let i = 0; i < pairs.length; i++) {
-				const pair = pairs[i];
-			}
-		});
+        this.matter.Events.on(this.engine, 'collisionStart', (event) => {
+            const pairs = event.pairs;
+
+            for (let i = 0; i < pairs.length; i++) {
+                const pair = pairs[i];
+            }
+        });
 
         this.addPool(new PlayerEntity(this, {
             x: 0,
             y: 0,
-            vertices: [{x: 0, y: 0},{x: -50, y: 200},{x: 0, y: 150},{x: 50, y: 200}],
+            vertices: [{ x: 0, y: 0 }, { x: -50, y: 200 }, { x: 0, y: 150 }, { x: 50, y: 200 }],
             restitution: 0.5,
             stat: {
                 hp: 1,
@@ -65,13 +65,15 @@ class BackGameMaster extends GameMaster {
 
     update(delta) {
         super.update(delta);
-        console.log(delta)
         const entitiesToUpdate = this.pool.filter((e) => e.dirty);
-        this.server.broadcastUpdates(entitiesToUpdate);
 
-        this.pool.forEach((e) => {
-            e.dirty = true;
-        });
+        if (entitiesToUpdate.length !== 0) {
+            this.server.broadcastUpdates(entitiesToUpdate);
+
+            entitiesToUpdate.forEach((e) => {
+                e.dirty = false;
+            });
+        }
     }
 }
 
