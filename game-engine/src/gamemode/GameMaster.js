@@ -4,13 +4,11 @@ import * as decomp from 'poly-decomp';
 import { Entity } from "../entity/Entity.js";
 
 class GameMaster extends Scene {
-    constructor () {
+    constructor() {
         super();
-        this.pool_body = [];
         // module aliases
         this.Engine = Matter.Engine;
         this.Render = Matter.Render;
-        this.Runner = Matter.Runner;
         this.Bodies = Matter.Bodies;
         this.Body = Matter.Body;
         this.Vector = Matter.Vector;
@@ -21,22 +19,21 @@ class GameMaster extends Scene {
         // create an engine
         this.engine = this.Engine.create();
         this.engine.gravity.scale = 0;
+
+        // Accès au monde physique dans Matter.js
+        this.world = this.engine.world;
     }
 
     start() {
         super.start();
-        // add all of the bodies to the world
-        this.Composite.add(this.engine.world, this.pool_body);
-        
-        // create runner
-        this.runner = this.Runner.create();
-        
-        this.Events.on(this.runner, "tick", event => {
-            this.update(this.runner.delta);
-        });
-        
-        // run the engine
-        this.Runner.run(this.runner, this.engine);
+    }
+
+    addPool(entity) {
+        super.addPool(entity);
+
+        if (entity.body) {
+            this.Composite.add(this.world, entity.body);
+        }
     }
 
     update(delta) {

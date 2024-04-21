@@ -70,15 +70,6 @@ class Server {
                     // FIXME id in jwt as key
                     this.players[connection.username] = connection;
 
-                    const res = this.proto.lookupType('HandshakeResponse');
-                    this.sendMessage(ws, {
-                        handshakeResponse: res.create({
-                            username: connection.username,
-                            userId: 69,
-                            initialPosition: { x: 0, y: 0 },
-                            initialRotation: 0,
-                        })
-                    });
                     this.emitter.dispatchEvent(new Event('loginSuccess', connection));
                 }
 
@@ -105,6 +96,19 @@ class Server {
                 this.emitter.dispatchEvent(new Event('playerDisconnected', connection));
                 delete this.players[connection.username];
             }
+        });
+    }
+
+    callbackHandshake(connection, userId, initialPosition, initialRotation) {
+        const res = this.proto.lookupType('HandshakeResponse');
+
+        this.sendMessage(connection.webSocket, {
+            handshakeResponse: res.create({
+                username: connection.username,
+                userId,
+                initialPosition,
+                initialRotation,
+            })
         });
     }
 

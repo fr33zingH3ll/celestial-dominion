@@ -11,7 +11,6 @@ class Socket {
             try {
                 const wrap = this.proto.lookupType('MessageWrapper');
                 const msg = wrap.decode(new Uint8Array(event.data));
-                console.debug(msg);
                 const type = Object.keys(msg)[0];
                 const message = msg[type];
                 this.emitter.dispatchEvent(new Event(type, message));

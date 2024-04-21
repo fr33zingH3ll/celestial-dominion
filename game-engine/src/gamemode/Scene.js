@@ -25,10 +25,6 @@ class Scene {
      */
     addPool(entity) {
         this.pool.push(entity);
-
-        if (entity.body) {
-            this.pool_body.push(entity.body);
-        }
     }
 
     getEntityById(id) {
@@ -42,14 +38,6 @@ class Scene {
         if (indexEntity !== -1) {
             this.pool.splice(indexEntity, 1);
         }
-
-        if (!entity.body) return;
-
-        const indexBody = this.pool_body.indexOf(entity.body);
-
-        if (indexBody !== -1) {
-            this.pool_body.splice(entity.body, 1);
-        }
     }
 
     destroy() {
@@ -58,7 +46,11 @@ class Scene {
         }
     }
 
-    update(delta) { }
+    update(delta) {
+        for (const entity of this.pool) {
+            entity.update(delta);
+        }
+    }
 }
 
 export { Scene };

@@ -38,10 +38,12 @@ class Entity {
         this.id = ID_COUNTER++;
 
         if (this.prototype.vertices) {
-            this.body = this.game.Bodies.fromVertices(0, 0, this.prototype.vertices, { restitution: this.prototype.restitution });
+            this.body = this.game.Bodies.fromVertices(0, 0, this.prototype.vertices, { restitution: this.prototype.restitution ?? 0 });
         } else {
-            this.body = this.game.Bodies.rectangle(0, 0, this.prototype.height, this.prototype.width, { static: this.prototype.static });
+            this.body = this.game.Bodies.rectangle(0, 0, this.prototype.height, this.prototype.width, { static: this.prototype.static ?? false });
         }
+
+        this.body.label = `${this.constructor.name}`;
 
         this.model = this.prototype.model;
         this.loader = new GLTFLoader();
@@ -85,9 +87,10 @@ class Entity {
     }
 
     deserializeState(state) {
+        console.log(state);
         this.game.Body.setPosition(this.body, state.position);
         this.game.Body.setAngle(this.body, state.angle);
-        this.game.Body.setVelocity(this.body, state.angle);
+        this.game.Body.setVelocity(this.body, state.velocity);
     }
 
     update(delta) {
@@ -95,8 +98,8 @@ class Entity {
 
         const { x, y } = this.body.position;
         // dans le monde de Three, y est le haut, mais dans le monde de Matter, y est l'horizontal
-        this.modelObject.position = new THREE.Vector3(x, 0, y);
-        this.modelObject.setRotationFromEuler(new THREE.Euler(this.body.angle, 0, 0)); // TODO vérifier si l'ordre est correct
+        this.modelObject.position.set(x, 0, y);
+        this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0)); // TODO vérifier si l'ordre est correct
     }
 }
 

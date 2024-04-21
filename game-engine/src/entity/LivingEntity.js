@@ -7,6 +7,7 @@ class LivingEntity extends Entity {
 
         this.hpMax = this.prototype.hpMax;
         this.hp = this.hpMax;
+        this.speed = this.prototype.speed;
     }
 
     move(vector) {

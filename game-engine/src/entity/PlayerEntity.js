@@ -1,4 +1,6 @@
 import { LivingEntity } from "./LivingEntity.js";
+import Matter from "matter-js";
+const { Vertices } = Matter;
 
 class PlayerEntity extends LivingEntity {
     constructor(game, prototypeName) {
@@ -26,18 +28,11 @@ class PlayerEntity extends LivingEntity {
     }
 
     update(delta) {
+        super.update(delta);
         // Mettez à jour la position et l'angle selon votre logique
         if (this.controller) {
             this.move(this.controller.getMoveVector());
             this.setAngularVelocity(this.controller.getRotateVector());
-        }
-
-        // Mettre à jour la position et l'angle du modèle en fonction des changements dans votre jeu
-        // Exemple de mise à jour de l'angle
-        if (this.modelObject) {
-            this.modelObject.rotation.set(0, -this.body.angle, 0); // Mettez la logique de mise à jour de l'angle ici
-            this.modelObject.position.set(this.body.position.x, 0, this.body.position.y);
-            this.game.camera.position.set(this.body.position.x, 50, this.body.position.y + 100);
         }
     }
 
@@ -45,7 +40,10 @@ class PlayerEntity extends LivingEntity {
         return {
             base: {
                 hpMax: 100,
+                speed: 0.5,
                 model: "vaisseau_heal.glb",
+                vertices: Vertices.fromPath('40 0 40 20 100 20 100 80 40 80 40 100 0 50'),
+                restitution: 0,
             },
         };
     }

@@ -10,20 +10,8 @@ class BackGameMaster extends GameMaster {
 
         this.server = new Server();
 
-        // Utilisation de Matter.js pour la simulation physique
-        this.matter = Matter;
-
-        // Création d'un moteur Matter.js
-        this.engine = Matter.Engine.create();
-
-        // Accès au monde physique dans Matter.js
-        this.world = this.engine.world;
-
-        // Désactive la gravité pour ce mode de jeu
-        this.engine.gravity.scale = 0;
-
         // Écouteur d'événement pour la détection de collision
-        this.matter.Events.on(this.engine, 'collisionStart', (event) => {
+        this.Events.on(this.engine, 'collisionStart', (event) => {
             const pairs = event.pairs;
 
             for (let i = 0; i < pairs.length; i++) {
@@ -32,19 +20,20 @@ class BackGameMaster extends GameMaster {
         });
 
         // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
-        const asteroid = new Asteroide(this, "asteroide_1");
-        this.addPool(asteroid);
+        // const asteroid = new Asteroide(this, "asteroide_1");
+        // Matter.Body.setPosition(asteroid.body, {x: -50, y: -50});
+        // this.addPool(asteroid);
 
         this.server.emitter.addEventListener('loginSuccess', (event) => {
             this.server.sendNewEntities(event.message.webSocket, this.pool);
 
             const newPlayer = new PlayerEntity(this, "base");
 
-            newPlayer.body.position = { x: Math.random() * 100, y: Math.random() * 100 };
-
             newPlayer.connection = event.message;
             event.message.entity = newPlayer;
             this.addPool(newPlayer);
+
+            this.server.callbackHandshake(event.message, newPlayer.id, newPlayer.body.position, newPlayer.body.angle);
         });
 
         this.server.emitter.addEventListener('playerDisconnected', event => {
@@ -53,6 +42,7 @@ class BackGameMaster extends GameMaster {
     }
 
     async start() {
+        super.start();
         await this.server.start();
     }
 
