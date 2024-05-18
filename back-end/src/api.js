@@ -1,4 +1,7 @@
 import Express from 'express';
+import * as argon2 from "argon2";
+import r from 'rethinkdb';
+import { JsonWebTokenAuth } from './jwt.js';
 import http from 'http'; // Module http inclus avec Node.js
 import WebSocket, { WebSocketServer } from 'ws';
 import protobuf from 'protobufjs';
@@ -14,6 +17,8 @@ class Server {
         this.app = Express();
         this.server = http.createServer(this.app); // Créez un serveur HTTP
         this.wss = new WebSocketServer({ server: this.server }); // Créez un serveur WebSocket
+        this.jwtService = new JsonWebTokenAuth();
+        this.connect();
 
         this.port = 3000;
 
@@ -23,8 +28,62 @@ class Server {
         // Définir les routes ici
         this.app.get('/api/hello', this.handleHelloRequest.bind(this));
 
+        this.app.post("/api/v1/auth/login", async (req, res) => {
+            const body = req.body;
+
+            if (!body.username || !body.password) {
+                res.json({erreur: "un des champs est vide"});
+                return;
+            }
+
+            const users = await r.table('user').filter({ username: body.username }).run(this.conn);
+            let result;
+            try {
+                result = await users.next(); 
+            } catch (error) {
+                res.json({ erreur: error.msg });
+                return;
+            }
+
+            if (!await argon2.verify(result.password, body.password)) {
+                res.json({ erreur: "mauvais mot de passe." });
+                return;
+            }
+
+            const options = {
+                expiresIn: "1h"
+            };
+
+            res.json({ token: this.jwtService.jwtSign({ sub: result.id }, options) });
+        });
+
+        this.app.post("/api/v1/auth/register", async (req, res) => {
+            const body = req.body;
+
+            if (!body.username || !body.password) {
+                res.json({erreur: "un des champs est vide"});
+                return;
+            }
+
+            const users = await r.table('user').filter({ username: body.username }).run(this.conn);
+            let result;
+            try {
+                result = await users.next();
+                res.json({ erreur: "utilisateur déjà existant." });
+                return;
+            } catch (error) {  }
+
+            const password = await argon2.hash(body.password);
+            r.table('user').insert({ username: body.username, password: password }).run(this.conn);
+            res.json({ res: "enregistrement terminé." });
+        });
+
         // Gérez les connexions WebSocket
         this.wss.on('connection', this.handleWebSocketConnection.bind(this));
+    }
+
+    async connect () {
+        this.conn = await r.connect({ host: 'localhost', port: 28015, db: 'galactik-seeker', user: 'fr33zingH3ll', password: 'ziJY2jq6329MBu' });
     }
 
     async start() {
