@@ -8,6 +8,8 @@ import protobuf from 'protobufjs';
 import { Event } from 'game-engine/src/utils/Event.js';
 import { EventDispatcher } from 'game-engine/src/utils/EventDispatcher.js';
 
+const API_AUTH_PATH = "/api/v1/auth";
+
 class Server {
     constructor() {
         this.emitter = new EventDispatcher();
@@ -28,7 +30,7 @@ class Server {
         // Définir les routes ici
         this.app.get('/api/hello', this.handleHelloRequest.bind(this));
 
-        this.app.post("/api/v1/auth/login", async (req, res) => {
+        this.app.post(API_AUTH_PATH+"/login", async (req, res) => {
             const body = req.body;
 
             if (!body.username || !body.password) {
@@ -57,7 +59,7 @@ class Server {
             res.json({ token: this.jwtService.jwtSign({ sub: result.id }, options) });
         });
 
-        this.app.post("/api/v1/auth/register", async (req, res) => {
+        this.app.post(API_AUTH_PATH+"/register", async (req, res) => {
             const body = req.body;
 
             if (!body.username || !body.password) {
@@ -76,17 +78,6 @@ class Server {
             const password = await argon2.hash(body.password);
             r.table('user').insert({ username: body.username, password: password }).run(this.conn);
             res.json({ res: "enregistrement terminé." });
-        });
-
-        this.app.post("/api/v1/auth/token", async (req, res) => {
-            const body = req.body;
-
-            if (!body.token) {
-                res.json({erreur: "il manque le token."});
-            }
-
-            const response = await this.jwtService.jwtVerify(body.token);
-            res.json(response);
         });
 
         // Gérez les connexions WebSocket
