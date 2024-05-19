@@ -78,6 +78,17 @@ class Server {
             res.json({ res: "enregistrement terminé." });
         });
 
+        this.app.post("/api/v1/auth/token", async (req, res) => {
+            const body = req.body;
+
+            if (!body.token) {
+                res.json({erreur: "il manque le token."});
+            }
+
+            const response = await this.jwtService.jwtVerify(body.token);
+            res.json(response);
+        });
+
         // Gérez les connexions WebSocket
         this.wss.on('connection', this.handleWebSocketConnection.bind(this));
     }
