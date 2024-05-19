@@ -1,4 +1,5 @@
 import Express from 'express';
+import cors from 'cors';
 import * as argon2 from "argon2";
 import r from 'rethinkdb';
 import { JsonWebTokenAuth } from './jwt.js';
@@ -23,7 +24,7 @@ class Server {
         this.connect();
 
         this.port = 3000;
-
+        this.app.use(cors());
         // Middleware pour traiter le corps des requêtes en JSON
         this.app.use(Express.json());
 
@@ -118,11 +119,20 @@ class Server {
                 const firstKey = keys[0];
 
                 if (firstKey === 'handshakeRequest') {
+                    const result = this.jwtService.jwtVerify(msg[firstKey].token);
+                    if (result.erreur) {
+                        console.warn("Closing connection for invalid token.");
+                        const error = this.proto.lookupType('Error');
+                        this.sendMessage(ws, { error: error.create({ error: result.erreur }) }, () => {
+                            ws.close();
+                        });
+                    }
+
                     connection = {
-                        username: msg[firstKey].token,
+                        username: result.sub.id,
                         webSocket: ws,
                     };
-
+                    console.log(connection);
                     // FIXME id in jwt as key
                     this.players[connection.username] = connection;
 

@@ -63,3 +63,58 @@ class Socket {
 }
 
 export { Socket };
+
+export const login = async (username, password) => {
+    const result = await request("/auth/login", {
+        body: JSON.stringify({ username, password }),
+        method: "POST",
+    });
+    const res = {};
+
+    const body = await result.json();
+
+    if (!result.ok) {
+        throw new Error(body.error);
+    }
+
+    if (body.erreur) {
+        throw new Error(body.erreur);
+    }
+
+    localStorage.setItem("token", body.token);
+}
+
+export const logout = async () => {
+    localStorage.removeItem("token");
+};
+
+export const register = async (username, password, confirm_password) => {
+
+    if (password != confirm_password) {
+        throw new Error("Les mots de passes doivent être identiques.");
+    }
+
+	const result = await request("/auth/register", {
+		body: JSON.stringify({ username, password }),
+		method: "POST",
+	});
+
+	const body = await result.json();
+
+	if (!result.ok) {
+		throw new Error(body.error);
+	}
+
+    login(username, password);
+};
+
+
+const request = async (url, parameters) => {
+	return await fetch("http://127.0.0.1:3000/api/v1" + url, {
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+			...(localStorage.getItem("token") ? { Authorization: "Bearer " + localStorage.getItem("token") } : {})
+		}, ...(parameters ? parameters : {})
+	});
+};

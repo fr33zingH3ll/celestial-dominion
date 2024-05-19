@@ -14,21 +14,7 @@ class JsonWebTokenAuth {
         try {
             decrypt_token = await jwt.verify(token, this.private_key);
         } catch (error) {
-            if (error.name === 'TokenExpiredError') {
-                const decoded = jwt.decode(token);
-                if (decoded && typeof decoded === 'object') {
-                    const options = {
-                        expiresIn: "1h"
-                    };
-                    console.log(decoded.sub);
-                    const newToken = this.jwtSign({ sub: decoded.sub }, options);
-                    res.newToken = newToken;
-                } else {
-                    res.erreur = 'Impossible de décoder le token expiré.';
-                }
-            } else {
-                res.erreur = error.message;
-            }
+            res.erreur = "Token invalide.";
             return res;
         }
 
