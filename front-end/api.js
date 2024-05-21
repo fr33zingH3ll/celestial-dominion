@@ -19,6 +19,10 @@ class Socket {
                 this.socket.close();
             }
         });
+        
+        this.socket.addEventListener('close', () => {
+            // logout();
+        });
     }
 
     async init() {
@@ -64,6 +68,11 @@ class Socket {
 
 export { Socket };
 
+export const logout = async () => {
+    localStorage.removeItem("token");
+    window.location.replace("/");
+};
+
 export const login = async (username, password) => {
     const result = await request("/auth/login", {
         body: JSON.stringify({ username, password }),
@@ -83,10 +92,6 @@ export const login = async (username, password) => {
 
     localStorage.setItem("token", body.token);
 }
-
-export const logout = async () => {
-    localStorage.removeItem("token");
-};
 
 export const register = async (username, password, confirm_password) => {
 

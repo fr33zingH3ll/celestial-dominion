@@ -3,15 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../main.css">
     <title>Document</title>
 </head>
 <body>
-    <form id="login" method="POST">
-        <input type="text" name="username" id="">
-        <input type="password" name="password" id="">
-        <input type="submit" value="">
-    </form>
-    <p id="error-message" style="display:none; color:red;"></p>
+    <div class="container">
+        <h1>login</h1>
+        <form id="login" method="POST" class="form">
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div>
+                <input type="submit" value="Login">
+            </div>
+        </form>
+        
+        <p id="error-message" style="display:none; color:red;"></p>
+    </div>
 
     <script type="module" src="AuthLogin.js"></script>
 </body>

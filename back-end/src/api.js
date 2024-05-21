@@ -79,6 +79,7 @@ class Server {
             const password = await argon2.hash(body.password);
             r.table('user').insert({ username: body.username, password: password }).run(this.conn);
             res.json({ res: "enregistrement terminé." });
+            
         });
 
         // Gérez les connexions WebSocket
@@ -111,28 +112,27 @@ class Server {
         let connection;
 
         // Écoutez les messages WebSocket
-        ws.on('message', (message) => {
+        ws.on('message', async (message) => {
             try {
                 const msg = wrap.decode(message);
-                console.debug('Got message', msg);
+                console.log('Got message', msg);
                 const keys = Object.keys(msg);
                 const firstKey = keys[0];
 
                 if (firstKey === 'handshakeRequest') {
-                    const result = this.jwtService.jwtVerify(msg[firstKey].token);
-                    if (result.erreur) {
+                    const result = await this.jwtService.jwtVerify(msg[firstKey].token);
+                    if (result.error) {
                         console.warn("Closing connection for invalid token.");
                         const error = this.proto.lookupType('Error');
-                        this.sendMessage(ws, { error: error.create({ error: result.erreur }) }, () => {
+                        this.sendMessage(ws, { error: error.create({ error: result.error }) }, () => {
                             ws.close();
                         });
+                        return;
                     }
-
                     connection = {
-                        username: result.sub.id,
+                        username: result.sub.username,
                         webSocket: ws,
                     };
-                    console.log(connection);
                     // FIXME id in jwt as key
                     this.players[connection.username] = connection;
 
@@ -167,6 +167,7 @@ class Server {
 
     callbackHandshake(connection, userId, initialPosition, initialRotation) {
         const res = this.proto.lookupType('HandshakeResponse');
+        console.log(connection.username)
 
         this.sendMessage(connection.webSocket, {
             handshakeResponse: res.create({

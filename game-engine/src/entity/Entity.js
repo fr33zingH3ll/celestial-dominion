@@ -1,4 +1,6 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; // Importation du chargeur GLTFLoader de Three.js
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 import Matter from 'matter-js';
 
@@ -46,6 +48,7 @@ class Entity {
         this.body.label = `${this.constructor.name}`;
 
         this.model = this.prototype.model;
+        this.textMesh = "";
         this.loader = new GLTFLoader();
     }
 
@@ -55,6 +58,9 @@ class Entity {
                 '/assets/models/' + this.model, // Chemin du fichier glTF/GLB
                 (gltf) => {
                     this.modelObject = gltf.scene;
+                    console.log(this.modelObject);
+
+                    
 
                     // Ajoutez l'objet Group à la scène
                     this.game.scene.add(this.modelObject);
@@ -64,6 +70,7 @@ class Entity {
                     console.log(error); // Gestionnaire d'erreur
                 }
             );
+            
         }
     }
 
@@ -90,6 +97,10 @@ class Entity {
         if (!this.body || !this.modelObject) return;
 
         const { x, y } = this.body.position;
+        this.game.controls.target.copy(new THREE.Vector3(x, 0, y));
+
+        this.game.cameraParent.position.copy(new THREE.Vector3( x, 0, y ));
+        
         // dans le monde de Three, y est le haut, mais dans le monde de Matter, y est l'horizontal
         this.modelObject.position.set(x, 0, y);
         this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0)); // TODO vérifier si l'ordre est correct

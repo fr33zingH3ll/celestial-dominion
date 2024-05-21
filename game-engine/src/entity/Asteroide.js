@@ -1,8 +1,15 @@
 import { StaticEntity } from "game-engine/src/entity/StaticEntity.js";
 
 class Asteroide extends StaticEntity {
-    constructor(game, prototypeName) {
+    constructor(game) {
+        const prototypeName = Asteroide.getRandomPrototypeName();
         super(game, prototypeName);
+    }
+
+    static getRandomPrototypeName() {
+        const prototypes = Object.keys(Asteroide.getPrototypes());
+        const randomIndex = Math.floor(Math.random() * prototypes.length);
+        return prototypes[randomIndex];
     }
 
     static getPrototypes() {

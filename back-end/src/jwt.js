@@ -11,21 +11,27 @@ class JsonWebTokenAuth {
     async jwtVerify(token) {
         let decrypt_token;
         const res = {};
+
         try {
             decrypt_token = await jwt.verify(token, this.private_key);
         } catch (error) {
-            res.erreur = "Token invalide.";
+            res.error = error.message;
             return res;
         }
 
-        const user = await r.table('user').get(decrypt_token.sub).run(this.conn);
-        if (!user) {
-            res.erreur = "L'utilisateur n'existe pas.";
+        try {
+            const user = await r.table('user').get(decrypt_token.sub).without('password').run(this.conn);
+            if (!user) {
+                res.error = "L'utilisateur n'existe pas.";
+                return res;
+            }
+    
+            res.sub = user;
+            return res;
+        } catch (error) {
+            res.error = "Erreur de connexion à la base de données";
             return res;
         }
-    
-        res.sub = user;
-        return res;
     }
 
     jwtSign(payload, options) {
@@ -33,6 +39,7 @@ class JsonWebTokenAuth {
     }
 
     async connect () {
+        console.log("Connection to the database.");
         this.conn = await r.connect({ host: 'localhost', port: 28015, db: 'galactik-seeker', user: 'fr33zingH3ll', password: 'ziJY2jq6329MBu' });
     }
 }

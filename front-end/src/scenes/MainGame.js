@@ -4,7 +4,7 @@ import { Controller } from '../playercontroller/Controller';
 import { Socket } from '../../api';
 import { PlayerEntity } from 'game-engine/src/entity/PlayerEntity';
 
-class MainGame extends Scene3D { // Définition de la classe MainGame qui étend GameMaster
+class MainGame extends Scene3D {
     /**
      * @type {Socket}
      */
@@ -16,13 +16,18 @@ class MainGame extends Scene3D { // Définition de la classe MainGame qui étend
     playerId;
 
     /**
+     * @type {string}
+     */
+    playerName;
+
+    /**
      * @type {PlayerEntity}
      */
     playerEntity;
 
-    constructor(server) { // Constructeur de la classe MainGame avec le paramètre 'server'
-        super(); // Appel du constructeur de la classe parente GameMaster
-        this.server = server; // Assignation du paramètre 'server' à la propriété 'server' de MainGame
+    constructor(server) {
+        super(); 
+        this.server = server; 
 
         this.server.emitter.addEventListener('handshakeResponse', event => {
             this.playerId = event.message.userId;
@@ -39,7 +44,7 @@ class MainGame extends Scene3D { // Définition de la classe MainGame qui étend
                     this.playerEntity = entity;
                     this.playerEntity.controller = new Controller();
 
-                    this.#moveCamera();
+                    this.moveCamera();
                 }
             }
         });
@@ -76,13 +81,14 @@ class MainGame extends Scene3D { // Définition de la classe MainGame qui étend
     update(delta) {
         // this.#moveCamera();
         super.update(delta); // Appel de la méthode update() de la classe parente GameMaster
-
+        
         if (this.playerEntity) {
+            this.controls.update();
             this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle);
         }
     }
 
-    #moveCamera() {
+    moveCamera() {
         if (this.playerEntity) {
             this.camera.position.set(this.playerEntity.body.position.x, 50, this.playerEntity.body.position.y + 100);
         }

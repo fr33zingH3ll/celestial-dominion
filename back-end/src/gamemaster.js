@@ -20,13 +20,17 @@ class BackGameMaster extends GameMaster {
         });
 
         // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
-        // const asteroid = new Asteroide(this, "asteroide_1");
-        // Matter.Body.setPosition(asteroid.body, {x: -50, y: -50});
-        // this.addPool(asteroid);
+        for (let index = 0; index < 10; index++) {
+            const asteroid = new Asteroide(this);
+            const x = this.getRandomPosition(-100, 0);
+            const y = this.getRandomPosition(-100, 0);
+            Matter.Body.setPosition(asteroid.body, { x, y });
+            this.addPool(asteroid);    
+        }
+        
 
         this.server.emitter.addEventListener('loginSuccess', (event) => {
             this.server.sendNewEntities(event.message.webSocket, this.pool);
-
             const newPlayer = new PlayerEntity(this, "base");
 
             newPlayer.connection = event.message;
@@ -47,6 +51,11 @@ class BackGameMaster extends GameMaster {
             this.Body.setAngle(entity.body, rotation);
             entity.dirty = true;
         });
+    }
+    
+    // Fonction pour générer un nombre aléatoire entre deux valeurs
+    getRandomPosition(min, max) {
+        return Math.random() * (max - min) + min;
     }
 
     async start() {
