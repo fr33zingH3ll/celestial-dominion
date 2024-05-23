@@ -1,4 +1,4 @@
-import { register } from "../../api.js";
+import { register } from "./api.js";
 
 class AuthRegister {
     constructor() {

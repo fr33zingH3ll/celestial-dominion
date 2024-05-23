@@ -1,4 +1,4 @@
-import { login } from "../../api.js";
+import { login } from "./api.js";
 
 class Report {
     constructor() {

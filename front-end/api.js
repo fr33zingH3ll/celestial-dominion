@@ -126,7 +126,7 @@ export const report = async (type, description) => {
 
 
 const request = async (url, parameters) => {
-	return await fetch("http://127.0.0.1:3000/api/v1" + url, {
+	return await fetch("https://galactic-seeker-api.freezinghell.net/api/v1" + url, {
 		headers: {
 			Accept: "application/json",
 			"Content-Type": "application/json",
