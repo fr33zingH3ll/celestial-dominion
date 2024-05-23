@@ -1,23 +1,34 @@
+import * as THREE from 'three'; // Importation de la bibliothèque Three.js
+
 class Controller {
-    constructor() {
-        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', turnLeft: 'ArrowLeft', turnRight: 'ArrowRight'};
+    constructor(game) {
+        this.game = game;
+        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's'};
         this.control = {right: false, left: false, up: false, down: false};
+        this.lastMouseX = null;
+        this.mouse = {x: 0, y: 0}; // Stocke les positions de la souris
+        this.mouseSensitivity = 10; // Sensibilité de la souris pour le mouvement horizontal
+        this.mouseSpeedX = null;
+        this.rotation = 0; // Rotation actuelle sur l'axe horizontal
         this.setupEventListeners();
     }
+
     /**
-    * Sets up event listeners for keyboard input.
+    * Sets up event listeners for keyboard and mouse input.
     */
     setupEventListeners() {
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
+        window.addEventListener('mousemove', this.handleMouseMove);
     }
 
     /**
-    * Removes event listeners for keyboard input.
+    * Removes event listeners for keyboard and mouse input.
     */
-    removeEventListener() {
+    removeEventListeners() {
         window.removeEventListener('keydown', this.handleKeyDown);
         window.removeEventListener('keyup', this.handleKeyUp);
+        window.removeEventListener('mousemove', this.handleMouseMove);
     }
 
     /**
@@ -34,11 +45,6 @@ class Controller {
             this.control.up = true;
         } else if (event.key === this.keybind.down) {
             this.control.down = true;
-        }
-        if (event.key === this.keybind.turnLeft) {
-            this.control.turnLeft = true;
-        } else if (event.key === this.keybind.turnRight) {
-            this.control.turnRight = true;
         }
     }
 
@@ -57,15 +63,33 @@ class Controller {
         } else if (event.key === this.keybind.down) {
             this.control.down = false;
         }
-        if (event.key === this.keybind.turnLeft) {
-            this.control.turnLeft = false;
-        } else if (event.key === this.keybind.turnRight) {
-            this.control.turnRight = false;
+    }
+
+    /**
+    * Handles mousemove events to track mouse movement.
+    * @param {MouseEvent} event - The mouse event object.
+    */
+    handleMouseMove = (event) => {  
+        const currentMouseX = event.clientX;
+    
+        // Si c'est la première fois, définissez simplement la dernière position de la souris
+        if (this.lastMouseX === null) {
+            this.lastMouseX = currentMouseX;
         }
+    
+        const deltaX = currentMouseX - this.lastMouseX;
+    
+        this.mouseSpeedX += deltaX * this.mouseSensitivity;
+    
+        this.lastMouseX = currentMouseX;
+    }
+
+    calculateRotationAngle() {
+        return (this.mouseSpeedX / (this.mouseSensitivity * window.innerWidth)) * (2 * Math.PI);
     }
 
     getRotateVector() {
-        let angle = 0;
+        let angle = this.rotation;
 
         if (this.control.turnLeft) {
             angle += -1;
@@ -73,34 +97,35 @@ class Controller {
         if (this.control.turnRight) {
             angle += 1;
         }
-        return angle
+        return angle;
     }
 
-    getMoveVector() {
-        // Initialise les composantes du vecteur à 0
-        let value_x = 0;
-        let value_y = 0;
+    getMoveVector(spherical) {
+        const azimuth = spherical.theta;
 
-        // Vérifie les touches enfoncées et met à jour les composantes du vecteur en conséquence
-        if (this.control.left) {
-            value_x -= 1;
-        }
-        if (this.control.right) {
-            value_x += 1;
-        }
+        let x = 0;
+        let y = 0;
+
         if (this.control.up) {
-            value_y -= 1;
+            y += 1;
         }
         if (this.control.down) {
-            value_y += 1;
+            y -= 1;
+        }
+        if (this.control.right) {
+            x += 1;
+        }
+        if (this.control.left) {
+            x -= 1;
         }
 
-        // Assurez-vous que les valeurs sont comprises entre -1 et 1
-        value_x = Math.min(1, Math.max(-1, value_x));
-        value_y = Math.min(1, Math.max(-1, value_y));
+        const controlVector = new THREE.Vector2(x, y).normalize();
 
-        // Retourne le vecteur résultant
-        return { x: value_x, y: value_y };
+        const moveVector = new THREE.Vector2();
+        moveVector.y = controlVector.x * -Math.sin(azimuth) - controlVector.y * Math.cos(azimuth);
+        moveVector.x = controlVector.x * Math.cos(azimuth) + controlVector.y * -Math.sin(azimuth);
+
+        return moveVector;
     }
 }
 

@@ -20,7 +20,7 @@ class BackGameMaster extends GameMaster {
         });
 
         // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
-        for (let index = 0; index < 10; index++) {
+        for (let index = 0; index < 60; index++) {
             const asteroid = new Asteroide(this);
             const x = this.getRandomPosition(-100, 0);
             const y = this.getRandomPosition(-100, 0);

@@ -42,7 +42,7 @@ class MainGame extends Scene3D {
 
                 if (entity.id === this.playerId) {
                     this.playerEntity = entity;
-                    this.playerEntity.controller = new Controller();
+                    this.playerEntity.controller = new Controller(this);
 
                     this.moveCamera();
                 }
@@ -83,7 +83,6 @@ class MainGame extends Scene3D {
         super.update(delta); // Appel de la méthode update() de la classe parente GameMaster
         
         if (this.playerEntity) {
-            this.controls.update();
             this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle);
         }
     }

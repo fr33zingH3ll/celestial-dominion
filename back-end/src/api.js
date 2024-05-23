@@ -2,6 +2,7 @@ import Express from 'express';
 import cors from 'cors';
 import * as argon2 from "argon2";
 import r from 'rethinkdb';
+import DBManager from './DB.js';
 import { JsonWebTokenAuth } from './jwt.js';
 import http from 'http'; // Module http inclus avec Node.js
 import WebSocket, { WebSocketServer } from 'ws';
@@ -9,11 +10,13 @@ import protobuf from 'protobufjs';
 import { Event } from 'game-engine/src/utils/Event.js';
 import { EventDispatcher } from 'game-engine/src/utils/EventDispatcher.js';
 
-const API_AUTH_PATH = "/api/v1/auth";
+const API_PATH = "/api/v1";
+const API_AUTH_PATH = API_PATH+"/auth";
 
 class Server {
     constructor() {
         this.emitter = new EventDispatcher();
+        this.db = new DBManager();
         this.players = {};
         this.message_queues = [];
 
@@ -21,7 +24,6 @@ class Server {
         this.server = http.createServer(this.app); // Créez un serveur HTTP
         this.wss = new WebSocketServer({ server: this.server }); // Créez un serveur WebSocket
         this.jwtService = new JsonWebTokenAuth();
-        this.connect();
 
         this.port = 3000;
         this.app.use(cors());
@@ -31,63 +33,72 @@ class Server {
         // Définir les routes ici
         this.app.get('/api/hello', this.handleHelloRequest.bind(this));
 
-        this.app.post(API_AUTH_PATH+"/login", async (req, res) => {
+        this.app.post(API_AUTH_PATH + "/login", async (req, res) => {
             const body = req.body;
-
+        
             if (!body.username || !body.password) {
-                res.json({erreur: "un des champs est vide"});
-                return;
+                return res.status(400).json({ erreur: "Un des champs est vide" }); // Bad Request
             }
-
-            const users = await r.table('user').filter({ username: body.username }).run(this.conn);
-            let result;
-            try {
-                result = await users.next(); 
-            } catch (error) {
-                res.json({ erreur: error.msg });
-                return;
-            }
-
-            if (!await argon2.verify(result.password, body.password)) {
-                res.json({ erreur: "mauvais mot de passe." });
-                return;
-            }
-
-            const options = {
-                expiresIn: "1h"
-            };
-
-            res.json({ token: this.jwtService.jwtSign({ sub: result.id }, options) });
-        });
-
-        this.app.post(API_AUTH_PATH+"/register", async (req, res) => {
-            const body = req.body;
-
-            if (!body.username || !body.password) {
-                res.json({erreur: "un des champs est vide"});
-                return;
-            }
-
-            const users = await r.table('user').filter({ username: body.username }).run(this.conn);
+        
+            const users = await r.table('user').filter({ username: body.username }).run(this.db.conn);
             let result;
             try {
                 result = await users.next();
-                res.json({ erreur: "utilisateur déjà existant." });
-                return;
-            } catch (error) {  }
-
-            const password = await argon2.hash(body.password);
-            r.table('user').insert({ username: body.username, password: password }).run(this.conn);
-            res.json({ res: "enregistrement terminé." });
-            
+            } catch (error) {
+                return res.status(500).json({ erreur: error.msg }); // Internal Server Error
+            }
+        
+            if (!await argon2.verify(result.password, body.password)) {
+                return res.status(401).json({ erreur: "Mauvais mot de passe" }); // Unauthorized
+            }
+        
+            const options = {
+                expiresIn: "1h"
+            };
+        
+            return res.status(200).json({ token: this.jwtService.jwtSign({ sub: result.id }, options) });
         });
+        
+        this.app.post(API_AUTH_PATH + "/register", async (req, res) => {
+            const body = req.body;
+        
+            if (!body.username || !body.password) {
+                return res.status(400).json({ erreur: "Un des champs est vide" }); // Bad Request
+            }
+        
+            const users = await r.table('user').filter({ username: body.username }).run(this.db.conn);
+            let result;
+            try {
+                result = await users.next();
+                return res.status(409).json({ erreur: "Utilisateur déjà existant" }); // 409 Conflict
+            } catch (error) { }
+        
+            const password = await argon2.hash(body.password);
+            await r.table('user').insert({ username: body.username, password: password }).run(this.db.conn);
+            return res.status(201).json({ res: "Enregistrement terminé" }); // 201 Created
+        });
+        
+        this.app.post(API_PATH + "/report", async (req, res) => {
+            const body = req.body;
+        
+            if (!body.type || !body.description) {
+                return res.status(400).json({ error: "Le report n'est pas complet. Erreur dans l'enregistrement de votre report." }); // Bad Request
+            }
+        
+            const type = body.type;
+            const description = body.description;
+            try {
+                await r.table('report').insert({ type: type, description: description }).run(this.db.conn);    
+            } catch(error) {
+                return res.status(500).json({ error: "Une erreur est survenue lors de l'enregistrement de votre votre report." })
+            }
+            
+            return res.status(201).json({ succes: "L'enregistrement de votre report a bien été effectué." }); // 201 Created
+        });
+        
 
         // Gérez les connexions WebSocket
         this.wss.on('connection', this.handleWebSocketConnection.bind(this));
-    }
-
-    async connect () {
-        this.conn = await r.connect({ host: 'localhost', port: 28015, db: 'galactik-seeker', user: 'fr33zingH3ll', password: 'ziJY2jq6329MBu' });
     }
 
     async start() {

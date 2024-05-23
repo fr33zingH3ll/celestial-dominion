@@ -34,6 +34,8 @@ class Entity {
     constructor(game, prototypeName) {
         this.game = game;
         this.prototypeName = prototypeName;
+        this.angle = 0;
+        this.spherical = new THREE.Spherical();
         this.prototype = this.constructor.getPrototypes()[prototypeName];
         console.assert(this.prototype, `prototype ${prototypeName} not found`);
 
@@ -50,6 +52,20 @@ class Entity {
         this.model = this.prototype.model;
         this.textMesh = "";
         this.loader = new GLTFLoader();
+    }
+
+    rotateCameraAroundPlayer(camera, player, radius, radians) {
+        this.spherical.radius = radius;
+        this.spherical.theta = -radians; // l'angle horizontal
+        this.spherical.phi = Math.PI / 2.5; // angle vertical (90 degrés pour rester à hauteur du joueur)
+    
+        const newPosition = new THREE.Vector3();
+        newPosition.setFromSpherical(this.spherical);
+        newPosition.add(player.position); // déplace la position relative au joueur
+    
+        camera.position.copy(newPosition);
+    
+        camera.lookAt(player.position);
     }
 
     load() {
@@ -97,12 +113,12 @@ class Entity {
         if (!this.body || !this.modelObject) return;
 
         const { x, y } = this.body.position;
-        this.game.controls.target.copy(new THREE.Vector3(x, 0, y));
-
-        this.game.cameraParent.position.copy(new THREE.Vector3( x, 0, y ));
+        
+        this.angle += 0.1;
         
         // dans le monde de Three, y est le haut, mais dans le monde de Matter, y est l'horizontal
         this.modelObject.position.set(x, 0, y);
+        this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
         this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0)); // TODO vérifier si l'ordre est correct
     }
 }

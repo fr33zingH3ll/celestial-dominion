@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
 import r from 'rethinkdb';
+import DBManager from './DB.js';
 
 class JsonWebTokenAuth {
 
     constructor() { 
         this.private_key = "une_string_au_pif";
-        this.connect();
+        this.db = new DBManager();
     }
 
     async jwtVerify(token) {
@@ -20,7 +21,7 @@ class JsonWebTokenAuth {
         }
 
         try {
-            const user = await r.table('user').get(decrypt_token.sub).without('password').run(this.conn);
+            const user = await r.table('user').get(decrypt_token.sub).without('password').run(this.db.conn);
             if (!user) {
                 res.error = "L'utilisateur n'existe pas.";
                 return res;
@@ -36,11 +37,6 @@ class JsonWebTokenAuth {
 
     jwtSign(payload, options) {
         return jwt.sign(payload, this.private_key, options);
-    }
-
-    async connect () {
-        console.log("Connection to the database.");
-        this.conn = await r.connect({ host: 'localhost', port: 28015, db: 'galactik-seeker', user: 'fr33zingH3ll', password: 'ziJY2jq6329MBu' });
     }
 }
 

@@ -16,6 +16,7 @@ class Socket {
                 this.emitter.dispatchEvent(new Event(type, message));
             } catch (e) {
                 console.error(e);
+                window.location.replace("/home.html");
                 this.socket.close();
             }
         });
@@ -78,7 +79,6 @@ export const login = async (username, password) => {
         body: JSON.stringify({ username, password }),
         method: "POST",
     });
-    const res = {};
 
     const body = await result.json();
 
@@ -111,6 +111,17 @@ export const register = async (username, password, confirm_password) => {
 	}
 
     login(username, password);
+};
+
+export const report = async (type, description) => {
+    const result = await request("/report", {
+        body: JSON.stringify({ type, description }),
+        method: "POST"
+    });
+
+    if (!result.ok) {
+        throw new Error(body.error);
+    }
 };
 
 
