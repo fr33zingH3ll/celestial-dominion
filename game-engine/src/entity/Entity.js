@@ -63,7 +63,6 @@ class Entity {
         const next = new THREE.Vector3(this.body.position.x, 0, this.body.position.y);
 
         this.dirty = previous.distanceTo(next) > velocityThreshold;
-        this.dirty = true;
     }
 
     getPosition() {
