@@ -1,0 +1,40 @@
+name: Deployment
+
+on:
+  push:
+    branches: [deploy]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://galactic-seeker.freezinghell.net/
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt -y update && sudo apt -y install npm
+      - name: Build front
+        working-directory: front-end
+        run: npm i && npm run build
+      - name: Deploy front
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: front-end/dist
+          strip_components: 2
+          target: /var/www/galatic
+          overwrite: true
+      - name: Deploy back
+        uses: appleboy/ssh-action
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd galactic-seekers
+            git pull
+            npm i
+            pm2 restart galactic-seekers-game-server
