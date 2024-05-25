@@ -9,6 +9,7 @@
     "scripts": {},
     "dependencies": {
         "argon2": "^0.40.1",
+        "jsdoc": "^4.0.3",
         "jsonwebtoken": "^9.0.2",
         "rethinkdb": "^2.4.2"
     }

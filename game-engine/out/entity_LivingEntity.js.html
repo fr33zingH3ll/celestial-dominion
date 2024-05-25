@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: entity/LivingEntity.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: entity/LivingEntity.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { Entity } from "./Entity.js";
+
+/**
+ * Représente une entité vivante dans le jeu, héritant de la classe Entity.
+ */
+class LivingEntity extends Entity {
+    /**
+     * Crée une instance de LivingEntity.
+     * @param {Object} game - L'instance du jeu.
+     * @param {string} prototypeName - Le nom du prototype de l'entité.
+     */
+    constructor(game, prototypeName) {
+        super(game, prototypeName);
+
+        // Initialise les points de vie maximum, les points de vie actuels, la vitesse et la force de l'entité
+        this.hpMax = this.prototype.hpMax;
+        this.hp = this.hpMax;
+        this.speed = this.prototype.speed;
+        this.force = this.prototype.force;
+    }
+
+    /**
+     * Inflige des dégâts à l'entité vivante.
+     * @param {number} damage - Les dégâts à infliger.
+     */
+    damage(damage) {
+        // Réduit les points de vie de l'entité par les dégâts infligés
+        this.hp -= damage;
+
+        // Vérifie si les points de vie sont tombés à zéro ou moins, déclenche l'événement de mort
+        if (this.hp &lt;= 0) {
+            this.onDeath();
+        }
+    }
+
+    /**
+     * Gère l'événement de mort de l'entité vivante.
+     */
+    onDeath() {
+        // Retire l'entité du pool du jeu et la détruit
+        this.game.removePool(this);
+        this.destroy();
+    }
+
+    /**
+     * Déplace l'entité vivante dans une direction donnée par un vecteur.
+     * @param {Object} vector - Le vecteur de direction du déplacement.
+     */
+    move(vector) {
+        // Si le vecteur de direction est nul, ne fait rien
+        if (vector.x === 0 &amp;&amp; vector.y === 0) {
+            return;
+        }
+    
+        // Calcule l'angle en radians en fonction du vecteur de direction
+        const radians = Math.atan2(vector.y, vector.x);
+    
+        // Calcule la magnitude de la force en fonction de la vitesse et de la masse de l'entité
+        const forceMagnitude = this.speed / this.body.mass;
+        
+        // Crée un vecteur de vitesse en utilisant l'angle et la magnitude de la force
+        const velocity = this.game.Vector.create(
+            Math.cos(radians) / 20000 * forceMagnitude,
+            Math.sin(radians) / 20000 * forceMagnitude
+        );
+    
+        // Applique la force calculée au corps de l'entité
+        this.game.Body.applyForce(this.body, this.body.position, velocity);
+    }
+
+    /**
+     * Définit la vélocité angulaire de l'entité vivante.
+     * @param {number} angle - L'angle de vélocité angulaire à définir.
+     */
+    setAngularVelocity(angle) {
+        // Si l'angle est nul, ne fait rien
+        if (angle === 0) {
+            return;
+        }
+
+        // Définit la vélocité angulaire du corps de l'entité en fonction de l'angle
+        this.game.Body.setAngularVelocity(this.body, angle / 50);
+    }
+
+    /**
+     * Sérialise l'état de l'entité vivante.
+     * @returns {Object} - L'état sérialisé de l'entité vivante.
+     */
+    serializeState() {
+        return {
+            livingEntity: {
+                hp: this.hp,
+                hpMax: this.hpMax,
+                speed: this.speed,
+                force: this.force,
+            },
+
+            ...super.serializeState(),
+        };
+    }
+
+    /**
+     * Désérialise l'état de l'entité vivante à partir d'un état sérialisé.
+     * @param {Object} state - L'état sérialisé de l'entité vivante.
+     */
+    deserializeState(state) {
+        // Désérialise l'état de l'entité de base
+        super.deserializeState(state);
+        
+        // Désérialise les propriétés spécifiques à l'entité vivante
+        this.hp = state.livingEntity.hp;
+        this.hpMax = state.livingEntity.hpMax;
+        this.speed = state.livingEntity.speed;
+        this.force = state.livingEntity.force;
+    }
+
+    /**
+     * Met à jour l'entité vivante.
+     * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
+     */
+    update(delta) {
+        // Appelle la méthode de mise à jour de l'entité de base
+        super.update(delta);
+    }
+}
+
+export { LivingEntity };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Asteroide.html">Asteroide</a></li><li><a href="ConnectEvent.html">ConnectEvent</a></li><li><a href="Entity.html">Entity</a></li><li><a href="Event.html">Event</a></li><li><a href="EventDispatcher.html">EventDispatcher</a></li><li><a href="LivingEntity.html">LivingEntity</a></li><li><a href="PlayerEntity.html">PlayerEntity</a></li><li><a href="PlayerEvent.html">PlayerEvent</a></li><li><a href="Projectil.html">Projectil</a></li><li><a href="Scene.html">Scene</a></li><li><a href="StaticEntity.html">StaticEntity</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sat May 25 2024 19:08:27 GMT+0200 (heure d’été d’Europe centrale)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
