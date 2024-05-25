@@ -80,7 +80,7 @@ class MainGame extends Scene3D {
 
     update(delta) {
         super.update(delta); // Appel de la méthode update() de la classe parente GameMaster
-        
+
         if (this.playerEntity) {
             this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle);
         }
@@ -88,6 +88,8 @@ class MainGame extends Scene3D {
     
     start() {
         super.start(); // Appel de la méthode start() de la classe parente GameMaster
+
+
 
         const run = () => {
             window.requestAnimationFrame(run);

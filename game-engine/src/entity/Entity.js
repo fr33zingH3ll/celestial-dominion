@@ -37,6 +37,7 @@ class Entity {
         this.angle = 0;
         this.spherical = new THREE.Spherical();
         this.collideBox; 
+        this.tempo_position = { x: 0, y: 0};
         this.prototype = this.constructor.getPrototypes()[prototypeName];
         console.assert(this.prototype, `prototype ${prototypeName} not found`);
 
@@ -55,12 +56,23 @@ class Entity {
         this.loader = new GLTFLoader();
     }
 
+    isMoving() {
+        const velocityThreshold = 0.05; 
+
+        const previous = new THREE.Vector3(this.tempo_position.x, 0, this.tempo_position.y);
+        const next = new THREE.Vector3(this.body.position.x, 0, this.body.position.y);
+
+        this.dirty = previous.distanceTo(next) > velocityThreshold;
+        console.log(previous.distanceTo(next));
+    }
+
     getPosition() {
         return this.body.position
     }
 
     fromPath(path) {
         const vertice = [];
+
         for (const entry of path) {
             vertice.push(new THREE.Vector2( entry.x, entry.y ));
         }
@@ -75,9 +87,9 @@ class Entity {
         const newPosition = new THREE.Vector3();
         newPosition.setFromSpherical(this.spherical);
         newPosition.add(player.position); // déplace la position relative au joueur
-    
+        
+        this.game.Body.setAngle(this.body, -this.spherical.theta);
         camera.position.copy(newPosition);
-    
         camera.lookAt(player.position);
     }
 
@@ -180,9 +192,10 @@ class Entity {
 
     update(delta) {
         if (!this.body || !this.modelObject) return;
-        const { x, y } = this.body.position;
-        
+        this.isMoving();
 
+        const { x, y } = this.body.position;
+        this.tempo_position = { x, y };
 
         this.collideBox.visible = this.game.debug;
         if (this.collideBox && this.collideBox.visible) {
@@ -195,6 +208,7 @@ class Entity {
         this.modelObject.position.set(x, 0, y);
         if (this.id == this.game.playerEntity.id) {
             this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
+            
         }
         this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0)); // TODO vérifier si l'ordre est correct
     }

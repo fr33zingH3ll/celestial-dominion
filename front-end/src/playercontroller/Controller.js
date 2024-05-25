@@ -3,7 +3,7 @@ import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 class Controller {
     constructor(game) {
         this.game = game;
-        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', left_click: 'j', debug_mode: '²'};
+        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', left_click: 'mouseLeft', debug_mode: '²'};
         this.control = {right: false, left: false, up: false, down: false, left_click: false};
         this.mouseSensitivity = 0.002; // Sensibilité de la souris pour le mouvement horizontal
         this.rotation = 0; // Rotation actuelle sur l'axe horizontal
@@ -23,6 +23,8 @@ class Controller {
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
         document.addEventListener('pointerlockchange', this.handlePointerLockChange);
+        window.addEventListener('mousedown', this.handleMouseDown);
+        window.addEventListener('mouseup', this.handleMouseUp);
     }
 
     /**
@@ -33,6 +35,8 @@ class Controller {
         window.removeEventListener('keyup', this.handleKeyUp);
         document.removeEventListener('pointerlockchange', this.handlePointerLockChange);
         document.removeEventListener('mousemove', this.handleMouseMove);
+        window.removeEventListener('mousedown', this.handleMouseDown);
+        window.removeEventListener('mouseup', this.handleMouseUp);
     }
 
     /**
@@ -79,6 +83,26 @@ class Controller {
         }
     }
 
+        /**
+    * Handles mousedown events for shooting.
+    * @param {MouseEvent} event - The mouse event object.
+    */
+    handleMouseDown = (event) => {
+        if (event.button === 0) { // Left mouse button
+            this.control.left_click = true;
+        }
+    }
+
+    /**
+    * Handles mouseup events to stop shooting.
+    * @param {MouseEvent} event - The mouse event object.
+    */
+    handleMouseUp = (event) => {
+        if (event.button === 0) { // Left mouse button
+            this.control.left_click = false;
+        }
+    }
+
     /**
     * Handles pointer lock state changes.
     */
@@ -102,7 +126,6 @@ class Controller {
 
         // Utilisez movementX et movementY pour gérer les mouvements de la caméra
         this.rotation += movementX * this.mouseSensitivity;
-        console.log(`Mouse moved: X=${movementX}, Y=${movementY}`);
     }
 
     /**

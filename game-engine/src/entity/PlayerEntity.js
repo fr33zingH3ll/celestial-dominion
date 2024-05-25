@@ -5,14 +5,14 @@ const { Vertices } = Matter;
 class PlayerEntity extends LivingEntity {
     constructor(game, prototypeName) {
         super(game, prototypeName);
-        this.cooldown = 100;
+        this.cooldown = 500;
         this.tempo_delta = 0;
         this.can_shot = false;
         this.addEventListener();
     }
 
     addEventListener() {
-        this.game.emitter.addEventListener("clientPlayerMove", (event) => {
+        this.game.emitter.addEventListener("clientEntityUpdate", (event) => {
             console.trace();
             console.log(event);
         });
@@ -23,7 +23,7 @@ class PlayerEntity extends LivingEntity {
         const angle = this.body.angle;
 
         this.game.server.sendMessage({
-            clientPlayerMove: {
+            clientEntityUpdate: {
                 position,
                 rotation: angle,
             }

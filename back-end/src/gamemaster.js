@@ -19,14 +19,23 @@ class BackGameMaster extends GameMaster {
             // Boucle sur les paires de corps en collision
             pairs.forEach((pair) => {
                 const { bodyA, bodyB } = pair;
+
+                const entityA = this.pool.find(e => e.body === bodyA);
+                const entityB = this.pool.find(e => e.body === bodyB);
                 
-                if (bodyA.label == "PlayerEntity" && bodyB.label == "Projectil" || bodyB.label == "PlayerEntity" && bodyA.label == "Projectil") {
-                    console.log('Collision detected between:', bodyA.label, bodyB.label);
-                    const entityA = this.pool.find(e => e.body === bodyA);
-                    const entityB = this.pool.find(e => e.body === bodyB);
+                if ((entityA.body.label === "PlayerEntity" && entityB.body.label === "Projectil") || (entityB.body.label === "PlayerEntity" && entityA.body.label === "Projectil")) {
+
                     if (entityA && entityB) {
-                        entityA.damage(entityB.force);
-                        entityB.damage(entityA.force);
+                        if (entityA instanceof Projectil && entityB instanceof PlayerEntity) {
+                            if (entityA.owner === entityB.id) return;
+                            entityB.damage(entityA.force);
+                            entityA.damage(entityB.force);
+                        } 
+                        else if (entityB instanceof Projectil && entityA instanceof PlayerEntity) {
+                            if (entityB.owner === entityA.id) return;
+                            entityA.damage(entityB.force);
+                            entityB.damage(entityA.force);
+                        }
                     }
                 }
             });
@@ -68,6 +77,8 @@ class BackGameMaster extends GameMaster {
 
         this.server.emitter.addEventListener('clientShot', event => {
             const newProjectil = new Projectil(this, "base", event.message.connection.id);
+            const playerPosition = this.getEntityById(event.message.connection.id).body.position;
+            this.Body.setPosition(newProjectil.body, { x: playerPosition.x, y: playerPosition.y -30 });
             this.addPool(newProjectil);
         });
     }
@@ -84,22 +95,31 @@ class BackGameMaster extends GameMaster {
 
     update(delta) {
         super.update(delta);
-        const entitiesToDelete = this.pool.filter((e) => e instanceof LivingEntity && e.hp <= 0);
 
+        // Gestion des entités a détruire
+        const entitiesToDelete = this.pool.filter((e) => e instanceof LivingEntity && e.hp <= 0);
         for (const entity of entitiesToDelete) {
             this.removePool(entity);
         }
 
-        const entitiesToUpdate = this.pool.filter((e) => e.dirty);
-
-        if (entitiesToUpdate.length !== 0) {
-            this.server.broadcastUpdates(entitiesToUpdate);
-
-            entitiesToUpdate.forEach(e => e.dirty = false);
+        // Gestion des trajectoires de chaque Projectil
+        const projectils = this.pool.filter(e => e instanceof Projectil);
+        for (const projectil of projectils) {
+            const owner = this.pool.find(e => e instanceof PlayerEntity && e.id == projectil.owner);
+            if (projectil.track ==null) {
+                projectil.setTrack(owner.body.angle);
+            }
         }
 
-        const newbornEntities = this.pool.filter((e) => e.newborn);
 
+        // Gestion des entités a mettre à jour
+        const entitiesToUpdate = this.pool.filter((e) => e.dirty);
+        console.log(entitiesToUpdate.length);
+        this.server.broadcastUpdates(entitiesToUpdate);
+        entitiesToUpdate.forEach(e => e.dirty = false);
+
+        // Gestion des entités a créer
+        const newbornEntities = this.pool.filter((e) => e.newborn);
         if (newbornEntities.length !== 0) {
             this.server.broadcastNewEntities(newbornEntities);
 
