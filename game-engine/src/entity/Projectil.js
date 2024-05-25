@@ -5,7 +5,7 @@ const { Vertices } = Matter;
 /**
  * Représente un projectile dans le jeu, héritant de la classe LivingEntity.
  */
-class Projectile extends LivingEntity {
+class Projectil extends LivingEntity {
     /**
      * Crée une instance de Projectile.
      * @param {Object} game - L'instance du jeu.
@@ -88,4 +88,4 @@ class Projectile extends LivingEntity {
     }
 }
 
-export { Projectile };
+export { Projectil };
