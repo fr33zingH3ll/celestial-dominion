@@ -46,13 +46,7 @@ class Server {
         this.jwtService = new JsonWebTokenAuth();
 
         this.port = 3000;
-        const mode = process.env.VITE_MODE || 'production';
-        if (mode === "development") {
-            console.log("Development mode");
-            this.app.use(cors());
-        } else {
-            console.log("Production mode");
-        }
+        // this.app.use(cors());
         // Middleware pour traiter le corps des requêtes en JSON
         this.app.use(Express.json());
 
