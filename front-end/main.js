@@ -1,4 +1,4 @@
-import "./public/assets/css/main.css";
+import "./main.css";
 import { Socket } from "./api";
 import { MainGame } from "./src/scenes/MainGame.js";
 

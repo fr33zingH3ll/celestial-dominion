@@ -39,9 +39,9 @@ class PlayerEntity extends LivingEntity {
         return {
             base: {
                 hpMax: 100,
-                speed: 5,
+                speed: 0.5,
                 model: "vaisseau_heal.glb",
-                vertices: Vertices.fromPath('15 0 15 15 0 15 0 0'),
+                vertices: Vertices.fromPath('40 0 40 40 0 40 0 0'),
                 restitution: 0,
             },
         };

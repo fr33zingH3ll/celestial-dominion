@@ -14,9 +14,18 @@ class LivingEntity extends Entity {
         if (vector.x === 0 && vector.y === 0) {
             return;
         }
-
-        const radians = Math.atan2(vector.x, vector.y);
-        const velocity = this.game.Vector.create(Math.sin(radians) / 1500 * this.speed, Math.cos(radians) / 1500 * this.speed);
+    
+        // Calcule l'angle en radians en fonction du vecteur de direction
+        const radians = Math.atan2(vector.y, vector.x);
+    
+        // Crée un vecteur de vitesse en utilisant l'angle et la vitesse souhaitée
+        const forceMagnitude = this.speed / this.body.mass; // Ajuste la force en fonction de la masse
+        const velocity = this.game.Vector.create(
+            Math.cos(radians) / 20000 * forceMagnitude,
+            Math.sin(radians) / 20000 * forceMagnitude
+        );
+    
+        // Applique la force ajustée au corps
         this.game.Body.applyForce(this.body, this.body.position, velocity);
     }
 

@@ -141,6 +141,10 @@ class Entity {
     update(delta) {
         if (!this.body || !this.modelObject) return;
         const { x, y } = this.body.position;
+        if (this.body == this.game.playerEntity.body) {
+            console.log(x, y);
+        }
+        
 
 
         this.collideBox.visible = this.game.debug;
