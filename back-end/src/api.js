@@ -12,13 +12,32 @@ import { EventDispatcher } from 'game-engine/src/utils/EventDispatcher.js';
 import 'dotenv/config';
 
 const API_PATH = "/api/v1";
-const API_AUTH_PATH = API_PATH+"/auth";
+const API_AUTH_PATH = API_PATH + "/auth";
 
+/**
+ * Class representing the server.
+ */
 class Server {
     constructor() {
+        /**
+         * Event dispatcher instance.
+         * @type {EventDispatcher}
+         */
         this.emitter = new EventDispatcher();
+        /**
+         * Database manager instance.
+         * @type {DBManager}
+         */
         this.db = new DBManager();
+        /**
+         * Object to hold player connections.
+         * @type {Object<string, Object>}
+         */
         this.players = {};
+        /**
+         * Array to hold message queues.
+         * @type {Array}
+         */
         this.message_queues = [];
 
         this.app = Express();
@@ -42,11 +61,11 @@ class Server {
 
         this.app.post(API_AUTH_PATH + "/login", async (req, res) => {
             const body = req.body;
-        
+
             if (!body.username || !body.password) {
                 return res.status(400).json({ erreur: "Un des champs est vide" }); // Bad Request
             }
-        
+
             const users = await r.table('user').filter({ username: body.username }).run(this.db.conn);
             let result;
             try {
@@ -54,60 +73,62 @@ class Server {
             } catch (error) {
                 return res.status(500).json({ erreur: error.msg }); // Internal Server Error
             }
-        
+
             if (!await argon2.verify(result.password, body.password)) {
                 return res.status(401).json({ erreur: "Mauvais mot de passe" }); // Unauthorized
             }
-        
+
             const options = {
                 expiresIn: "1h"
             };
-        
+
             return res.status(200).json({ token: this.jwtService.jwtSign({ sub: result.id }, options) });
         });
-        
+
         this.app.post(API_AUTH_PATH + "/register", async (req, res) => {
             const body = req.body;
-        
+
             if (!body.username || !body.password) {
                 return res.status(400).json({ erreur: "Un des champs est vide" }); // Bad Request
             }
-        
+
             const users = await r.table('user').filter({ username: body.username }).run(this.db.conn);
             let result;
             try {
                 result = await users.next();
                 return res.status(409).json({ erreur: "Utilisateur déjà existant" }); // 409 Conflict
             } catch (error) { }
-        
+
             const password = await argon2.hash(body.password);
             await r.table('user').insert({ username: body.username, password: password }).run(this.db.conn);
             return res.status(201).json({ res: "Enregistrement terminé" }); // 201 Created
         });
-        
+
         this.app.post(API_PATH + "/report", async (req, res) => {
             const body = req.body;
-        
+
             if (!body.type || !body.description) {
                 return res.status(400).json({ error: "Le report n'est pas complet. Erreur dans l'enregistrement de votre report." }); // Bad Request
             }
-        
+
             const type = body.type;
             const description = body.description;
             try {
-                await r.table('report').insert({ type: type, description: description }).run(this.db.conn);    
-            } catch(error) {
+                await r.table('report').insert({ type: type, description: description }).run(this.db.conn);
+            } catch (error) {
                 return res.status(500).json({ error: "Une erreur est survenue lors de l'enregistrement de votre votre report." })
             }
-            
+
             return res.status(201).json({ succes: "L'enregistrement de votre report a bien été effectué." }); // 201 Created
         });
-        
 
         // Gérez les connexions WebSocket
         this.wss.on('connection', this.handleWebSocketConnection.bind(this));
     }
 
+    /**
+     * Start the server.
+     */
     async start() {
         this.proto = await protobuf.load('../proto/game.proto');
 
@@ -116,12 +137,18 @@ class Server {
         });
     }
 
+    /**
+     * Handle a hello request.
+     * @param {Express.Request} req - The request object.
+     * @param {Express.Response} res - The response object.
+     */
     handleHelloRequest(req, res) {
         res.json({ message: 'Hello from your API!' });
     }
 
     /**
-     * @param {WebSocket} ws 
+     * Handle a WebSocket connection.
+     * @param {WebSocket} ws - The WebSocket connection.
      */
     handleWebSocketConnection(ws) {
         console.log('WebSocket connected');
@@ -181,6 +208,13 @@ class Server {
         });
     }
 
+    /**
+     * Send handshake response to a client.
+     * @param {Object} connection - The client connection object.
+     * @param {string} userId - The user ID.
+     * @param {Object} initialPosition - The initial position.
+     * @param {Object} initialRotation - The initial rotation.
+     */
     callbackHandshake(connection, userId, initialPosition, initialRotation) {
         const res = this.proto.lookupType('HandshakeResponse');
         console.log(connection.username)
@@ -195,17 +229,30 @@ class Server {
         });
     }
 
+    /**
+     * Broadcast the removal of an entity.
+     * @param {Object} entity - The entity to remove.
+     */
     broadcastRemovedEntity(entity) {
         const del = this.proto.lookupType('ServerEntityDelete');
         this.broadcastMessage({ serverEntityDelete: del.create({ entityId: entity.id }) });
     }
 
+    /**
+     * Broadcast new entities to all connected clients.
+     * @param {Array<Object>} entities - The entities to broadcast.
+     */
     broadcastNewEntities(entities) {
         for (const player of Object.values(this.players)) {
             this.sendNewEntities(player.webSocket, entities);
         }
     }
 
+    /**
+     * Send new entities to a specific client.
+     * @param {WebSocket} ws - The WebSocket connection.
+     * @param {Array<Object>} entities - The entities to send.
+     */
     sendNewEntities(ws, entities) {
         const toSend = [];
         const datum = this.proto.lookupType('ServerEntityCreateDatum');
@@ -223,6 +270,10 @@ class Server {
         this.sendMessage(ws, { serverEntityCreate: data.create({ data: toSend }) });
     }
 
+    /**
+     * Broadcast updates of entities to all connected clients.
+     * @param {Array<Object>} entities - The entities to update.
+     */
     broadcastUpdates(entities) {
         const toSend = [];
         const datum = this.proto.lookupType('ServerEntityUpdateDatum');
@@ -238,12 +289,22 @@ class Server {
         this.broadcastMessage({ serverEntityUpdate: data.create({ data: toSend }) });
     }
 
+    /**
+     * Broadcast a message to all connected clients.
+     * @param {Object} msg - The message to broadcast.
+     */
     broadcastMessage(msg) {
         for (const player of Object.values(this.players)) {
             this.sendMessage(player.webSocket, msg);
         }
     }
 
+    /**
+     * Send a message to a specific client.
+     * @param {WebSocket} ws - The WebSocket connection.
+     * @param {Object} msg - The message to send.
+     * @param {Function} [cb] - Optional callback to execute after sending the message.
+     */
     sendMessage(ws, msg, cb) {
         const wrap = this.proto.lookupType('MessageWrapper');
 

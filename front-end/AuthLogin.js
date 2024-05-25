@@ -1,5 +1,8 @@
 import { login } from "./api.js";
 
+/**
+ * Class for handling the login form submission.
+ */
 class AuthLogin {
     constructor() {
         document.addEventListener('DOMContentLoaded', () => {
@@ -8,6 +11,11 @@ class AuthLogin {
         });
     }
 
+    /**
+     * Handle the submission of the login form.
+     * @param {Event} event - The form submission event.
+     * @returns {Promise<void>}
+     */
     async handleLoginSubmit(event) {
         event.preventDefault();
 

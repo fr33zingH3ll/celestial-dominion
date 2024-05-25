@@ -17,10 +17,10 @@ class Scene2D extends GameMaster {
 
         // Création d'une caméra PerspectiveCamera
         this.camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.camera.rotation.set( 0.2, 0, 0 );
+        this.camera.rotation.set(0.2, 0, 0);
 
         // Ajout d'une lumière ambiante à la scène
-        this.scene.add( new THREE.AmbientLight( 0x404040 ) );
+        this.scene.add(new THREE.AmbientLight(0x404040));
 
         // Création d'un rectangle transparent
         const geometry = new THREE.PlaneGeometry(5, 3); // Dimensions du rectangle
@@ -29,10 +29,17 @@ class Scene2D extends GameMaster {
         this.scene.add(rectangle);
     }
 
+    /**
+     * Met à jour la scène en appelant la méthode update de la classe parente GameMaster
+     * et en rendant la scène avec le rendu WebGL.
+     * @param {number} delta - Delta de temps depuis la dernière mise à jour.
+     */
     update(delta) {
+        // Appel de la méthode update de la classe parente GameMaster
         super.update(delta);
         
-        this.renderer.render(this.scene, this.camera); // Rendu de la scène avec la caméra
+        // Rendu de la scène avec la caméra
+        this.renderer.render(this.scene, this.camera);
     }
 }
 

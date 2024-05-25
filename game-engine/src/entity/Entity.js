@@ -15,7 +15,7 @@ class Entity {
     dirty;
 
     /**
-     * Indique si l'entitée est nouvelle et doit être envoyée aux clients.
+     * Indique si l'entité est nouvelle et doit être envoyée aux clients.
      * 
      * @type {boolean}
      */
@@ -31,6 +31,11 @@ class Entity {
      */
     body;
 
+    /**
+     * Crée une instance de l'entité.
+     * @param {Game} game - L'instance du jeu.
+     * @param {string} prototypeName - Le nom du prototype de l'entité.
+     */
     constructor(game, prototypeName) {
         this.game = game;
         this.prototypeName = prototypeName;
@@ -43,6 +48,7 @@ class Entity {
 
         this.id = ID_COUNTER++;
 
+        // Création du corps physique de l'entité avec Matter.js
         if (this.prototype.vertices) {
             this.body = this.game.Bodies.fromVertices(0, 0, this.prototype.vertices, { restitution: this.prototype.restitution ?? 0 });
         } else {
@@ -56,6 +62,9 @@ class Entity {
         this.loader = new GLTFLoader();
     }
 
+    /**
+     * Vérifie si l'entité est en mouvement.
+     */
     isMoving() {
         const velocityThreshold = 0.05;
 
@@ -65,97 +74,74 @@ class Entity {
         this.dirty = previous.distanceTo(next) > velocityThreshold;
     }
 
+    /**
+     * Obtient la position de l'entité.
+     * @returns {THREE.Vector2} La position de l'entité.
+     */
     getPosition() {
-        return this.body.position
+        return this.body.position;
     }
 
-    fromPath(path) {
-        const vertice = [];
-
-        for (const entry of path) {
-            vertice.push(new THREE.Vector2(entry.x, entry.y));
-        }
-        return vertice;
-    }
-
-    rotateCameraAroundPlayer(camera, player, radius, radians) {
-        this.spherical.radius = radius;
-        this.spherical.theta = -radians; // l'angle horizontal
-        this.spherical.phi = Math.PI / 2.5; // angle vertical (90 degrés pour rester à hauteur du joueur)
-
-        const newPosition = new THREE.Vector3();
-        newPosition.setFromSpherical(this.spherical);
-        newPosition.add(player.position); // déplace la position relative au joueur
-
-        this.game.Body.setAngle(this.body, -this.spherical.theta);
-        camera.position.copy(newPosition);
-        camera.lookAt(player.position);
-    }
-
+    /**
+     * Charge le modèle de l'entité.
+     */
     load() {
         if (this.model) {
+            // Chargement du modèle via le GLTFLoader
             this.loader.load(
                 '/assets/models/' + this.model, // Chemin du fichier glTF/GLB
                 (gltf) => {
                     this.modelObject = gltf.scene;
 
+                    // Création d'une géométrie pour la collision
                     const vertices = this.body.vertices.map(v => ({ x: v.x, y: v.y }));
                     const shape = new THREE.Shape(vertices);
-
-                    // Créer une géométrie extrudée
-                    const extrudeSettings = {
-                        steps: 2,
-                        depth: 10,
-                        bevelEnabled: false
-                    };
+                    const extrudeSettings = { steps: 2, depth: 10, bevelEnabled: false };
                     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-
                     geometry.center();
 
-                    // Créer un matériau et un maillage
+                    // Création d'un maillage pour la collision
                     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.5 });
                     const mesh = new THREE.Mesh(geometry, material);
                     this.collideBox = mesh;
-
                     this.collideBox.rotateX(Math.PI / 2);
 
+                    // Ajout du maillage de collision et du modèle à la scène Three.js
                     this.game.scene.add(this.collideBox);
                     this.game.scene.add(this.modelObject);
                 },
                 undefined,
                 (error) => {
-                    console.log(error); // Gestionnaire d'erreur
+                    console.log(error); // Gestion des erreurs lors du chargement
                 }
             );
-
         }
     }
 
-    // Méthode pour nettoyer l'écouteur d'événements lorsque l'entité est détruite
+    /**
+     * Nettoie l'entité lorsqu'elle est détruite.
+     */
     destroy() {
-        // Supprimer le modèle de la scène
+        // Suppression du modèle de la scène
         if (this.game.scene) {
             this.game.scene.remove(this.modelObject);
             this.game.scene.remove(this.collideBox);
         }
 
         if (this.modelObject) {
+            // Libération des ressources du modèle
             this.modelObject.traverse((child) => {
                 if (child.isMesh) {
                     child.geometry.dispose();
                     if (Array.isArray(child.material)) {
-                        // Si le matériau est un tableau (plusieurs matériaux)
                         child.material.forEach(material => this.disposeMaterial(material));
                     } else {
-                        // Sinon, un seul matériau
                         this.disposeMaterial(child.material);
                     }
                 }
             });
-
             this.modelObject = null;
         }
-
 
         if (this.collideBox) {
             this.collideBox.geometry.dispose();
@@ -164,23 +150,27 @@ class Entity {
             } else {
                 this.collideBox.material.dispose();
             }
-
-            // Définir la box de collision sur null pour libérer les références
             this.collideBox = null;
         }
     }
 
+    /**
+     * Libère les ressources d'un matériau.
+     * @param {THREE.Material} material - Le matériau à libérer.
+     */
     disposeMaterial(material) {
-        // Supprimer les textures du matériau
         for (const key in material) {
             if (material[key] && material[key].isTexture) {
                 material[key].dispose();
             }
         }
-        // Supprimer le matériau lui-même
         material.dispose();
     }
 
+    /**
+     * Sérialise l'état de l'entité.
+     * @returns {object} L'état sérialisé de l'entité.
+     */
     serializeState() {
         return {
             position: this.body.position,
@@ -190,6 +180,10 @@ class Entity {
         };
     }
 
+    /**
+     * Déserialise l'état de l'entité.
+     * @param {object} state - L'état sérialisé de l'entité.
+     */
     deserializeState(state) {
         this.game.Body.setPosition(this.body, state.position);
         this.game.Body.setAngle(this.body, state.angle);
@@ -197,27 +191,48 @@ class Entity {
         this.game.Body.setAngularVelocity(this.body, state.angularVelocity);
     }
 
+    /**
+     * Met à jour l'entité à chaque itération de la boucle de jeu.
+     * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
+     */
     update(delta) {
+        // Vérifie si le corps physique de l'entité existe
         if (!this.body) return;
+
+        // Vérifie si l'entité est en mouvement
         this.isMoving();
 
+        // Récupère les coordonnées x et y de la position de l'entité
         const { x, y } = this.body.position;
+
+        // Stocke temporairement la position dans l'attribut tempo_position
         this.tempo_position = { x, y };
 
+        // Vérifie si l'objet de modèle 3D existe
         if (!this.modelObject) return;
-        // dans le monde de Three, y est le haut, mais dans le monde de Matter, y est l'horizontal
+
+        // Positionne l'objet de modèle 3D aux coordonnées de l'entité
+        // avec la prise en compte de la différence de coordonnées entre les mondes Three.js et Matter.js
         this.modelObject.position.set(x, 0, y);
+
+        // Si l'entité est le joueur, effectue une rotation de la caméra autour du joueur
         if (this.id == this.game.playerEntity.id) {
             this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
-
         }
-        this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0)); // TODO vérifier si l'ordre est correct
 
+        // Applique la rotation de l'objet de modèle 3D en fonction de l'angle du corps physique de l'entité
+        this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0));
+
+        // Vérifie si la boîte de collision existe et si le mode de débogage est activé
         if (!this.collideBox) return;
-        this.collideBox.visible = this.game.debug;
-        if (this.collideBox && this.collideBox.visible) {
+        if (this.collideBox && this.game.debug) {
+            // Positionne et oriente la boîte de collision en fonction de l'angle du corps physique de l'entité
+            this.collideBox.visible = true;
             this.collideBox.position.set(x, 0, y);
             this.collideBox.rotation.z = this.body.angle;
+        } else {
+            // Masque la boîte de collision si le mode de débogage n'est pas activé
+            this.collideBox.visible = false;
         }
     }
 }

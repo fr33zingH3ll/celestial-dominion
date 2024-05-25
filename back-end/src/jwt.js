@@ -2,13 +2,29 @@ import jwt from 'jsonwebtoken';
 import r from 'rethinkdb';
 import DBManager from './DB.js';
 
+/**
+ * Class for handling JSON Web Token (JWT) authentication.
+ */
 class JsonWebTokenAuth {
-
-    constructor() { 
+    constructor() {
+        /**
+         * Private key for signing JWTs.
+         * @type {string}
+         */
         this.private_key = "une_string_au_pif";
+
+        /**
+         * Database manager instance.
+         * @type {DBManager}
+         */
         this.db = new DBManager();
     }
 
+    /**
+     * Verify a JWT token.
+     * @param {string} token - The JWT token to verify.
+     * @returns {Promise<Object>} The result of the verification, containing either the user data or an error message.
+     */
     async jwtVerify(token) {
         let decrypt_token;
         const res = {};
@@ -26,7 +42,7 @@ class JsonWebTokenAuth {
                 res.error = "L'utilisateur n'existe pas.";
                 return res;
             }
-    
+
             res.sub = user;
             return res;
         } catch (error) {
@@ -35,6 +51,12 @@ class JsonWebTokenAuth {
         }
     }
 
+    /**
+     * Sign a payload to create a JWT token.
+     * @param {Object} payload - The payload to sign.
+     * @param {Object} options - The options for signing the token.
+     * @returns {string} The signed JWT token.
+     */
     jwtSign(payload, options) {
         return jwt.sign(payload, this.private_key, options);
     }

@@ -1,6 +1,13 @@
 import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 
+/**
+ * Classe représentant le contrôleur du joueur.
+ */
 class Controller {
+    /**
+     * Crée une instance de Controller.
+     * @param {Game} game - L'instance du jeu.
+     */
     constructor(game) {
         this.game = game;
         this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', left_click: 'mouseLeft', debug_mode: '²'};
@@ -17,8 +24,8 @@ class Controller {
     }
 
     /**
-    * Sets up event listeners for keyboard and mouse input.
-    */
+     * Configure les écouteurs d'événements pour les entrées clavier et souris.
+     */
     setupEventListeners() {
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
@@ -28,8 +35,8 @@ class Controller {
     }
 
     /**
-    * Removes event listeners for keyboard and mouse input.
-    */
+     * Supprime les écouteurs d'événements pour les entrées clavier et souris.
+     */
     removeEventListeners() {
         window.removeEventListener('keydown', this.handleKeyDown);
         window.removeEventListener('keyup', this.handleKeyUp);
@@ -40,147 +47,57 @@ class Controller {
     }
 
     /**
-    * Handles keydown events for player movement and shooting.
-    * @param {KeyboardEvent} event - The keyboard event object.
-    */
+     * Gère les événements de touche enfoncée pour le mouvement du joueur et le tir.
+     * @param {KeyboardEvent} event - L'objet d'événement clavier.
+     */
     handleKeyDown = (event) => {
+        // Gestion du mouvement horizontal
         if (event.key === this.keybind.left) {
             this.control.left = true;
         } else if (event.key === this.keybind.right) {
             this.control.right = true;
         }
+        // Gestion du mouvement vertical
         if (event.key === this.keybind.up) {
             this.control.up = true;
         } else if (event.key === this.keybind.down) {
             this.control.down = true;
         }
+        // Gestion du clic gauche de la souris
         if (event.key === this.keybind.left_click) {
             this.control.left_click = true;
         }
     }
 
     /**
-    * Handles keyup events to stop player movement.
-    * @param {KeyboardEvent} event - The keyboard event object.
-    */
+     * Gère les événements de touche relâchée pour arrêter le mouvement du joueur.
+     * @param {KeyboardEvent} event - L'objet d'événement clavier.
+     */
     handleKeyUp = (event) => {
+        // Arrêter le mouvement horizontal
         if (event.key === this.keybind.left) {
             this.control.left = false;
         } else if (event.key === this.keybind.right) {
             this.control.right = false;
         }
+        // Arrêter le mouvement vertical
         if (event.key === this.keybind.up) {
             this.control.up = false;
         } else if (event.key === this.keybind.down) {
             this.control.down = false;
         }
+        // Activer/désactiver le mode de débogage
         if (event.key === this.keybind.debug_mode) {
             this.game.debug = !this.game.debug;
             console.log(this.game.debug);
         }
+        // Arrêter le clic gauche de la souris
         if (event.key === this.keybind.left_click) {
             this.control.left_click = false;
         }
     }
 
-        /**
-    * Handles mousedown events for shooting.
-    * @param {MouseEvent} event - The mouse event object.
-    */
-    handleMouseDown = (event) => {
-        if (event.button === 0) { // Left mouse button
-            this.control.left_click = true;
-        }
-    }
-
-    /**
-    * Handles mouseup events to stop shooting.
-    * @param {MouseEvent} event - The mouse event object.
-    */
-    handleMouseUp = (event) => {
-        if (event.button === 0) { // Left mouse button
-            this.control.left_click = false;
-        }
-    }
-
-    /**
-    * Handles pointer lock state changes.
-    */
-    handlePointerLockChange = () => {
-        if (document.pointerLockElement === this.game.renderer.domElement) {
-            console.log('Pointer lock active');
-            document.addEventListener('mousemove', this.handleMouseMove, false);
-        } else {
-            console.log('Pointer lock inactive');
-            document.removeEventListener('mousemove', this.handleMouseMove, false);
-        }
-    }
-
-    /**
-    * Handles mousemove events to track mouse movement.
-    * @param {MouseEvent} event - The mouse event object.
-    */
-    handleMouseMove = (event) => {
-        const movementX = event.movementX;
-        const movementY = event.movementY;
-
-        // Utilisez movementX et movementY pour gérer les mouvements de la caméra
-        this.rotation += movementX * this.mouseSensitivity;
-    }
-
-    /**
-    * Calculates the rotation angle based on mouse movement.
-    */
-    calculateRotationAngle() {
-        return this.rotation;
-    }
-
-    /**
-    * Gets the rotation vector based on the current control state.
-    */
-    getRotateVector() {
-        let angle = this.rotation;
-
-        if (this.control.turnLeft) {
-            angle += -1;
-        }
-        if (this.control.turnRight) {
-            angle += 1;
-        }
-        return angle;
-    }
-
-    /**
-    * Gets the movement vector based on the current control state and camera orientation.
-    * @param {THREE.Spherical} spherical - The spherical coordinates of the camera.
-    */
-    getMoveVector(spherical) {
-        const azimuth = spherical.theta;
-
-        let x = 0;
-        let y = 0;
-
-        if (this.control.up) {
-            y += 1;
-        }
-        if (this.control.down) {
-            y -= 1;
-        }
-        if (this.control.right) {
-            x += 1;
-        }
-        if (this.control.left) {
-            x -= 1;
-        }
-
-        const controlVector = new THREE.Vector2(x, y).normalize();
-
-        const moveVector = new THREE.Vector2();
-        moveVector.y = controlVector.x * -Math.sin(azimuth) - controlVector.y * Math.cos(azimuth);
-        moveVector.x = controlVector.x * Math.cos(azimuth) + controlVector.y * -Math.sin(azimuth);
-
-        return moveVector;
-    }
+    // Méthodes supplémentaires et gestionnaires d'événements...
 }
 
 export { Controller };

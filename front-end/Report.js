@@ -1,5 +1,8 @@
 import { report } from "./api.js";
 
+/**
+ * Class for handling the report form submission.
+ */
 class Report {
     constructor() {
         document.addEventListener('DOMContentLoaded', () => {
@@ -8,6 +11,11 @@ class Report {
         });
     }
 
+    /**
+     * Handle the submission of the report form.
+     * @param {Event} event - The form submission event.
+     * @returns {Promise<void>}
+     */
     async handleReportSubmit(event) {
         event.preventDefault();
 

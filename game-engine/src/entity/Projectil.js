@@ -2,15 +2,26 @@ import { LivingEntity } from "./LivingEntity.js";
 import Matter from "matter-js";
 const { Vertices } = Matter;
 
-class Projectil extends LivingEntity {
+/**
+ * Représente un projectile dans le jeu, héritant de la classe LivingEntity.
+ */
+class Projectile extends LivingEntity {
+    /**
+     * Crée une instance de Projectile.
+     * @param {Object} game - L'instance du jeu.
+     * @param {string} prototyName - Le nom du prototype de l'entité.
+     * @param {number} id - L'identifiant du propriétaire du projectile.
+     */
     constructor(game, prototyName, id) {
         super(game, prototyName);
+
+        // Initialise les propriétés spécifiques du projectile
         this.owner = id;
         this.startPosition = { x: this.body.position.x, y: this.body.position.y };
         this.distanceTraveled = 0;
         this.track = null;
 
-        // Écoute des événements de collision
+        // Écoute les événements de collision
         this.game.Events.on(this.game.engine, 'collisionStart', (event) => {
             const pairs = event.pairs;
 
@@ -38,8 +49,14 @@ class Projectil extends LivingEntity {
         });
     }
 
+    /**
+     * Met à jour le projectile.
+     * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
+     */
     update(delta) { 
         super.update(delta);
+
+        // Si le projectile a une trajectoire définie, le déplace dans cette direction
         if (this.track) {
             // Crée un vecteur de vitesse en utilisant l'angle et la vitesse souhaitée
             const forceMagnitude = 10; // Ajuste la force en fonction de la masse
@@ -53,6 +70,10 @@ class Projectil extends LivingEntity {
         }
     }
 
+    /**
+     * Retourne les prototypes de projectile disponibles.
+     * @returns {Object} - Les prototypes de projectile.
+     */
     static getPrototypes() {
         return {
             base: {
@@ -67,4 +88,4 @@ class Projectil extends LivingEntity {
     }
 }
 
-export { Projectil };
+export { Projectile };

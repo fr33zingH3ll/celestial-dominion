@@ -1,5 +1,8 @@
 import { register } from "./api.js";
 
+/**
+ * Class for handling the registration form submission.
+ */
 class AuthRegister {
     constructor() {
         document.addEventListener('DOMContentLoaded', () => {
@@ -8,6 +11,11 @@ class AuthRegister {
         });
     }
 
+    /**
+     * Handle the submission of the registration form.
+     * @param {Event} event - The form submission event.
+     * @returns {Promise<void>}
+     */
     async handleRegisterSubmit(event) {
         event.preventDefault();
 

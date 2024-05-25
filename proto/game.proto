@@ -1,90 +1,105 @@
 syntax = "proto3";
 import "google/protobuf/any.proto";
 
+// Représente un vecteur bidimensionnel.
 message Vector {
-	float x = 1;
-	float y = 2;
+	float x = 1; // Composante x du vecteur.
+	float y = 2; // Composante y du vecteur.
 }
 
+// Représente l'état d'une entité dans le jeu.
 message EntityState {
-	Vector position = 1;
-	float angle = 2;
-	Vector velocity = 3;
-	float angularVelocity = 4;
+	Vector position = 1;           // Position de l'entité.
+	float angle = 2;               // Angle de rotation de l'entité (en radians).
+	Vector velocity = 3;           // Vitesse de l'entité.
+	float angularVelocity = 4;     // Vitesse angulaire de l'entité.
 
+	// Contient l'état spécifique d'une entité vivante.
 	oneof child_entity {
-		LivingEntityState livingEntity = 5;
+		LivingEntityState livingEntity = 5; // État d'une entité vivante.
 	}
 }
 
+// Représente l'état spécifique d'une entité vivante.
 message LivingEntityState {
-	float hp = 1;
-	float hpMax = 2;
-	float speed = 3;
-	float force = 4;
+	float hp = 1;      // Points de vie actuels de l'entité.
+	float hpMax = 2;   // Points de vie maximum de l'entité.
+	float speed = 3;   // Vitesse de déplacement de l'entité.
+	float force = 4;   // Force de l'entité.
 }
 
+// Contient les données de mise à jour d'une entité côté serveur.
 message ServerEntityUpdateDatum {
-	int32 entityId = 1;
-	EntityState state = 2;
+	int32 entityId = 1;  // ID de l'entité mise à jour.
+	EntityState state = 2; // État mis à jour de l'entité.
 }
 
+// Contient les données de création d'une entité côté serveur.
 message ServerEntityCreateDatum {
-	int32 entityId = 1;
-	string type = 2;
-	string prototype = 3;
-	EntityState state = 4;
+	int32 entityId = 1;    // ID de l'entité créée.
+	string type = 2;       // Type de l'entité créée.
+	string prototype = 3;  // Prototype de l'entité créée.
+	EntityState state = 4; // État initial de l'entité créée.
 }
 
+// Enveloppe pour encapsuler différents types de messages.
 message MessageWrapper {
 	oneof message {
-		Error error = 0;
+		Error error = 0;                            // Message d'erreur.
 
-		HandshakeRequest handshakeRequest = 1;
-		HandshakeResponse handshakeResponse = 2;
+		HandshakeRequest handshakeRequest = 1;      // Requête de poignée de main.
+		HandshakeResponse handshakeResponse = 2;    // Réponse à la poignée de main.
 
-		ClientPlayerMove clientPlayerMove = 3;
-		ServerEntityUpdate serverEntityUpdate = 4;
-		ServerEntityCreate serverEntityCreate = 5;
-		ServerEntityDelete serverEntityDelete = 6;
+		ClientPlayerMove clientPlayerMove = 3;      // Mouvement du joueur côté client.
+		ServerEntityUpdate serverEntityUpdate = 4;  // Mise à jour des entités côté serveur.
+		ServerEntityCreate serverEntityCreate = 5;  // Création d'entité côté serveur.
+		ServerEntityDelete serverEntityDelete = 6;  // Suppression d'entité côté serveur.
 
-		ClientShot clientShot = 7;
+		ClientShot clientShot = 7;                  // Déclenchement d'un tir côté client.
 	}
 }
 
+// Représente une erreur.
 message Error {
-	string message = 1;
+	string message = 1;  // Message d'erreur.
 }
 
+// Requête de poignée de main.
 message HandshakeRequest {
-	string token = 1;
+	string token = 1;  // Jeton d'authentification.
 }
 
+// Réponse à la poignée de main.
 message HandshakeResponse {
-	string username = 1;
-	int32 userId = 2; // TODO choisir format d'ID (pas forcément string)
-	Vector initialPosition = 3;
-	float initialRotation = 4; // in radians
+	string username = 1;              // Nom d'utilisateur.
+	int32 userId = 2;                 // Identifiant de l'utilisateur.
+	Vector initialPosition = 3;       // Position initiale de l'entité.
+	float initialRotation = 4;        // Rotation initiale de l'entité (en radians).
 }
 
+// Mouvement du joueur côté client.
 message ClientPlayerMove {
-	Vector position = 1; // TODO virer
-	float rotation = 2;
-	Vector velocity = 3;
+	Vector position = 1;   // Position du joueur.
+	float rotation = 2;    // Rotation du joueur (en radians).
+	Vector velocity = 3;   // Vitesse du joueur.
 }
 
+// Mise à jour des entités côté serveur.
 message ServerEntityUpdate {
-	repeated ServerEntityUpdateDatum data = 1;
+	repeated ServerEntityUpdateDatum data = 1;  // Liste des données de mise à jour des entités.
 }
 
+// Création d'entité côté serveur.
 message ServerEntityCreate {
-	repeated ServerEntityCreateDatum data = 1;
+	repeated ServerEntityCreateDatum data = 1;  // Liste des données de création d'entité.
 }
 
+// Suppression d'entité côté serveur.
 message ServerEntityDelete {
-	int32 entityId = 1;
+	int32 entityId = 1;  // ID de l'entité à supprimer.
 }
 
+// Déclenchement d'un tir côté client.
 message ClientShot {
-	bool inutile = 1;
+	bool inutile = 1;  // Champ inutilisé (juste pour l'exemple).
 }
