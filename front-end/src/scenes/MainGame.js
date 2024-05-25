@@ -35,7 +35,6 @@ class MainGame extends Scene3D {
 
         this.server.emitter.addEventListener('serverEntityCreate', (event) => {
             for (const datum of event.message.data) {
-                console.log(datum.type);
                 const entityConstrutor = entityNames[datum.type];
                 const entity = new entityConstrutor(this, datum.prototype);
                 entity.id = datum.entityId;
@@ -63,14 +62,14 @@ class MainGame extends Scene3D {
         });
 
         this.server.emitter.addEventListener('serverEntityDelete', event => {
-            const entity = this.getEntityById(event.message.id);
-
+            const entity = this.getEntityById(event.message.entityId);
             if (entity) {
                 this.removePool(entity);
                 entity.destroy();
             } else {
                 console.warn("Told to delete unknown entity", event.message.id);
             }
+            console.log("suuprimer ? : "+ this.pool.find(e => e.id == event.message.id));
         });
     }
 
@@ -80,7 +79,6 @@ class MainGame extends Scene3D {
     }
 
     update(delta) {
-        // this.#moveCamera();
         super.update(delta); // Appel de la méthode update() de la classe parente GameMaster
         
         if (this.playerEntity) {

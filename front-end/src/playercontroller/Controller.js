@@ -3,8 +3,8 @@ import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 class Controller {
     constructor(game) {
         this.game = game;
-        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', debug_mode: '²'};
-        this.control = {right: false, left: false, up: false, down: false};
+        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', left_click: 'j', debug_mode: '²'};
+        this.control = {right: false, left: false, up: false, down: false, left_click: false};
         this.mouseSensitivity = 0.002; // Sensibilité de la souris pour le mouvement horizontal
         this.rotation = 0; // Rotation actuelle sur l'axe horizontal
 
@@ -50,6 +50,9 @@ class Controller {
         } else if (event.key === this.keybind.down) {
             this.control.down = true;
         }
+        if (event.key === this.keybind.left_click) {
+            this.control.left_click = true;
+        }
     }
 
     /**
@@ -70,6 +73,9 @@ class Controller {
         if (event.key === this.keybind.debug_mode) {
             this.game.debug = !this.game.debug;
             console.log(this.game.debug);
+        }
+        if (event.key === this.keybind.left_click) {
+            this.control.left_click = false;
         }
     }
 

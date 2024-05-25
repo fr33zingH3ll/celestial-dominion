@@ -46,6 +46,8 @@ message MessageWrapper {
 		ServerEntityUpdate serverEntityUpdate = 4;
 		ServerEntityCreate serverEntityCreate = 5;
 		ServerEntityDelete serverEntityDelete = 6;
+
+		ClientShot clientShot = 7;
 	}
 }
 
@@ -79,4 +81,8 @@ message ServerEntityCreate {
 
 message ServerEntityDelete {
 	int32 entityId = 1;
+}
+
+message ClientShot {
+	bool inutile = 1;
 }

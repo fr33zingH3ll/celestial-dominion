@@ -29,7 +29,7 @@ class Scene {
     }
 
     getEntityById(id) {
-        const entities = this.pool.filter(e => e.id);
+        const entities = this.pool.filter(e => e.id == id);
         return entities.length ? entities[0] : null;
     }
 

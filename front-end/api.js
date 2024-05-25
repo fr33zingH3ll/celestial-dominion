@@ -28,8 +28,14 @@ class Socket {
         });
         
         this.socket.addEventListener('close', () => {
-            logout();
+            // logout();
         });
+    }
+
+    sendClientShot() {
+        const shot = this.proto.lookupType("ClientShot");
+        
+        this.sendMessage({ clientShot: shot.create({ inutile: true }) });
     }
 
     sendPlayerMove(position, rotation) {

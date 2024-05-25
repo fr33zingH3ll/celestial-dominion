@@ -1,4 +1,3 @@
-import matter from "matter-js";
 import { Entity } from "./Entity.js";
 
 class LivingEntity extends Entity {
@@ -8,6 +7,11 @@ class LivingEntity extends Entity {
         this.hpMax = this.prototype.hpMax;
         this.hp = this.hpMax;
         this.speed = this.prototype.speed;
+        this.force = this.prototype.force;
+    }
+
+    damage(damage) {
+        this.hp -= damage;
     }
 
     move(vector) {
@@ -56,6 +60,10 @@ class LivingEntity extends Entity {
         this.hpMax = state.livingEntity.hpMax;
         this.speed = state.livingEntity.speed;
         this.force = state.livingEntity.force;
+    }
+
+    update(delta) {
+        super.update(delta);
     }
 }
 

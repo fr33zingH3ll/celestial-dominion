@@ -133,10 +133,9 @@ class Server {
         ws.on('message', async (message) => {
             try {
                 const msg = wrap.decode(message);
-                console.log('Got message', msg);
                 const keys = Object.keys(msg);
                 const firstKey = keys[0];
-
+                // if (firstKey == "clientShot") console.log('Got message', msg);
                 if (firstKey === 'handshakeRequest') {
                     const result = await this.jwtService.jwtVerify(msg[firstKey].token);
                     if (result.error) {
@@ -177,7 +176,7 @@ class Server {
             console.log('WebSocket disconnected');
 
             if (connection) {
-                this.emitter.dispatchEvent(new Event('playerDisconnected', connection));
+                this.emitter.dispatchEvent(new Event('ServerEntityDelete', connection));
                 delete this.players[connection.username];
             }
         });

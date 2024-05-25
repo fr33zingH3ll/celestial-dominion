@@ -55,6 +55,10 @@ class Entity {
         this.loader = new GLTFLoader();
     }
 
+    getPosition() {
+        return this.body.position
+    }
+
     fromPath(path) {
         const vertice = [];
         for (const entry of path) {
@@ -85,10 +89,7 @@ class Entity {
                     this.modelObject = gltf.scene;
 
                     const vertices = this.body.vertices.map(v => ({ x: v.x, y: v.y }));
-                    console.log(vertices);
-
-                    const shape = new THREE.Shape(vertices);
-                    
+                    const shape = new THREE.Shape(vertices);                    
                     
                     // Créer une géométrie extrudée
                     const extrudeSettings = {
@@ -121,7 +122,46 @@ class Entity {
 
     // Méthode pour nettoyer l'écouteur d'événements lorsque l'entité est détruite
     destroy() {
+        // Supprimer le modèle de la scène
         this.game.scene.remove(this.modelObject);
+        this.modelObject.traverse((child) => {
+            if (child.isMesh) {
+                child.geometry.dispose();
+                if (Array.isArray(child.material)) {
+                    // Si le matériau est un tableau (plusieurs matériaux)
+                    child.material.forEach(material => this.disposeMaterial(material));
+                } else {
+                    // Sinon, un seul matériau
+                    this.disposeMaterial(child.material);
+                }
+            }
+        });
+
+        // Définir le modèle sur null pour libérer les références
+        this.modelObject = null;
+
+        // Supprimer la box de collision de la scène
+        this.game.scene.remove(this.collideBox);
+        this.collideBox.geometry.dispose();
+        if (Array.isArray(this.collideBox.material)) {
+            this.collideBox.material.forEach(material => this.disposeMaterial(material));
+        } else {
+            this.collideBox.material.dispose();
+        }
+
+        // Définir la box de collision sur null pour libérer les références
+        this.collideBox = null;
+    }
+
+    disposeMaterial(material) {
+        // Supprimer les textures du matériau
+        for (const key in material) {
+            if (material[key] && material[key].isTexture) {
+                material[key].dispose();
+            }
+        }
+        // Supprimer le matériau lui-même
+        material.dispose();
     }
 
     serializeState() {
@@ -141,9 +181,6 @@ class Entity {
     update(delta) {
         if (!this.body || !this.modelObject) return;
         const { x, y } = this.body.position;
-        if (this.body == this.game.playerEntity.body) {
-            console.log(x, y);
-        }
         
 
 

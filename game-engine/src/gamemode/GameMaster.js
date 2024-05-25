@@ -31,9 +31,13 @@ class GameMaster extends Scene {
     addPool(entity) {
         super.addPool(entity);
 
-        if (entity.body) {
-            this.Composite.add(this.world, entity.body);
-        }
+        if (entity.body) this.Composite.add(this.world, entity.body);
+    }
+
+    removePool(entity) {
+        if (entity.body) this.Composite.remove(this.world, entity.body);
+
+        super.removePool(entity);
     }
 
     update(delta) {
