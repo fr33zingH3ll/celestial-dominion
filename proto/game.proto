@@ -68,7 +68,7 @@ message HandshakeResponse {
 }
 
 message ClientPlayerMove {
-	Vector position = 1;
+	Vector position = 1; // TODO virer
 	float rotation = 2;
 	Vector velocity = 3;
 }

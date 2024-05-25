@@ -28,7 +28,7 @@ class Socket {
         });
         
         this.socket.addEventListener('close', () => {
-            // logout();
+            logout();
         });
     }
 
