@@ -135,7 +135,6 @@ class Server {
                 const msg = wrap.decode(message);
                 const keys = Object.keys(msg);
                 const firstKey = keys[0];
-                if (firstKey == "cleintEntityUpdate") console.log('Got message', msg);
                 if (firstKey === 'handshakeRequest') {
                     const result = await this.jwtService.jwtVerify(msg[firstKey].token);
                     if (result.error) {
