@@ -26,7 +26,7 @@ class MainGame extends Scene3D {
     playerEntity;
 
     constructor(server) {
-        super(); 
+        super();
         this.server = server;
 
         this.server.emitter.addEventListener('handshakeResponse', event => {
@@ -51,12 +51,14 @@ class MainGame extends Scene3D {
 
         this.server.emitter.addEventListener('serverEntityUpdate', (event) => {
             for (const datum of event.message.data) {
-                if (datum.entityId === this.playerId) {
+                if (datum.entityId === this.playerId && this.playerEntity) {
                     datum.state.position = { ...this.playerEntity.body.position };
                     datum.state.angle = this.playerEntity.body.angle;
                 } else {
                     const entity = this.pool.filter((e) => e.id === datum.entityId)[0];
-                    entity.deserializeState(datum.state);
+                    if (entity) {
+                        entity.deserializeState(datum.state);
+                    }
                 }
             }
         });
@@ -69,7 +71,7 @@ class MainGame extends Scene3D {
             } else {
                 console.warn("Told to delete unknown entity", event.message.id);
             }
-            console.log("suuprimer ? : "+ this.pool.find(e => e.id == event.message.id));
+            console.log("suuprimer ? : " + this.pool.find(e => e.id == event.message.id));
         });
     }
 
@@ -82,10 +84,10 @@ class MainGame extends Scene3D {
         super.update(delta); // Appel de la méthode update() de la classe parente GameMaster
 
         if (this.playerEntity) {
-            this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle);
+            this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle, this.playerEntity.body.velocity);
         }
     }
-    
+
     start() {
         super.start(); // Appel de la méthode start() de la classe parente GameMaster
 

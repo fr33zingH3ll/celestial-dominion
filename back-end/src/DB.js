@@ -12,7 +12,9 @@ class DBManager {
 
     async connect () {
         console.log("Connection to the database.");
-        this.conn = await r.connect({ host: 'localhost', port: 28015, db: this.dbName, user: this.user, password: this.password });
+        this.conn = await r.connect({ host: 'localhost', port: 28015, db: this.dbName, 
+        // user: this.user, password: this.password
+    });
     }
 
     async setupDabatbase() {

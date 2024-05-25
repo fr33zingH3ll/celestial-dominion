@@ -68,10 +68,11 @@ class BackGameMaster extends GameMaster {
         });
 
         this.server.emitter.addEventListener('clientPlayerMove', event => {
-            const { message: { position, rotation }, connection: { entity } } = event.message;
+            const { message: { position, rotation, velocity }, connection: { entity } } = event.message;
 
             this.Body.setPosition(entity.body, position);
             this.Body.setAngle(entity.body, rotation);
+            this.Body.setVelocity(entity.body, velocity);
             entity.dirty = true;
         });
 
@@ -114,7 +115,6 @@ class BackGameMaster extends GameMaster {
 
         // Gestion des entités a mettre à jour
         const entitiesToUpdate = this.pool.filter((e) => e.dirty);
-        console.log(entitiesToUpdate.length);
         this.server.broadcastUpdates(entitiesToUpdate);
         entitiesToUpdate.forEach(e => e.dirty = false);
 

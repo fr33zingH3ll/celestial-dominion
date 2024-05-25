@@ -36,8 +36,8 @@ class Entity {
         this.prototypeName = prototypeName;
         this.angle = 0;
         this.spherical = new THREE.Spherical();
-        this.collideBox; 
-        this.tempo_position = { x: 0, y: 0};
+        this.collideBox;
+        this.tempo_position = { x: 0, y: 0 };
         this.prototype = this.constructor.getPrototypes()[prototypeName];
         console.assert(this.prototype, `prototype ${prototypeName} not found`);
 
@@ -57,13 +57,13 @@ class Entity {
     }
 
     isMoving() {
-        const velocityThreshold = 0.05; 
+        const velocityThreshold = 0.05;
 
         const previous = new THREE.Vector3(this.tempo_position.x, 0, this.tempo_position.y);
         const next = new THREE.Vector3(this.body.position.x, 0, this.body.position.y);
 
         this.dirty = previous.distanceTo(next) > velocityThreshold;
-        console.log(previous.distanceTo(next));
+        this.dirty = true;
     }
 
     getPosition() {
@@ -74,7 +74,7 @@ class Entity {
         const vertice = [];
 
         for (const entry of path) {
-            vertice.push(new THREE.Vector2( entry.x, entry.y ));
+            vertice.push(new THREE.Vector2(entry.x, entry.y));
         }
         return vertice;
     }
@@ -83,11 +83,11 @@ class Entity {
         this.spherical.radius = radius;
         this.spherical.theta = -radians; // l'angle horizontal
         this.spherical.phi = Math.PI / 2.5; // angle vertical (90 degrés pour rester à hauteur du joueur)
-    
+
         const newPosition = new THREE.Vector3();
         newPosition.setFromSpherical(this.spherical);
         newPosition.add(player.position); // déplace la position relative au joueur
-        
+
         this.game.Body.setAngle(this.body, -this.spherical.theta);
         camera.position.copy(newPosition);
         camera.lookAt(player.position);
@@ -101,8 +101,8 @@ class Entity {
                     this.modelObject = gltf.scene;
 
                     const vertices = this.body.vertices.map(v => ({ x: v.x, y: v.y }));
-                    const shape = new THREE.Shape(vertices);                    
-                    
+                    const shape = new THREE.Shape(vertices);
+
                     // Créer une géométrie extrudée
                     const extrudeSettings = {
                         steps: 2,
@@ -118,7 +118,7 @@ class Entity {
                     const mesh = new THREE.Mesh(geometry, material);
                     this.collideBox = mesh;
 
-                    this.collideBox.rotateX(Math.PI/2);
+                    this.collideBox.rotateX(Math.PI / 2);
 
                     this.game.scene.add(this.collideBox);
                     this.game.scene.add(this.modelObject);
@@ -128,7 +128,7 @@ class Entity {
                     console.log(error); // Gestionnaire d'erreur
                 }
             );
-            
+
         }
     }
 
@@ -181,6 +181,7 @@ class Entity {
             position: this.body.position,
             angle: this.body.angle,
             velocity: this.body.velocity,
+            angularVelocity: this.body.angularVelocity,
         };
     }
 
@@ -188,29 +189,31 @@ class Entity {
         this.game.Body.setPosition(this.body, state.position);
         this.game.Body.setAngle(this.body, state.angle);
         this.game.Body.setVelocity(this.body, state.velocity);
+        this.game.Body.setAngularVelocity(this.body, state.angularVelocity);
     }
 
     update(delta) {
-        if (!this.body || !this.modelObject) return;
+        if (!this.body) return;
         this.isMoving();
 
         const { x, y } = this.body.position;
         this.tempo_position = { x, y };
 
+        if (!this.modelObject) return;
+        // dans le monde de Three, y est le haut, mais dans le monde de Matter, y est l'horizontal
+        this.modelObject.position.set(x, 0, y);
+        if (this.id == this.game.playerEntity.id) {
+            this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
+
+        }
+        this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0)); // TODO vérifier si l'ordre est correct
+
+        if (!this.collideBox) return;
         this.collideBox.visible = this.game.debug;
         if (this.collideBox && this.collideBox.visible) {
             this.collideBox.position.set(x, 0, y);
             this.collideBox.rotation.z = this.body.angle;
         }
-        
-
-        // dans le monde de Three, y est le haut, mais dans le monde de Matter, y est l'horizontal
-        this.modelObject.position.set(x, 0, y);
-        if (this.id == this.game.playerEntity.id) {
-            this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
-            
-        }
-        this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0)); // TODO vérifier si l'ordre est correct
     }
 }
 

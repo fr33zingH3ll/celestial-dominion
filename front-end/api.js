@@ -38,10 +38,10 @@ class Socket {
         this.sendMessage({ clientShot: shot.create({ inutile: true }) });
     }
 
-    sendPlayerMove(position, rotation) {
+    sendPlayerMove(position, rotation, velocity) {
         const move = this.proto.lookupType("ClientPlayerMove");
 
-        this.sendMessage({ clientPlayerMove: move.create({ position, rotation }) });
+        this.sendMessage({ clientPlayerMove: move.create({ position, rotation, velocity }) });
     }
 
     sendHandshake(token) {

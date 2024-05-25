@@ -10,9 +10,10 @@ message EntityState {
 	Vector position = 1;
 	float angle = 2;
 	Vector velocity = 3;
+	float angularVelocity = 4;
 
 	oneof child_entity {
-		LivingEntityState livingEntity = 4;
+		LivingEntityState livingEntity = 5;
 	}
 }
 
@@ -69,6 +70,7 @@ message HandshakeResponse {
 message ClientPlayerMove {
 	Vector position = 1;
 	float rotation = 2;
+	Vector velocity = 3;
 }
 
 message ServerEntityUpdate {
