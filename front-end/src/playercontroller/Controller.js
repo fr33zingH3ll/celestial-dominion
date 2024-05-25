@@ -3,13 +3,16 @@ import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 class Controller {
     constructor(game) {
         this.game = game;
-        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's'};
+        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', debug_mode: '²'};
         this.control = {right: false, left: false, up: false, down: false};
-        this.lastMouseX = null;
-        this.mouse = {x: 0, y: 0}; // Stocke les positions de la souris
-        this.mouseSensitivity = 10; // Sensibilité de la souris pour le mouvement horizontal
-        this.mouseSpeedX = null;
+        this.mouseSensitivity = 0.002; // Sensibilité de la souris pour le mouvement horizontal
         this.rotation = 0; // Rotation actuelle sur l'axe horizontal
+
+        // Ajout de l'événement click pour demander le verrouillage du pointeur
+        this.game.renderer.domElement.addEventListener('click', () => {
+            this.game.renderer.domElement.requestPointerLock();
+        });
+
         this.setupEventListeners();
     }
 
@@ -19,7 +22,7 @@ class Controller {
     setupEventListeners() {
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
-        window.addEventListener('mousemove', this.handleMouseMove);
+        document.addEventListener('pointerlockchange', this.handlePointerLockChange);
     }
 
     /**
@@ -28,7 +31,8 @@ class Controller {
     removeEventListeners() {
         window.removeEventListener('keydown', this.handleKeyDown);
         window.removeEventListener('keyup', this.handleKeyUp);
-        window.removeEventListener('mousemove', this.handleMouseMove);
+        document.removeEventListener('pointerlockchange', this.handlePointerLockChange);
+        document.removeEventListener('mousemove', this.handleMouseMove);
     }
 
     /**
@@ -63,31 +67,48 @@ class Controller {
         } else if (event.key === this.keybind.down) {
             this.control.down = false;
         }
+        if (event.key === this.keybind.debug_mode) {
+            this.game.debug = !this.game.debug;
+            console.log(this.game.debug);
+        }
+    }
+
+    /**
+    * Handles pointer lock state changes.
+    */
+    handlePointerLockChange = () => {
+        if (document.pointerLockElement === this.game.renderer.domElement) {
+            console.log('Pointer lock active');
+            document.addEventListener('mousemove', this.handleMouseMove, false);
+        } else {
+            console.log('Pointer lock inactive');
+            document.removeEventListener('mousemove', this.handleMouseMove, false);
+        }
     }
 
     /**
     * Handles mousemove events to track mouse movement.
     * @param {MouseEvent} event - The mouse event object.
     */
-    handleMouseMove = (event) => {  
-        const currentMouseX = event.clientX;
-    
-        // Si c'est la première fois, définissez simplement la dernière position de la souris
-        if (this.lastMouseX === null) {
-            this.lastMouseX = currentMouseX;
-        }
-    
-        const deltaX = currentMouseX - this.lastMouseX;
-    
-        this.mouseSpeedX += deltaX * this.mouseSensitivity;
-    
-        this.lastMouseX = currentMouseX;
+    handleMouseMove = (event) => {
+        const movementX = event.movementX;
+        const movementY = event.movementY;
+
+        // Utilisez movementX et movementY pour gérer les mouvements de la caméra
+        this.rotation += movementX * this.mouseSensitivity;
+        console.log(`Mouse moved: X=${movementX}, Y=${movementY}`);
     }
 
+    /**
+    * Calculates the rotation angle based on mouse movement.
+    */
     calculateRotationAngle() {
-        return (this.mouseSpeedX / (this.mouseSensitivity * window.innerWidth)) * (2 * Math.PI);
+        return this.rotation;
     }
 
+    /**
+    * Gets the rotation vector based on the current control state.
+    */
     getRotateVector() {
         let angle = this.rotation;
 
@@ -100,6 +121,10 @@ class Controller {
         return angle;
     }
 
+    /**
+    * Gets the movement vector based on the current control state and camera orientation.
+    * @param {THREE.Spherical} spherical - The spherical coordinates of the camera.
+    */
     getMoveVector(spherical) {
         const azimuth = spherical.theta;
 

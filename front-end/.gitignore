@@ -25,3 +25,4 @@ dist-ssr
 
 # Protobuf
 public/game.proto
+.env.*

@@ -4,9 +4,15 @@ import { Event } from 'game-engine/src/utils/Event';
 
 class Socket {
     constructor(url) {
-        this.socket = new WebSocket(url);
+        this.url = url;
         this.emitter = new EventDispatcher();
+    }
+
+    async init() {
+        this.proto = await (new protobuf.Root().load("/game.proto"));
+        this.socket = new WebSocket(this.url);
         this.socket.binaryType = 'arraybuffer';
+        await this.awaitOpen();
         this.socket.addEventListener("message", (event) => {
             try {
                 const wrap = this.proto.lookupType('MessageWrapper');
@@ -24,11 +30,6 @@ class Socket {
         this.socket.addEventListener('close', () => {
             // logout();
         });
-    }
-
-    async init() {
-        this.proto = await (new protobuf.Root().load("/game.proto"));
-        await this.awaitOpen();
     }
 
     sendPlayerMove(position, rotation) {
@@ -119,14 +120,15 @@ export const report = async (type, description) => {
         method: "POST"
     });
 
+    const body = await result.json();
+
     if (!result.ok) {
         throw new Error(body.error);
     }
 };
 
-
 const request = async (url, parameters) => {
-	return await fetch("https://galactic-seeker-api.freezinghell.net/api/v1" + url, {
+	return await fetch(import.meta.env.VITE_API_URI + url, {
 		headers: {
 			Accept: "application/json",
 			"Content-Type": "application/json",

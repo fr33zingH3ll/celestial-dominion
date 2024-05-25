@@ -1,10 +1,10 @@
-import { login } from "./api.js";
+import { report } from "./api.js";
 
 class Report {
     constructor() {
         document.addEventListener('DOMContentLoaded', () => {
-            const login = document.getElementById('report');
-            login.addEventListener('submit', this.handleReportSubmit.bind(this));
+            const report = document.getElementById('report');
+            report.addEventListener('submit', this.handleReportSubmit.bind(this));
         });
     }
 
@@ -30,4 +30,4 @@ class Report {
     }
 }
 
-const report = new Report();
+const a = new Report();

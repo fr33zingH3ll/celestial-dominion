@@ -1,5 +1,5 @@
 import { Scene3D } from 'game-engine/src/gamemode/Scene3D.js';
-import { entityNames } from 'game-engine/src/entity/EntityList';
+import entityNames from 'game-engine/src/entity/EntityList';
 import { Controller } from '../playercontroller/Controller';
 import { Socket } from '../../api';
 import { PlayerEntity } from 'game-engine/src/entity/PlayerEntity';
@@ -27,7 +27,7 @@ class MainGame extends Scene3D {
 
     constructor(server) {
         super(); 
-        this.server = server; 
+        this.server = server;
 
         this.server.emitter.addEventListener('handshakeResponse', event => {
             this.playerId = event.message.userId;
@@ -35,16 +35,17 @@ class MainGame extends Scene3D {
 
         this.server.emitter.addEventListener('serverEntityCreate', (event) => {
             for (const datum of event.message.data) {
-                const entity = new entityNames[datum.type](this, datum.prototype);
+                console.log(datum.type);
+                const entityConstrutor = entityNames[datum.type];
+                const entity = new entityConstrutor(this, datum.prototype);
                 entity.id = datum.entityId;
                 entity.deserializeState(datum.state);
+
                 this.addPool(entity);
 
                 if (entity.id === this.playerId) {
                     this.playerEntity = entity;
                     this.playerEntity.controller = new Controller(this);
-
-                    this.moveCamera();
                 }
             }
         });
@@ -86,13 +87,7 @@ class MainGame extends Scene3D {
             this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle);
         }
     }
-
-    moveCamera() {
-        if (this.playerEntity) {
-            this.camera.position.set(this.playerEntity.body.position.x, 50, this.playerEntity.body.position.y + 100);
-        }
-    }
-
+    
     start() {
         super.start(); // Appel de la méthode start() de la classe parente GameMaster
 

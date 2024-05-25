@@ -36,6 +36,7 @@ class Entity {
         this.prototypeName = prototypeName;
         this.angle = 0;
         this.spherical = new THREE.Spherical();
+        this.collideBox; 
         this.prototype = this.constructor.getPrototypes()[prototypeName];
         console.assert(this.prototype, `prototype ${prototypeName} not found`);
 
@@ -52,6 +53,14 @@ class Entity {
         this.model = this.prototype.model;
         this.textMesh = "";
         this.loader = new GLTFLoader();
+    }
+
+    fromPath(path) {
+        const vertice = [];
+        for (const entry of path) {
+            vertice.push(new THREE.Vector2( entry.x, entry.y ));
+        }
+        return vertice;
     }
 
     rotateCameraAroundPlayer(camera, player, radius, radians) {
@@ -74,11 +83,31 @@ class Entity {
                 '/assets/models/' + this.model, // Chemin du fichier glTF/GLB
                 (gltf) => {
                     this.modelObject = gltf.scene;
-                    console.log(this.modelObject);
 
+                    const vertices = this.body.vertices.map(v => ({ x: v.x, y: v.y }));
+                    console.log(vertices);
+
+                    const shape = new THREE.Shape(vertices);
                     
+                    
+                    // Créer une géométrie extrudée
+                    const extrudeSettings = {
+                        steps: 2,
+                        depth: 10,
+                        bevelEnabled: false
+                    };
+                    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
 
-                    // Ajoutez l'objet Group à la scène
+                    geometry.center();
+
+                    // Créer un matériau et un maillage
+                    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.5 });
+                    const mesh = new THREE.Mesh(geometry, material);
+                    this.collideBox = mesh;
+
+                    this.collideBox.rotateX(Math.PI/2);
+
+                    this.game.scene.add(this.collideBox);
                     this.game.scene.add(this.modelObject);
                 },
                 undefined,
@@ -111,14 +140,21 @@ class Entity {
 
     update(delta) {
         if (!this.body || !this.modelObject) return;
-
         const { x, y } = this.body.position;
+
+
+        this.collideBox.visible = this.game.debug;
+        if (this.collideBox && this.collideBox.visible) {
+            this.collideBox.position.set(x, 0, y);
+            this.collideBox.rotation.z = this.body.angle;
+        }
         
-        this.angle += 0.1;
-        
+
         // dans le monde de Three, y est le haut, mais dans le monde de Matter, y est l'horizontal
         this.modelObject.position.set(x, 0, y);
-        this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
+        if (this.id == this.game.playerEntity.id) {
+            this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
+        }
         this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0)); // TODO vérifier si l'ordre est correct
     }
 }

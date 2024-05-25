@@ -1,10 +1,9 @@
-import { Asteroide } from "./Asteroide";
-import { PlayerEntity } from "./PlayerEntity";
+import { Asteroide } from "./Asteroide.js";
+import { PlayerEntity } from "./PlayerEntity.js";
 
-const entityNames = {};
+const entityNames = {
+    Asteroide,
+    PlayerEntity
+};
 
-[Asteroide, PlayerEntity].forEach((e) => {
-    entityNames[e.name] = e;
-});
-
-export { entityNames };
+export default entityNames;

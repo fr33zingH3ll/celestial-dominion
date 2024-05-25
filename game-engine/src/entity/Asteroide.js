@@ -16,23 +16,23 @@ class Asteroide extends StaticEntity {
         return {
             asteroide_1: {
                 model: "Asteroid_1.glb",
-                height: 80,
-                width: 80,
+                height: 5,
+                width: 5,
             },
             asteroide_2: {
                 model: "Asteroid_2.glb",
-                height: 80,
-                width: 80,
+                height: 5,
+                width: 5,
             },
             asteroide_3: {
                 model: "Asteroid_3.glb",
-                height: 80,
-                width: 80,
+                height: 5,
+                width: 5,
             },
             asteroide_4: {
                 model: "Asteroid_4.glb",
-                height: 80,
-                width: 80,
+                height: 5,
+                width: 5,
             },
         };
     }

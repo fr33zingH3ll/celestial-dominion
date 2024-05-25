@@ -9,6 +9,7 @@ import WebSocket, { WebSocketServer } from 'ws';
 import protobuf from 'protobufjs';
 import { Event } from 'game-engine/src/utils/Event.js';
 import { EventDispatcher } from 'game-engine/src/utils/EventDispatcher.js';
+import 'dotenv/config';
 
 const API_PATH = "/api/v1";
 const API_AUTH_PATH = API_PATH+"/auth";
@@ -26,7 +27,13 @@ class Server {
         this.jwtService = new JsonWebTokenAuth();
 
         this.port = 3000;
-        // this.app.use(cors());
+        const mode = process.env.VITE_MODE || 'production';
+        if (mode === "development") {
+            console.log("Development mode");
+            this.app.use(cors());
+        } else {
+            console.log("Production mode");
+        }
         // Middleware pour traiter le corps des requêtes en JSON
         this.app.use(Express.json());
 

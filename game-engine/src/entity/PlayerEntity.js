@@ -32,7 +32,6 @@ class PlayerEntity extends LivingEntity {
         // Mettez à jour la position et l'angle selon votre logique
         if (this.controller) {
             this.move(this.controller.getMoveVector(this.spherical));
-            // this.move(this.controller.getMoveVector(this.game.camera));
         }
     }
 
@@ -40,9 +39,9 @@ class PlayerEntity extends LivingEntity {
         return {
             base: {
                 hpMax: 100,
-                speed: 0.5,
+                speed: 5,
                 model: "vaisseau_heal.glb",
-                vertices: Vertices.fromPath('40 0 40 20 100 20 100 80 40 80 40 100 0 50'),
+                vertices: Vertices.fromPath('15 0 15 15 0 15 0 0'),
                 restitution: 0,
             },
         };

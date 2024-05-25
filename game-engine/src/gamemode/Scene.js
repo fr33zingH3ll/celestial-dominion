@@ -12,6 +12,7 @@ class Scene {
     constructor() {
         this.pool = [];
         this.emitter = new EventDispatcher();
+        this.debug = false;
     }
 
     /**
