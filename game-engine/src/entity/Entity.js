@@ -134,34 +134,40 @@ class Entity {
     // Méthode pour nettoyer l'écouteur d'événements lorsque l'entité est détruite
     destroy() {
         // Supprimer le modèle de la scène
-        this.game.scene.remove(this.modelObject);
-        this.modelObject.traverse((child) => {
-            if (child.isMesh) {
-                child.geometry.dispose();
-                if (Array.isArray(child.material)) {
-                    // Si le matériau est un tableau (plusieurs matériaux)
-                    child.material.forEach(material => this.disposeMaterial(material));
-                } else {
-                    // Sinon, un seul matériau
-                    this.disposeMaterial(child.material);
-                }
-            }
-        });
-
-        // Définir le modèle sur null pour libérer les références
-        this.modelObject = null;
-
-        // Supprimer la box de collision de la scène
-        this.game.scene.remove(this.collideBox);
-        this.collideBox.geometry.dispose();
-        if (Array.isArray(this.collideBox.material)) {
-            this.collideBox.material.forEach(material => this.disposeMaterial(material));
-        } else {
-            this.collideBox.material.dispose();
+        if (this.game.scene) {
+            this.game.scene.remove(this.modelObject);
+            this.game.scene.remove(this.collideBox);
         }
 
-        // Définir la box de collision sur null pour libérer les références
-        this.collideBox = null;
+        if (this.modelObject) {
+            this.modelObject.traverse((child) => {
+                if (child.isMesh) {
+                    child.geometry.dispose();
+                    if (Array.isArray(child.material)) {
+                        // Si le matériau est un tableau (plusieurs matériaux)
+                        child.material.forEach(material => this.disposeMaterial(material));
+                    } else {
+                        // Sinon, un seul matériau
+                        this.disposeMaterial(child.material);
+                    }
+                }
+            });
+
+            this.modelObject = null;
+        }
+
+
+        if (this.collideBox) {
+            this.collideBox.geometry.dispose();
+            if (Array.isArray(this.collideBox.material)) {
+                this.collideBox.material.forEach(material => this.disposeMaterial(material));
+            } else {
+                this.collideBox.material.dispose();
+            }
+
+            // Définir la box de collision sur null pour libérer les références
+            this.collideBox = null;
+        }
     }
 
     disposeMaterial(material) {

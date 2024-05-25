@@ -12,35 +12,6 @@ class BackGameMaster extends GameMaster {
 
         this.server = new Server();
 
-        // Écoute des événements de collision
-        this.Events.on(this.engine, 'collisionStart', (event) => {
-            const pairs = event.pairs;
-
-            // Boucle sur les paires de corps en collision
-            pairs.forEach((pair) => {
-                const { bodyA, bodyB } = pair;
-
-                const entityA = this.pool.find(e => e.body === bodyA);
-                const entityB = this.pool.find(e => e.body === bodyB);
-                
-                if ((entityA.body.label === "PlayerEntity" && entityB.body.label === "Projectil") || (entityB.body.label === "PlayerEntity" && entityA.body.label === "Projectil")) {
-
-                    if (entityA && entityB) {
-                        if (entityA instanceof Projectil && entityB instanceof PlayerEntity) {
-                            if (entityA.owner === entityB.id) return;
-                            entityB.damage(entityA.force);
-                            entityA.damage(entityB.force);
-                        } 
-                        else if (entityB instanceof Projectil && entityA instanceof PlayerEntity) {
-                            if (entityB.owner === entityA.id) return;
-                            entityA.damage(entityB.force);
-                            entityB.damage(entityA.force);
-                        }
-                    }
-                }
-            });
-        });
-
         // Création d'une instance de Asteriode avec des paramètres spécifiques et ajout à la scène
         for (let index = 0; index < 60; index++) {
             const asteroid = new Asteroide(this);
@@ -50,7 +21,6 @@ class BackGameMaster extends GameMaster {
             this.addPool(asteroid);    
         }
         
-
         this.server.emitter.addEventListener('loginSuccess', (event) => {
             this.server.sendNewEntities(event.message.webSocket, this.pool);
             const newPlayer = new PlayerEntity(this, "base");
@@ -63,10 +33,6 @@ class BackGameMaster extends GameMaster {
             this.server.callbackHandshake(event.message, newPlayer.id, newPlayer.body.position, newPlayer.body.angle);
         });
 
-        this.server.emitter.addEventListener('ServerEntityDelete', event => {
-            this.removePool(event.message.entity);
-        });
-
         this.server.emitter.addEventListener('clientPlayerMove', event => {
             const { message: { position, rotation, velocity }, connection: { entity } } = event.message;
 
@@ -77,9 +43,16 @@ class BackGameMaster extends GameMaster {
         });
 
         this.server.emitter.addEventListener('clientShot', event => {
+            const player = this.getEntityById(event.message.connection.id);
             const newProjectil = new Projectil(this, "base", event.message.connection.id);
-            const playerPosition = this.getEntityById(event.message.connection.id).body.position;
-            this.Body.setPosition(newProjectil.body, { x: playerPosition.x, y: playerPosition.y -30 });
+            const playerPosition = player.body.position;
+            
+            newProjectil.track = player.body.angle;
+            const offset = this.Vector.rotate({x: 0, y: -30}, newProjectil.track);
+            newProjectil.track -= Math.PI / 2;
+
+            this.Body.setPosition(newProjectil.body, this.Vector.add(playerPosition, offset));
+
             this.addPool(newProjectil);
         });
     }
@@ -96,22 +69,6 @@ class BackGameMaster extends GameMaster {
 
     update(delta) {
         super.update(delta);
-
-        // Gestion des entités a détruire
-        const entitiesToDelete = this.pool.filter((e) => e instanceof LivingEntity && e.hp <= 0);
-        for (const entity of entitiesToDelete) {
-            this.removePool(entity);
-        }
-
-        // Gestion des trajectoires de chaque Projectil
-        const projectils = this.pool.filter(e => e instanceof Projectil);
-        for (const projectil of projectils) {
-            const owner = this.pool.find(e => e instanceof PlayerEntity && e.id == projectil.owner);
-            if (projectil.track ==null) {
-                projectil.setTrack(owner.body.angle);
-            }
-        }
-
 
         // Gestion des entités a mettre à jour
         const entitiesToUpdate = this.pool.filter((e) => e.dirty);

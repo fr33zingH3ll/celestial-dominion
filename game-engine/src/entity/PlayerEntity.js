@@ -39,7 +39,10 @@ class PlayerEntity extends LivingEntity {
 
     destroy() {
         super.destroy();
-        this.controller.removeEventListeners();
+
+        if (this.controller) {
+            this.controller.removeEventListeners();
+        }
     }
 
     update(delta) {

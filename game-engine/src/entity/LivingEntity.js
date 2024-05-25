@@ -12,6 +12,15 @@ class LivingEntity extends Entity {
 
     damage(damage) {
         this.hp -= damage;
+
+        if (this.hp <= 0) {
+            this.onDeath();
+        }
+    }
+
+    onDeath() {
+        this.game.removePool(this);
+        this.destroy();
     }
 
     move(vector) {
