@@ -80,7 +80,9 @@ class MainGame extends FrontGameMaster {
 
         // Écoute les événements de suppression d'entité du serveur
         this.server.emitter.addEventListener('serverEntityDelete', event => {
+            console.log(event.message.entityId);
             const entity = this.getEntityById(event.message.entityId);
+            console.log(entity);
             if (entity) {
                 this.removePool(entity);
                 entity.destroy();

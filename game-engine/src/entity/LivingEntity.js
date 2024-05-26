@@ -25,10 +25,8 @@ class LivingEntity extends Entity {
      * @param {number} damage - Les dégâts à infliger.
      */
     damage(damage) {
-        // Réduit les points de vie de l'entité par les dégâts infligés
         this.hp -= damage;
 
-        // Vérifie si les points de vie sont tombés à zéro ou moins, déclenche l'événement de mort
         if (this.hp <= 0) {
             this.onDeath();
         }
@@ -38,7 +36,6 @@ class LivingEntity extends Entity {
      * Gère l'événement de mort de l'entité vivante.
      */
     onDeath() {
-        if (!this.modelObject) this.game.server.emitter.dispatchEvent(new Event("EntityDeath", { entityId: this.id }));
         this.game.removePool(this);
         this.destroy();
     }
@@ -119,9 +116,9 @@ class LivingEntity extends Entity {
      * Met à jour l'entité vivante.
      * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
      */
-    update(delta) {
+    update_front(delta) {
         // Appelle la méthode de mise à jour de l'entité de base
-        super.update(delta);
+        super.update_front(delta);
     }
 }
 

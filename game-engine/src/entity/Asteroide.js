@@ -1,5 +1,6 @@
 import { StaticEntity } from "game-engine/src/entity/StaticEntity.js";
 
+
 /**
  * Représente un astéroïde dans le jeu, héritant de la classe StaticEntity.
  */
@@ -8,9 +9,10 @@ class Asteroide extends StaticEntity {
      * Crée une instance d'Asteroide.
      * @param {Object} game - L'instance du jeu.
      */
-    constructor(game) {
-        const prototypeName = Asteroide.getRandomPrototypeName();
+    constructor(game, prototypeName) {
+        if (prototypeName != "") prototypeName = Asteroide.getRandomPrototypeName();
         super(game, prototypeName);
+        this.scale = 5;
     }
 
     /**
@@ -31,24 +33,24 @@ class Asteroide extends StaticEntity {
         return {
             asteroide_1: {
                 model: "Asteroid_1.glb",
-                height: 5,
-                width: 5,
+                height: 15,
+                width: 15,
             },
             asteroide_2: {
                 model: "Asteroid_2.glb",
-                height: 5,
-                width: 5,
+                height: 10,
+                width: 10,
             },
             asteroide_3: {
                 model: "Asteroid_3.glb",
-                height: 5,
-                width: 5,
+                height: 15,
+                width: 15,
             },
             asteroide_4: {
                 model: "Asteroid_4.glb",
                 height: 5,
                 width: 5,
-            },
+            }
         };
     }
 }

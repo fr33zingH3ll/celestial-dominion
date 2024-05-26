@@ -59,7 +59,7 @@ class Entity {
         this.model = this.prototype.model;
         this.textMesh = "";
         this.loader = new GLTFLoader();
-        this.modelObject = new THREE.Object3D();
+        
     }
 
     /**
@@ -95,6 +95,8 @@ class Entity {
             this.loader.load(
                 '/assets/models/' + this.model, // Chemin du fichier glTF/GLB
                 (gltf) => {
+                    if (this.scale) gltf.scene.scale.set(this.scale || 1, this.scale || 1, this.scale || 1);
+                    this.modelObject = new THREE.Object3D();
                     this.modelObject.add(gltf.scene);
 
                     // Création d'une géométrie pour la collision
@@ -120,6 +122,7 @@ class Entity {
                 }
             );
         }
+        // 
     }
 
     /**
@@ -156,27 +159,6 @@ class Entity {
             }
             this.collideBox = null;
         }
-    }
-
-    /**
-     * Fait tourner la caméra autour du joueur selon un rayon et des radians spécifiés.
-     * @param {THREE.Camera} camera - La caméra à faire tourner.
-     * @param {THREE.Object3D} player - Le joueur autour duquel la caméra doit tourner.
-     * @param {number} radius - Le rayon de rotation de la caméra par rapport au joueur.
-     * @param {number} radians - Les radians de rotation autour du joueur.
-     */
-    rotateCameraAroundPlayer(camera, player, radius, radians) {
-        this.spherical.radius = radius;
-        this.spherical.theta = -radians; // l'angle horizontal
-        this.spherical.phi = Math.PI / 2.5; // angle vertical (90 degrés pour rester à hauteur du joueur)
-
-        const newPosition = new THREE.Vector3();
-        newPosition.setFromSpherical(this.spherical);
-        newPosition.add(player.position); // déplace la position relative au joueur
-
-        this.game.Body.setAngle(this.body, -this.spherical.theta);
-        camera.position.copy(newPosition);
-        camera.lookAt(player.position);
     }
 
     /**
@@ -238,7 +220,7 @@ class Entity {
      * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
      */
     update_back(delta) {
-        if (!this.body) return;
+        if (!this.body && this.modelObject) return;
         this.isMoving();
 
         const { x, y } = this.body.position;

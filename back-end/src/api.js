@@ -193,10 +193,10 @@ class Server {
 
         // Gérez la fermeture de la connexion WebSocket
         ws.on('close', () => {
-            console.log('WebSocket disconnected');
+            console.log('WebSocket disconnected :', connection.username);
 
             if (connection) {
-                this.emitter.dispatchEvent(new Event('playerDisconnected', connection));
+                this.emitter.dispatchEvent(new Event('playerDisconnected', { id: connection.id }));
                 delete this.players[connection.username];
             }
         });
@@ -272,7 +272,6 @@ class Server {
         const toSend = [];
         const datum = this.proto.lookupType('ServerEntityUpdateDatum');
         const data = this.proto.lookupType('ServerEntityUpdate');
-
         for (const entity of entities) {
             toSend.push(datum.create({
                 entityId: entity.id,

@@ -47,7 +47,7 @@ class Socket {
         
         // Handle WebSocket close event
         this.socket.addEventListener('close', () => {
-            logout();
+            // logout();
         });
     }
 

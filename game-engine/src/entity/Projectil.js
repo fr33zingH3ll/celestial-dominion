@@ -1,5 +1,8 @@
-import { LivingEntity } from "./LivingEntity.js";
 import Matter from "matter-js";
+import * as THREE from 'three'; // Importation de la bibliothèque Three.js
+
+import { LivingEntity } from "./LivingEntity.js";
+
 const { Vertices } = Matter;
 
 /**
@@ -12,41 +15,42 @@ class Projectil extends LivingEntity {
      * @param {string} prototyName - Le nom du prototype de l'entité.
      * @param {number} id - L'identifiant du propriétaire du projectile.
      */
-    constructor(game, prototyName, id) {
+    constructor(game, prototyName, id, playerPosition) {
         super(game, prototyName);
 
         // Initialise les propriétés spécifiques du projectile
         this.owner = id;
-        this.startPosition = { x: this.body.position.x, y: this.body.position.y };
-        this.distanceTraveled = 0;
+        this.startPosition = playerPosition;
         this.track = null;
 
-        // Écoute les événements de collision
-        this.game.Events.on(this.game.engine, 'collisionStart', (event) => {
-            const pairs = event.pairs;
-
-            // Boucle sur les paires de corps en collision
-            pairs.forEach((pair) => {
-                const { bodyA, bodyB } = pair;
-
-                const entityA = this.game.pool.find(e => e.body === bodyA);
-                const entityB = this.game.pool.find(e => e.body === bodyB);
-
-                if (entityA !== this && entityB !== this) {
-                    return;
-                }
-
-                let other;
-
-                if (entityA !== this) other = entityA;
-                else if (entityB !== this) other = entityB;
-
-                if (other.damage) {
-                    other.damage(this.force);
-                    this.onDeath();
-                }
+        if (!this.modelObject) {
+            this.game.Events.on(this.game.engine, 'collisionStart', (event) => {
+                console.log("collision");
+                const pairs = event.pairs;
+    
+                // Boucle sur les paires de corps en collision
+                pairs.forEach((pair) => {
+                    const { bodyA, bodyB } = pair;
+    
+                    const entityA = this.game.pool.find(e => e.body === bodyA);
+                    const entityB = this.game.pool.find(e => e.body === bodyB);
+    
+                    if (entityA !== this && entityB !== this) {
+                        return;
+                    }
+    
+                    let other;
+    
+                    if (entityA !== this) other = entityA;
+                    else if (entityB !== this) other = entityB;
+                    if (other.id == this.owner) return;
+                    if (other.damage) {
+                        // other.damage(this.force);
+                        this.onDeath();
+                    }
+                });
             });
-        });
+        }
     }
 
     /**
@@ -55,6 +59,16 @@ class Projectil extends LivingEntity {
      */
     update_back(delta) { 
         super.update_back(delta);
+        if (!this.game.playerEntity) {
+            const actualPos = new THREE.Vector3(this.body.position.x, 0, this.body.position.y);
+            const startPos = new THREE.Vector3(this.startPosition.x, 0, this.startPosition.y);
+            console.log(startPos.distanceTo(actualPos));
+            if (startPos.distanceTo(actualPos) >= 500) {
+                this.onDeath();
+                return;
+            } 
+        }
+        
 
         // Si le projectile a une trajectoire définie, le déplace dans cette direction
         if (this.track) {
@@ -64,6 +78,7 @@ class Projectil extends LivingEntity {
                 Math.cos(this.track),
                 Math.sin(this.track)
             ), forceMagnitude);
+            
         
             // Applique la force ajustée au corps
             this.game.Body.setVelocity(this.body, velocity);

@@ -1,5 +1,7 @@
-import { LivingEntity } from "./LivingEntity.js";
+import * as THREE from 'three';
 import Matter from "matter-js";
+
+import { LivingEntity } from "./LivingEntity.js";
 const { Vertices } = Matter;
 
 /**
@@ -18,7 +20,6 @@ class PlayerEntity extends LivingEntity {
         this.cooldown = 500;
         this.tempo_delta = 0;
         this.can_shot = false;
-        console.log(this.modelObject);
         // Ajoute les écouteurs d'événements
         this.addEventListener();
     }
@@ -34,16 +35,37 @@ class PlayerEntity extends LivingEntity {
     }
 
     /**
+     * Fait tourner la caméra autour du joueur selon un rayon et des radians spécifiés.
+     * @param {THREE.Camera} camera - La caméra à faire tourner.
+     * @param {THREE.Object3D} player - Le joueur autour duquel la caméra doit tourner.
+     * @param {number} radius - Le rayon de rotation de la caméra par rapport au joueur.
+     * @param {number} radians - Les radians de rotation autour du joueur.
+     */
+    rotateCameraAroundPlayer(camera, player, radius, radians) {
+        this.spherical.radius = radius;
+        this.spherical.theta = -radians; // l'angle horizontal
+        this.spherical.phi = Math.PI / 2.5; // angle vertical (90 degrés pour rester à hauteur du joueur)
+
+        const newPosition = new THREE.Vector3();
+        newPosition.setFromSpherical(this.spherical);
+        newPosition.add(player.position); // déplace la position relative au joueur
+
+        this.game.Body.setAngle(this.body, -this.spherical.theta);
+        camera.position.copy(newPosition);
+        camera.lookAt(player.position);
+    }
+
+    /**
      * Envoie les données de déplacement du joueur au serveur.
      */
     sendMove() {
         const position = this.body.position;
-        const angle = this.body.angle;
+        const rotation = this.body.angle;
 
         this.game.server.sendMessage({
             clientEntityUpdate: {
                 position,
-                rotation: angle,
+                rotation,
             }
         });
     }
@@ -82,8 +104,8 @@ class PlayerEntity extends LivingEntity {
 
     update_front(delta) {
         super.update_front(delta);
-        if (this.id == this.game.playerEntity.id) {
-            this.rotateCameraAroundPlayer(this.game.camera, this.getModelObject(), 75, this.game.playerEntity.controller.calculateRotationAngle());
+        if (this.game.playerEntity && this.id == this.game.playerEntity.id && this.modelObject) {
+            this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
         }
 
         if (this.controller) {

@@ -10,7 +10,7 @@ class Controller {
      */
     constructor(game) {
         this.game = game;
-        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', left_click: 'mouseLeft', debug_mode: '²'};
+        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', left_click: 'mouseLeft', debug_mode: 'F1'};
         this.control = {right: false, left: false, up: false, down: false, left_click: false};
         this.mouseSensitivity = 0.002; // Sensibilité de la souris pour le mouvement horizontal
         this.rotation = 0; // Rotation actuelle sur l'axe horizontal

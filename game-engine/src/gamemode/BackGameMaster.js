@@ -2,6 +2,7 @@ import { Scene } from "./Scene.js";
 import Matter from "matter-js";
 import * as decomp from 'poly-decomp';
 import { Entity } from "../entity/Entity.js";
+import { PlayerEntity } from "../entity/PlayerEntity.js";
 
 class BackGameMaster extends Scene {
     constructor() {
@@ -20,6 +21,9 @@ class BackGameMaster extends Scene {
         this.engine.gravity.scale = 0;
 
         this.world = this.engine.world;
+
+        this.maxDistance = 10; // La distance maximale pour qu'une entité soit considérée comme visible
+
     }
 
     start() {
