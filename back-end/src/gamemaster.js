@@ -1,16 +1,19 @@
 import Matter from "matter-js";
-import { GameMaster } from "game-engine/src/gamemode/GameMaster.js";
+import { Server } from "./api.js";
+import { BackGameMaster } from "game-engine/src/gamemode/BackGameMaster.js";
+
 import { PlayerEntity } from "game-engine/src/entity/PlayerEntity.js";
 import { Asteroide } from "game-engine/src/entity/Asteroide.js";
-import { Server } from "./api.js";
 import { Projectil } from "game-engine/src/entity/Projectil.js";
 import { LivingEntity } from "game-engine/src/entity/LivingEntity.js";
 
+import { getRandomPosition } from "game-engine/src/utils/functions.js";
+
 /**
  * Class representing the game master on the server side.
- * @extends GameMaster
+ * @extends BackGameMaster
  */
-class BackGameMaster extends GameMaster {
+class GameMaster extends BackGameMaster {
     constructor() {
         super();
 
@@ -23,8 +26,8 @@ class BackGameMaster extends GameMaster {
         // Création d'une instance de Asteroide avec des paramètres spécifiques et ajout à la scène
         for (let index = 0; index < 60; index++) {
             const asteroid = new Asteroide(this);
-            const x = this.getRandomPosition(-100, 0);
-            const y = this.getRandomPosition(-100, 0);
+            const x = getRandomPosition(-100, 0);
+            const y = getRandomPosition(-100, 0);
             Matter.Body.setPosition(asteroid.body, { x, y });
             this.addPool(asteroid);    
         }
@@ -63,16 +66,12 @@ class BackGameMaster extends GameMaster {
 
             this.addPool(newProjectil);
         });
-    }
 
-    /**
-     * Generate a random position between two values.
-     * @param {number} min - The minimum value.
-     * @param {number} max - The maximum value.
-     * @returns {number} A random number between min and max.
-     */
-    getRandomPosition(min, max) {
-        return Math.random() * (max - min) + min;
+        this.server.emitter.addEventListener('EntityDeath' || 'playerDisconnected', event => {
+            const entity = this.getEntityById(event.message.entityId);
+
+            this.server.broadcastRemovedEntity(entity);
+        });
     }
 
     /**
@@ -83,6 +82,17 @@ class BackGameMaster extends GameMaster {
         super.start();
         await this.server.start();
     }
+
+    /**
+     * Remove an entity from the pool and broadcast its removal.
+     * @param {LivingEntity} entity - The entity to remove.
+     */
+    removePool(entity) {
+        this.server.broadcastRemovedEntity(entity);
+
+        super.removePool(entity);
+    }
+
 
     /**
      * Update the game state.
@@ -103,15 +113,6 @@ class BackGameMaster extends GameMaster {
             newbornEntities.forEach(e => e.newborn = false);
         }
     }
-
-    /**
-     * Remove an entity from the pool and broadcast its removal.
-     * @param {LivingEntity} entity - The entity to remove.
-     */
-    removePool(entity) {
-        this.server.broadcastRemovedEntity(entity);
-        super.removePool(entity);
-    }
 }
 
-export { BackGameMaster };
+export { GameMaster };

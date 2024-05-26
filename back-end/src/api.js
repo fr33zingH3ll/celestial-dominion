@@ -46,7 +46,7 @@ class Server {
         this.jwtService = new JsonWebTokenAuth();
 
         this.port = 3000;
-        // this.app.use(cors());
+        this.app.use(cors());
         // Middleware pour traiter le corps des requêtes en JSON
         this.app.use(Express.json());
 

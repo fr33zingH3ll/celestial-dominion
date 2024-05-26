@@ -18,7 +18,7 @@ class PlayerEntity extends LivingEntity {
         this.cooldown = 500;
         this.tempo_delta = 0;
         this.can_shot = false;
-
+        console.log(this.modelObject);
         // Ajoute les écouteurs d'événements
         this.addEventListener();
     }
@@ -71,22 +71,21 @@ class PlayerEntity extends LivingEntity {
         }
     }
 
-    /**
-     * Met à jour l'entité joueur.
-     * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
-     */
-    update(delta) {
-        super.update(delta);
-        
-        // Incrémente le délai entre les tirs
+    update_back(delta) { 
+        super.update_back(delta);
         if (this.tempo_delta < this.cooldown) {
             this.tempo_delta += delta;
         }
         
-        // Vérifie si le joueur peut tirer
         this.can_shot = this.tempo_delta >= this.cooldown ? true : false;
-        
-        // Met à jour la position et l'angle du joueur en fonction de la logique du contrôleur
+    }
+
+    update_front(delta) {
+        super.update_front(delta);
+        if (this.id == this.game.playerEntity.id) {
+            this.rotateCameraAroundPlayer(this.game.camera, this.getModelObject(), 75, this.game.playerEntity.controller.calculateRotationAngle());
+        }
+
         if (this.controller) {
             this.move(this.controller.getMoveVector(this.spherical));
             this.shot(this.can_shot, this.controller.control.left_click);

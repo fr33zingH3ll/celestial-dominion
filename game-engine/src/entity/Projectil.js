@@ -53,8 +53,8 @@ class Projectil extends LivingEntity {
      * Met à jour le projectile.
      * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
      */
-    update(delta) { 
-        super.update(delta);
+    update_back(delta) { 
+        super.update_back(delta);
 
         // Si le projectile a une trajectoire définie, le déplace dans cette direction
         if (this.track) {

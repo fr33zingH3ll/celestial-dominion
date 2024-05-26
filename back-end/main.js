@@ -1,8 +1,8 @@
-import { BackGameMaster } from "./src/gamemaster.js";
+import { GameMaster } from "./src/gamemaster.js";
 import { Server } from "./src/api.js";
 
 (async () => {
-	const game = new BackGameMaster();
+	const game = new GameMaster();
 	await game.start();
 	let previousTime = Date.now();
 	setInterval(() => {

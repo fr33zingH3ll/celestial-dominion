@@ -30,8 +30,6 @@ class Controller {
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
         document.addEventListener('pointerlockchange', this.handlePointerLockChange);
-        window.addEventListener('mousedown', this.handleMouseDown);
-        window.addEventListener('mouseup', this.handleMouseUp);
     }
 
     /**
@@ -41,7 +39,6 @@ class Controller {
         window.removeEventListener('keydown', this.handleKeyDown);
         window.removeEventListener('keyup', this.handleKeyUp);
         document.removeEventListener('pointerlockchange', this.handlePointerLockChange);
-        document.removeEventListener('mousemove', this.handleMouseMove);
         window.removeEventListener('mousedown', this.handleMouseDown);
         window.removeEventListener('mouseup', this.handleMouseUp);
     }
@@ -117,9 +114,13 @@ class Controller {
         if (document.pointerLockElement === this.game.renderer.domElement) {
             console.log('Pointer lock active');
             document.addEventListener('mousemove', this.handleMouseMove, false);
+            window.addEventListener('mousedown', this.handleMouseDown);
+            window.addEventListener('mouseup', this.handleMouseUp);
         } else {
             console.log('Pointer lock inactive');
             document.removeEventListener('mousemove', this.handleMouseMove, false);
+            window.removeEventListener('mousedown', this.handleMouseDown);
+            window.removeEventListener('mouseup', this.handleMouseUp);
         }
     }
 

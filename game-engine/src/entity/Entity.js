@@ -1,8 +1,7 @@
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; // Importation du chargeur GLTFLoader de Three.js
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
-import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 import Matter from 'matter-js';
+import * as THREE from 'three';
+
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 var ID_COUNTER = 0;
 
@@ -60,6 +59,7 @@ class Entity {
         this.model = this.prototype.model;
         this.textMesh = "";
         this.loader = new GLTFLoader();
+        this.modelObject = new THREE.Object3D();
     }
 
     /**
@@ -82,6 +82,10 @@ class Entity {
         return this.body.position;
     }
 
+    getModelObject() {
+        return this.modelObject;
+    }
+
     /**
      * Charge le modèle de l'entité.
      */
@@ -91,7 +95,7 @@ class Entity {
             this.loader.load(
                 '/assets/models/' + this.model, // Chemin du fichier glTF/GLB
                 (gltf) => {
-                    this.modelObject = gltf.scene;
+                    this.modelObject.add(gltf.scene);
 
                     // Création d'une géométrie pour la collision
                     const vertices = this.body.vertices.map(v => ({ x: v.x, y: v.y }));
@@ -124,8 +128,8 @@ class Entity {
     destroy() {
         // Suppression du modèle de la scène
         if (this.game.scene) {
-            this.game.scene.remove(this.modelObject);
             this.game.scene.remove(this.collideBox);
+            this.game.scene.remove(this.modelObject);
         }
 
         if (this.modelObject) {
@@ -212,49 +216,33 @@ class Entity {
         this.game.Body.setAngularVelocity(this.body, state.angularVelocity);
     }
 
-    /**
-     * Met à jour l'entité à chaque itération de la boucle de jeu.
-     * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
-     */
-    update(delta) {
-        // Vérifie si le corps physique de l'entité existe
-        if (!this.body) return;
-
-        // Vérifie si l'entité est en mouvement
-        this.isMoving();
-
-        // Récupère les coordonnées x et y de la position de l'entité
+    update_front() {
+        if (!this.modelObject || !this.body) return;
         const { x, y } = this.body.position;
+        this.modelObject.position.set(this.tempo_position.x, 0, this.tempo_position.y);
 
-        // Stocke temporairement la position dans l'attribut tempo_position
-        this.tempo_position = { x, y };
-
-        // Vérifie si l'objet de modèle 3D existe
-        if (!this.modelObject) return;
-
-        // Positionne l'objet de modèle 3D aux coordonnées de l'entité
-        // avec la prise en compte de la différence de coordonnées entre les mondes Three.js et Matter.js
-        this.modelObject.position.set(x, 0, y);
-
-        // Si l'entité est le joueur, effectue une rotation de la caméra autour du joueur
-        if (this.id == this.game.playerEntity.id) {
-            this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
-        }
-
-        // Applique la rotation de l'objet de modèle 3D en fonction de l'angle du corps physique de l'entité
         this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0));
 
-        // Vérifie si la boîte de collision existe et si le mode de débogage est activé
         if (!this.collideBox) return;
         if (this.collideBox && this.game.debug) {
-            // Positionne et oriente la boîte de collision en fonction de l'angle du corps physique de l'entité
             this.collideBox.visible = true;
             this.collideBox.position.set(x, 0, y);
             this.collideBox.rotation.z = this.body.angle;
         } else {
-            // Masque la boîte de collision si le mode de débogage n'est pas activé
             this.collideBox.visible = false;
         }
+    }
+
+    /**
+     * Met à jour l'entité à chaque itération de la boucle de jeu.
+     * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
+     */
+    update_back(delta) {
+        if (!this.body) return;
+        this.isMoving();
+
+        const { x, y } = this.body.position;
+        this.tempo_position = { x, y };
     }
 }
 

@@ -1,3 +1,4 @@
+import { Event } from "../utils/Event.js";
 import { Entity } from "./Entity.js";
 
 /**
@@ -37,7 +38,7 @@ class LivingEntity extends Entity {
      * Gère l'événement de mort de l'entité vivante.
      */
     onDeath() {
-        // Retire l'entité du pool du jeu et la détruit
+        if (!this.modelObject) this.game.server.emitter.dispatchEvent(new Event("EntityDeath", { entityId: this.id }));
         this.game.removePool(this);
         this.destroy();
     }

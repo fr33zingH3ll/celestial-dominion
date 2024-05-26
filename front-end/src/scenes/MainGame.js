@@ -1,4 +1,4 @@
-import { Scene3D } from 'game-engine/src/gamemode/Scene3D.js';
+import { FrontGameMaster } from 'game-engine/src/gamemode/FrontGameMaster.js';
 import entityNames from 'game-engine/src/entity/EntityList';
 import { Controller } from '../playercontroller/Controller';
 import { Socket } from '../../api';
@@ -8,7 +8,7 @@ import { PlayerEntity } from 'game-engine/src/entity/PlayerEntity';
  * Classe représentant le jeu principal.
  * Étend la classe Scene3D du moteur de jeu.
  */
-class MainGame extends Scene3D {
+class MainGame extends FrontGameMaster {
     /**
      * Socket pour la communication avec le serveur.
      * @type {Socket}
