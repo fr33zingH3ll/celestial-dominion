@@ -1,4 +1,4 @@
-import "./main.css";
+import "./index.css";
 import { Socket } from "./api";
 import { MainGame } from "./src/scenes/MainGame.js";
 
@@ -13,6 +13,6 @@ if (token && token != "undefined") {
         game.start();
     })();
 } else {
-    window.location.replace('/home.html');
+    window.location.replace('/login.html');
 }
 

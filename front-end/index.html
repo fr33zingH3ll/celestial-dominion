@@ -1,11 +1,38 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Space War</title>
-    </head>
-    <body id="body">
-        <div id="app"></div>
-        <script type="module" src="/main.js"></script>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Document</title>
+</head>
+<body id="root">
+    <div id="header">
+        <div id="title" class="header-item">
+            <h1>Galactic Seeker</h1>
+        </div>
+        <div id="menu" class="header-item">
+            <ul class="nav">
+                <li class="nav-item">
+                    <a href="#"><img class="entry-point" src="/assets/images/vert.jpg" alt=""></a>
+                    <ul class="dropdown">
+                        <li class="dropdown-item"><a href="/login.html" class="nav-link">Se connecter</a></li>
+                        <li class="dropdown-item"><a href="/register.html" class="nav-link">S'inscrire</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Se déconnecter</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="main">
+        <div id="actions">
+            <div class="div-item"></div>
+            <div class="play-button-div">
+                <a href="/game.html" class="play-button">Jouer</a>
+            </div>
+        </div>
+    </div>
+    <div id="footer">© 2024 Galactic Seeker Game. <a href="https://github.com/fr33zingH3ll/galactic-seekers" target="_blank">Github repositoty.</a></div>
+</body>
+<script type="module" src="index.js"></script>
 </html>

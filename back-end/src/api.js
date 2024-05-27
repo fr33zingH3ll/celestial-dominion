@@ -53,6 +53,13 @@ class Server {
         // Définir les routes ici
         this.app.get('/api/hello', this.handleHelloRequest.bind(this));
 
+
+        this.app.get(API_PATH + '/all_updates', async (req, res) => {
+            const updates = await r.table('update').run(this.db.conn);
+            const array = await updates.toArray();
+            return res.status(200).json(array);
+        });
+
         this.app.post(API_AUTH_PATH + "/login", async (req, res) => {
             const body = req.body;
 

@@ -187,6 +187,19 @@ export const report = async (type, description) => {
     }
 };
 
+export const message_update = async () => {
+    const result = await request("/all_updates", {
+        method: "GET"
+    });
+
+    const body = await result.json();
+
+    if (!result.ok) {
+        throw new Error(body.error);
+    }
+    return body;
+}
+
 /**
  * Effectue une requête HTTP.
  * @param {string} url - L'URL à requêter.

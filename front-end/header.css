@@ -1,0 +1,75 @@
+#header {
+    width: 100%;
+    padding: 2em 0;
+    background-color: #010409;
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid white;
+    color: white;
+}
+
+.header-item {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 2em;
+}
+
+#title {
+    font-size: large;
+}
+
+
+.nav {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.entry-point {
+    height: 5em;
+    border: 1px solid;
+    border-radius: 100%;
+}
+
+.nav-link {
+    display: block;
+    padding: 1em;
+    color: white;
+    text-decoration: none;
+    background-color: #010409;
+}
+
+/* Styles pour le sous-menu */
+.dropdown {
+    display: none;
+    position: absolute;
+    width: 15em;
+    top: 100%;
+    left: 0;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    z-index: 1000; /* S'assurer que le sous-menu est au-dessus des autres éléments */
+}
+
+.dropdown-item {
+    width: 100%;
+}
+
+.dropdown-item .nav-link {
+    padding: 0.5em 1em;
+}
+
+/* Afficher le sous-menu au survol */
+.nav-item:hover .dropdown {
+    display: block;
+}

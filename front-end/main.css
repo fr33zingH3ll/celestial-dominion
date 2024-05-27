@@ -1,56 +1,53 @@
-* {
-    margin: 0 auto;
-    padding: 0 auto;
-}
-
-body {
+#main {
+    margin: 2em 0;
     width: 100%;
-    height: 100vh;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.container {
-    width: 50%;
-    height: 50vh;
-    border: 1px solid;
-    border-radius: 20px;
-    padding: 5em 0;
-
     display: flex;
     flex-direction: column;
+    align-items: center;
+}
+
+#actions {
+    width: 50em;
+    height: 20em;
+    border: 1px solid;
+    display: flex;
     justify-content: center;
     align-items: center;
+    position: absolute;
+    bottom: 10em;
+    right: 10em;
     gap: 2em;
+    background-color: #212121;
 }
 
-.form div {
-    margin-bottom: 15px;
+.play-button-div, .div-item  {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
 }
 
-.form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.form input[type="text"],
-.form input[type="password"],
-.form input[type="submit"] {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-}
-
-.form input[type="submit"] {
-    background-color: #4CAF50;
+.div-item {
+    width: 55%;
+    height: 80%;
+    border: 1px solid;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    overflow: auto;
+    word-wrap: break-word;
+    white-space: normal;
     color: white;
-    border: none;
-    cursor: pointer;
 }
 
-.form input[type="submit"]:hover {
-    background-color: #45a049;
+.play-button-div {
+    justify-content: end;
+}
+
+.play-button {
+    color: white;
+    font-size: large;
+    background-color: red;
+    padding: 1em  5em;
+    text-decoration: none;
 }
