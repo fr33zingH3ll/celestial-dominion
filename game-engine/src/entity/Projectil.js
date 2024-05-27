@@ -46,7 +46,7 @@ class Projectil extends LivingEntity {
                     else if (entityB !== this) other = entityB;
                     if (other.id == this.owner) return;
                     if (other.damage) {
-                        // other.damage(this.force);
+                        other.damage(this.force);
                         this.onDeath();
                     }
                 });
@@ -89,7 +89,7 @@ class Projectil extends LivingEntity {
             base: {
                 hpMax: 1,
                 speed: 10,
-                force: 80,
+                force: 5,
                 model: "Asteroid_1.glb",
                 vertices: Vertices.fromPath('2 0 2 2 0 2 0 0'),
                 restitution: 0,
