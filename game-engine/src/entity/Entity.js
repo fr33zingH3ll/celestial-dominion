@@ -49,9 +49,12 @@ class Entity {
 
         // Création du corps physique de l'entité avec Matter.js
         if (this.prototype.vertices) {
-            this.body = this.game.Bodies.fromVertices(0, 0, this.prototype.vertices, { restitution: this.prototype.restitution ?? 0 });
+            this.body = this.game.Bodies.fromVertices(0, 0, this.prototype.vertices, { restitution: this.prototype.restitution || 0 });
+        } else if (this.prototype.radius) {
+            this.body = this.game.Bodies.circle(0, 0, this.prototype.radius, { isStatic: this.prototype.static || false });
+            this.scale = this.prototype.radius;
         } else {
-            this.body = this.game.Bodies.rectangle(0, 0, this.prototype.height, this.prototype.width, { static: this.prototype.static ?? false });
+            this.body = this.game.Bodies.rectangle(0, 0, this.prototype.height, this.prototype.width, { isStatic: this.prototype.static || false });
         }
 
         this.body.label = `${this.constructor.name}`;
@@ -67,23 +70,9 @@ class Entity {
      */
     isMoving() {
         const velocityThreshold = 0.05;
-
         const previous = new THREE.Vector3(this.tempo_position.x, 0, this.tempo_position.y);
         const next = new THREE.Vector3(this.body.position.x, 0, this.body.position.y);
-
         this.dirty = previous.distanceTo(next) > velocityThreshold;
-    }
-
-    /**
-     * Obtient la position de l'entité.
-     * @returns {THREE.Vector2} La position de l'entité.
-     */
-    getPosition() {
-        return this.body.position;
-    }
-
-    getModelObject() {
-        return this.modelObject;
     }
 
     /**
@@ -96,6 +85,9 @@ class Entity {
                 '/assets/models/' + this.model, // Chemin du fichier glTF/GLB
                 (gltf) => {
                     if (this.scale) gltf.scene.scale.set(this.scale || 1, this.scale || 1, this.scale || 1);
+                    const box = new THREE.Box3( ).setFromObject( gltf.scene );
+                    const c = box.getCenter( new THREE.Vector3( ) );
+                    gltf.scene.position.set( -c.x, - c.y, -c.z ); // center the gltf scene
                     this.modelObject = new THREE.Object3D();
                     this.modelObject.add(gltf.scene);
 
@@ -206,7 +198,7 @@ class Entity {
         this.modelObject.setRotationFromEuler(new THREE.Euler(0, -this.body.angle, 0));
 
         if (!this.collideBox) return;
-        if (this.collideBox && this.game.debug) {
+        if (this.game.debug) {
             this.collideBox.visible = true;
             this.collideBox.position.set(x, 0, y);
             this.collideBox.rotation.z = this.body.angle;
@@ -220,7 +212,7 @@ class Entity {
      * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
      */
     update_back(delta) {
-        if (!this.body && this.modelObject) return;
+        if (!this.body && !this.game.inBack) return;
         this.isMoving();
 
         const { x, y } = this.body.position;

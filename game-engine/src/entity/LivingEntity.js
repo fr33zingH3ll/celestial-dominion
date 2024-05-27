@@ -117,7 +117,6 @@ class LivingEntity extends Entity {
      * @param {number} delta - Le temps écoulé depuis la dernière mise à jour.
      */
     update_front(delta) {
-        // Appelle la méthode de mise à jour de l'entité de base
         super.update_front(delta);
     }
 }

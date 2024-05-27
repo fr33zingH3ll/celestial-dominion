@@ -41,6 +41,7 @@ class FrontGameMaster extends BackGameMaster {
          * @type {Boolean}
          */
         this.debug = false;
+        this.inBack = false;
 
         window.addEventListener('resize', () => {
             this.camera.aspect = window.innerWidth / window.innerHeight;

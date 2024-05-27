@@ -16,22 +16,12 @@ class PlayerEntity extends LivingEntity {
     constructor(game, prototypeName) {
         super(game, prototypeName);
 
+        this.controller = null;
+
         // Initialise les propriétés spécifiques du joueur
         this.cooldown = 500;
         this.tempo_delta = 0;
         this.can_shot = false;
-        // Ajoute les écouteurs d'événements
-        this.addEventListener();
-    }
-
-    /**
-     * Ajoute les écouteurs d'événements pour les mises à jour des entités client.
-     */
-    addEventListener() {
-        this.game.emitter.addEventListener("clientEntityUpdate", (event) => {
-            console.trace();
-            console.log(event);
-        });
     }
 
     /**
@@ -75,11 +65,8 @@ class PlayerEntity extends LivingEntity {
      * @param {boolean} boolean - Indique si le joueur peut tirer.
      * @param {boolean} shot - Indique si le joueur est en train de tirer.
      */
-    shot(boolean, shot) {
-        if (boolean && shot) {
-            this.game.server.sendClientShot();
-            this.tempo_delta = 0;
-        }
+    canShot() {
+        return this.can_shot;
     }
 
     /**
@@ -95,22 +82,24 @@ class PlayerEntity extends LivingEntity {
 
     update_back(delta) { 
         super.update_back(delta);
-        if (this.tempo_delta < this.cooldown) {
-            this.tempo_delta += delta;
-        }
-        
-        this.can_shot = this.tempo_delta >= this.cooldown ? true : false;
+        if (!this.game.inBack) return;
+        this.tempo_delta += delta;
+        this.can_shot = this.tempo_delta >= this.cooldown;
+        console.log(this.can_shot);
     }
 
     update_front(delta) {
         super.update_front(delta);
+        if (this.game.inBack) return;
         if (this.game.playerEntity && this.id == this.game.playerEntity.id && this.modelObject) {
             this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
         }
 
         if (this.controller) {
             this.move(this.controller.getMoveVector(this.spherical));
-            this.shot(this.can_shot, this.controller.control.left_click);
+            if (this.controller.control.left_click) {
+                this.game.server.sendClientShot();
+            }
         }
     }
 

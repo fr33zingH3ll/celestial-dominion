@@ -22,8 +22,9 @@ class Projectil extends LivingEntity {
         this.owner = id;
         this.startPosition = playerPosition;
         this.track = null;
+        this.delta_life = 0;
 
-        if (!this.modelObject) {
+        if (this.game.inBack) {
             this.game.Events.on(this.game.engine, 'collisionStart', (event) => {
                 console.log("collision");
                 const pairs = event.pairs;
@@ -59,20 +60,15 @@ class Projectil extends LivingEntity {
      */
     update_back(delta) { 
         super.update_back(delta);
-        if (!this.game.playerEntity) {
-            const actualPos = new THREE.Vector3(this.body.position.x, 0, this.body.position.y);
-            const startPos = new THREE.Vector3(this.startPosition.x, 0, this.startPosition.y);
-            console.log(startPos.distanceTo(actualPos));
-            if (startPos.distanceTo(actualPos) >= 500) {
-                this.onDeath();
-                return;
-            } 
-        }
-        
+        if (!this.game.inBack) return;
+        this.delta_life += delta;
 
-        // Si le projectile a une trajectoire définie, le déplace dans cette direction
+        if (this.delta_life >= 2000) {
+            this.onDeath();
+            return;
+        }
+
         if (this.track) {
-            // Crée un vecteur de vitesse en utilisant l'angle et la vitesse souhaitée
             const forceMagnitude = 10; // Ajuste la force en fonction de la masse
             const velocity = this.game.Vector.mult(this.game.Vector.create(
                 Math.cos(this.track),
@@ -80,7 +76,6 @@ class Projectil extends LivingEntity {
             ), forceMagnitude);
             
         
-            // Applique la force ajustée au corps
             this.game.Body.setVelocity(this.body, velocity);
         }
     }

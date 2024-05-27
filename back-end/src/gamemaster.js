@@ -34,6 +34,14 @@ class GameMaster extends BackGameMaster {
             Matter.Body.setPosition(asteroid.body, { x, y });
             this.addPool(asteroid);
         }
+
+        for (let index = 0; index < 1; index++) {
+            const asteroid = new Lune(this,`lune'`);
+            const x = getRandomPosition(-100, 0);
+            const y = getRandomPosition(-100, 0);
+            Matter.Body.setPosition(asteroid.body, { x, y });
+            this.addPool(asteroid);
+        }
         
         this.server.emitter.addEventListener('loginSuccess', (event) => {
             this.server.sendNewEntities(event.message.webSocket, this.pool);
@@ -58,10 +66,13 @@ class GameMaster extends BackGameMaster {
 
         this.server.emitter.addEventListener('clientShot', event => {
             const player = this.getEntityById(event.message.connection.id);
+            if (!player.canShot()) return;
+            player.can_shot = false;
+            player.tempo_delta = 0;
+            console.log("ce joueur a tiré : "+event.message.connection.username)
             const playerPosition = {...player.body.position};
-            const newProjectil = new Projectil(this, "base", event.message.connection.id, playerPosition);
+            const newProjectil = new Projectil(this, "base", player.id, playerPosition);
             
-            console.log(newProjectil.startPosition);
             
             
             newProjectil.track = player.body.angle;

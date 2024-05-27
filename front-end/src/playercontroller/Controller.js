@@ -130,9 +130,7 @@ class Controller {
     */
     handleMouseMove = (event) => {
         const movementX = event.movementX;
-        const movementY = event.movementY;
 
-        // Utilisez movementX et movementY pour gérer les mouvements de la caméra
         this.rotation += movementX * this.mouseSensitivity;
     }
 

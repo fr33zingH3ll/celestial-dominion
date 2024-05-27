@@ -23,6 +23,7 @@ class BackGameMaster extends Scene {
         this.world = this.engine.world;
 
         this.maxDistance = 10; // La distance maximale pour qu'une entité soit considérée comme visible
+        this.inBack = true;
 
     }
 
