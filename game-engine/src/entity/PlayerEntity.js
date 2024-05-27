@@ -85,7 +85,6 @@ class PlayerEntity extends LivingEntity {
         if (!this.game.inBack) return;
         this.tempo_delta += delta;
         this.can_shot = this.tempo_delta >= this.cooldown;
-        console.log(this.can_shot);
     }
 
     update_front(delta) {

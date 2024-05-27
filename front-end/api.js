@@ -56,7 +56,6 @@ class Socket {
      */
     sendClientShot() {
         const shot = this.proto.lookupType("ClientShot");
-        console.log("j'envoie le message d tir");
         this.sendMessage({ clientShot: shot.create({ inutile: true }) });
     }
 

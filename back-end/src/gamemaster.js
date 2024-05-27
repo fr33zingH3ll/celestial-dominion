@@ -69,7 +69,6 @@ class GameMaster extends BackGameMaster {
             if (!player.canShot()) return;
             player.can_shot = false;
             player.tempo_delta = 0;
-            console.log("ce joueur a tiré : "+event.message.connection.username)
             const playerPosition = {...player.body.position};
             const newProjectil = new Projectil(this, "base", player.id, playerPosition);
             

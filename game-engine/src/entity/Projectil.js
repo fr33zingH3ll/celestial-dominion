@@ -26,7 +26,6 @@ class Projectil extends LivingEntity {
 
         if (this.game.inBack) {
             this.game.Events.on(this.game.engine, 'collisionStart', (event) => {
-                console.log("collision");
                 const pairs = event.pairs;
     
                 // Boucle sur les paires de corps en collision

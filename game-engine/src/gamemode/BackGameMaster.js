@@ -1,8 +1,8 @@
-import { Scene } from "./Scene.js";
 import Matter from "matter-js";
 import * as decomp from 'poly-decomp';
+
+import { Scene } from "./Scene.js";
 import { Entity } from "../entity/Entity.js";
-import { PlayerEntity } from "../entity/PlayerEntity.js";
 
 class BackGameMaster extends Scene {
     constructor() {

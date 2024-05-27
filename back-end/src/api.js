@@ -193,7 +193,7 @@ class Server {
 
         // Gérez la fermeture de la connexion WebSocket
         ws.on('close', () => {
-            console.log('WebSocket disconnected :', connection.username);
+            console.log('WebSocket disconnected');
 
             if (connection) {
                 this.emitter.dispatchEvent(new Event('playerDisconnected', { id: connection.id }));
