@@ -5,8 +5,7 @@ import { useEffect, useState } from 'react';
 import { get_of } from '../../Api';
 
 function ModalUsers(props) {
-    const [user, setUser] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -15,16 +14,14 @@ function ModalUsers(props) {
         };
 
         if (props.showModal) {
-            setIsLoading(true); // Set loading to true when modal is triggered to open
             fetchUser();
         }
-        setIsLoading(false); // Set loading to false once data is fetched
     }, [props.showModal]);
 
 
     return (
         <>
-            {!isLoading && (
+            {user ? (
                 <Modal show={props.showModal} onHide={props.handleCloseModal}>
                     <Modal.Header closeButton>
                         <Modal.Title>Edit User</Modal.Title>
@@ -38,6 +35,7 @@ function ModalUsers(props) {
                                     name="id"
                                     value={user.id}
                                     placeholder="ID"
+                                    readOnly
                                     disabled
                                 />
                             </Form.Group>
@@ -57,7 +55,7 @@ function ModalUsers(props) {
                         <Button variant="primary" onClick={() => handleSubmit(user)}>Save Changes</Button>
                     </Modal.Footer>
                 </Modal>
-            )}
+            ) : <p>Loading...</p>}
         </>
     );
 }

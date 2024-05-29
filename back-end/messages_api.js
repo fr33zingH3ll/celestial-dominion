@@ -219,7 +219,7 @@ const get_user_by_id = async (req, res) => {
     } catch(error) {
         return res.status(500).json(error.msg);
     }
-    return res.status(200).json({ user });
+    return res.status(200).json(user);
 };
 
 /** ALL ABOUT REPORT */
