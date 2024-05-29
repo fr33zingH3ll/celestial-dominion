@@ -11,3 +11,5 @@ for (const update of updates) {
     p.textContent = `${update.id} : ${update.description}`;
     divItem.appendChild(p);
 }
+
+divItem.scrollTop = divItem.scrollHeight;
