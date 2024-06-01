@@ -10,37 +10,38 @@ import { PlayerEntity } from "game-engine/src/entity/PlayerEntity.js";
 import { Projectil } from "game-engine/src/entity/Projectil.js";
 
 import { getRandomPosition } from "game-engine/src/utils/functions.js";
+import { StaticEntity } from "game-engine/src/entity/StaticEntity.js";
 
 /**
  * Class representing the game master on the server side.
  * @extends BackGameMaster
  */
 class GameMaster extends BackGameMaster {
-    constructor() {
+    constructor(db) {
         super();
 
         /**
          * The server instance.
          * @type {Server}
          */
-        this.server = new Server();
+        this.server = new Server(db);
 
         // Création d'une instance de Asteroide avec des paramètres spécifiques et ajout à la scène
         
-        for (let index = 1; index < 5; index++) {
+        for (let index = 1; index < 3; index++) {
             const asteroid = new Asteroide(this,`Asteroide_'${index}'`);
-            const x = getRandomPosition(-100, 0);
-            const y = getRandomPosition(-100, 0);
+            const x = getRandomPosition(-1000, 0);
+            const y = getRandomPosition(-1000, 0);
             Matter.Body.setPosition(asteroid.body, { x, y });
             this.addPool(asteroid);
         }
 
         for (let index = 0; index < 1; index++) {
-            const asteroid = new Lune(this,`lune'`);
-            const x = getRandomPosition(-100, 0);
-            const y = getRandomPosition(-100, 0);
-            Matter.Body.setPosition(asteroid.body, { x, y });
-            this.addPool(asteroid);
+            const lune = new Lune(this,'lune');
+            const x = getRandomPosition(-1000, 0);
+            const y = getRandomPosition(-1000, 0);
+            Matter.Body.setPosition(lune.body, { x, y });
+            this.addPool(lune);
         }
         
         this.server.emitter.addEventListener('loginSuccess', (event) => {
@@ -56,11 +57,11 @@ class GameMaster extends BackGameMaster {
         });
 
         this.server.emitter.addEventListener('clientPlayerMove', event => {
-            const { message: { position, rotation, velocity }, connection: { entity } } = event.message;
+            const { message: { rotation, velocity }, connection: { entity } } = event.message;
 
-            this.Body.setPosition(entity.body, position);
+            
             this.Body.setAngle(entity.body, rotation);
-            this.Body.setVelocity(entity.body, velocity);
+            entity.velocity = velocity;
             entity.dirty = true;
         });
 
@@ -81,6 +82,11 @@ class GameMaster extends BackGameMaster {
             this.Body.setPosition(newProjectil.body, this.Vector.add(playerPosition, offset));
 
             this.addPool(newProjectil);
+        });
+
+        this.server.emitter.addEventListener('clientOrbit', event => {
+            const player = this.getEntityById(event.message.connection.id);
+            player.inOrbit = !player.inOrbit;
         });
 
         this.server.emitter.addEventListener('playerDisconnected', event => {

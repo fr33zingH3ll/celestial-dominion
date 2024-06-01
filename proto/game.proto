@@ -79,7 +79,6 @@ message HandshakeResponse {
 
 // Mouvement du joueur côté client.
 message ClientPlayerMove {
-	Vector position = 1;   // Position du joueur.
 	float rotation = 2;    // Rotation du joueur (en radians).
 	Vector velocity = 3;   // Vitesse du joueur.
 }
@@ -101,5 +100,10 @@ message ServerEntityDelete {
 
 // Déclenchement d'un tir côté client.
 message ClientShot {
-	bool inutile = 1;  // Champ inutilisé (juste pour l'exemple).
+	bool dummy = 1;  // Champ inutilisé (juste pour l'exemple).
+}
+
+// Déclenchement d'un tir côté client.
+message ClientOrbit {
+	bool dummy = 1;  // Champ inutilisé (juste pour l'exemple).
 }

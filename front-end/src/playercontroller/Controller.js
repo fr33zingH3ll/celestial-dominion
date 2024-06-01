@@ -10,8 +10,8 @@ class Controller {
      */
     constructor(game) {
         this.game = game;
-        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', left_click: 'mouseLeft', debug_mode: 'F1'};
-        this.control = {right: false, left: false, up: false, down: false, left_click: false};
+        this.keybind = {right: 'd', left: 'q', up: 'z', down: 's', orbit: 'a', left_click: 'mouseLeft', debug_mode: 'F1'};
+        this.control = {right: false, left: false, up: false, down: false, orbit: false, left_click: false};
         this.mouseSensitivity = 0.002; // Sensibilité de la souris pour le mouvement horizontal
         this.rotation = 0; // Rotation actuelle sur l'axe horizontal
 
@@ -78,9 +78,13 @@ class Controller {
         } else if (event.key === this.keybind.down) {
             this.control.down = false;
         }
+        if (event.key === this.keybind.orbit) {
+            this.control.orbit = !this.control.orbit;
+            console.log(this.control.orbit);
+            this.game.server.sendClientOrbit(this.control.orbit);
+        }
         if (event.key === this.keybind.debug_mode) {
             this.game.debug = !this.game.debug;
-            console.log(this.game.debug);
         }
         if (event.key === this.keybind.left_click) {
             this.control.left_click = false;

@@ -29,7 +29,7 @@ const API_AUTH = API_PATH + "/auth";
  * Class representing the server.
  */
 class Server {
-    constructor() {
+    constructor(db) {
         /**
          * Event dispatcher instance.
          * @type {EventDispatcher}
@@ -39,7 +39,7 @@ class Server {
          * Database manager instance.
          * @type {DBManager}
          */
-        this.db = new DBManager();
+        this.db = db;
         /**
          * Object to hold player connections.
          * @type {Object<string, Object>}
@@ -54,7 +54,7 @@ class Server {
         this.app = Express();
         this.server = http.createServer(this.app); // Créez un serveur HTTP
         this.wss = new WebSocketServer({ server: this.server }); // Créez un serveur WebSocket
-        this.jwtService = new JsonWebTokenAuth();
+        this.jwtService = new JsonWebTokenAuth(this.db);
 
         this.port = 3000;
         this.app.use(cors());

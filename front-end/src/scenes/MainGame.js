@@ -65,6 +65,7 @@ class MainGame extends FrontGameMaster {
 
         // Écoute les événements de mise à jour d'entité du serveur
         this.server.emitter.addEventListener('serverEntityUpdate', (event) => {
+            console.log()
             for (const datum of event.message.data) {
                 if (datum.entityId === this.playerId && this.playerEntity) {
                     datum.state.position = { ...this.playerEntity.body.position };
@@ -107,7 +108,7 @@ class MainGame extends FrontGameMaster {
         super.update(delta); // Appel de la méthode update() de la classe parente Scene3D
 
         if (this.playerEntity) {
-            this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle, this.playerEntity.body.velocity);
+            this.server.sendPlayerMove(this.playerEntity.body.angle, this.playerEntity.velocity);
         }
     }
 

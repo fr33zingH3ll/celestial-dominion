@@ -45,16 +45,21 @@ class Entity {
         this.prototype = this.constructor.getPrototypes()[prototypeName];
         console.assert(this.prototype, `prototype ${prototypeName} not found`);
 
+        let static_body = false;
+        let mass = 1;
+
         this.id = ID_COUNTER++;
+        if (this.prototype.static) static_body = true;
+        if (this.prototype.mass) mass = this.prototype.mass;
 
         // Création du corps physique de l'entité avec Matter.js
         if (this.prototype.vertices) {
-            this.body = this.game.Bodies.fromVertices(0, 0, this.prototype.vertices, { restitution: this.prototype.restitution || 0 });
+            this.body = this.game.Bodies.fromVertices(0, 0, this.prototype.vertices, { isStatic: static_body, mass: mass });
         } else if (this.prototype.radius) {
-            this.body = this.game.Bodies.circle(0, 0, this.prototype.radius, { isStatic: this.prototype.static || false });
+            this.body = this.game.Bodies.circle(0, 0, this.prototype.radius, { isStatic: static_body, mass: mass });
             this.scale = this.prototype.radius;
         } else {
-            this.body = this.game.Bodies.rectangle(0, 0, this.prototype.height, this.prototype.width, { isStatic: this.prototype.static || false });
+            this.body = this.game.Bodies.rectangle(0, 0, this.prototype.height, this.prototype.width, { isStatic: static_body, mass: mass });
         }
 
         this.body.label = `${this.constructor.name}`;

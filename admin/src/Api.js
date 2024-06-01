@@ -72,15 +72,16 @@ export const get_of = async (table, id) => {
     });
 
     const body = await result.json();
-
+    
     if (!result.ok) {
         throw new Error(body.error);
     }
+
     return body;
 };
 
 export const new_of = async (table, options) => {
-    const result = await request("/"+table+"/new_"+table, {
+    const result = await request("/"+table, {
         body: JSON.stringify({ options }),
         method: "POST"
     });
@@ -94,7 +95,8 @@ export const new_of = async (table, options) => {
 };
 
 export const modify_of = async (table, options) => {
-    const result = await request("/"+table+"/modify_"+table, {
+    if (!options.id) return;
+    const result = await request("/"+table+"/"+options.id, {
         body: JSON.stringify({ options }),
         method: "PUT"
     });
@@ -108,7 +110,9 @@ export const modify_of = async (table, options) => {
 };
 
 export const delete_of = async (table, id) => {
-    const result = await request("/"+table+"/delete_"+table, {
+    console.log(id)
+    if (!id) return;
+    const result = await request("/"+table+"/"+id, {
         body: JSON.stringify({ id }),
         method: "DELETE"
     });

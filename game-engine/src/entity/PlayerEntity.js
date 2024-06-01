@@ -22,6 +22,7 @@ class PlayerEntity extends LivingEntity {
         this.cooldown = 500;
         this.tempo_delta = 0;
         this.can_shot = false;
+        this.inOrbit = false;
     }
 
     /**
@@ -43,21 +44,6 @@ class PlayerEntity extends LivingEntity {
         this.game.Body.setAngle(this.body, -this.spherical.theta);
         camera.position.copy(newPosition);
         camera.lookAt(player.position);
-    }
-
-    /**
-     * Envoie les données de déplacement du joueur au serveur.
-     */
-    sendMove() {
-        const position = this.body.position;
-        const rotation = this.body.angle;
-
-        this.game.server.sendMessage({
-            clientEntityUpdate: {
-                position,
-                rotation,
-            }
-        });
     }
 
     /**
@@ -95,7 +81,7 @@ class PlayerEntity extends LivingEntity {
         }
 
         if (this.controller) {
-            this.move(this.controller.getMoveVector(this.spherical));
+            this.velocity = this.move(this.controller.getMoveVector(this.spherical));
             if (this.controller.control.left_click) {
                 this.game.server.sendClientShot();
             }

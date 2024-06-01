@@ -18,6 +18,7 @@ class LivingEntity extends Entity {
         this.hp = this.hpMax;
         this.speed = this.prototype.speed;
         this.force = this.prototype.force;
+        this.velocity = {x: 0, y: 0};
     }
 
     /**
@@ -45,18 +46,14 @@ class LivingEntity extends Entity {
      * @param {Object} vector - Le vecteur de direction du déplacement.
      */
     move(vector) {
-        // Si le vecteur de direction est nul, ne fait rien
         if (vector.x === 0 && vector.y === 0) {
-            return;
+            return { x: 0, y: 0 };
         }
     
-        // Calcule l'angle en radians en fonction du vecteur de direction
         const radians = Math.atan2(vector.y, vector.x);
     
-        // Calcule la magnitude de la force en fonction de la vitesse et de la masse de l'entité
         const forceMagnitude = this.speed / this.body.mass;
         
-        // Crée un vecteur de vitesse en utilisant l'angle et la magnitude de la force
         const velocity = this.game.Vector.create(
             Math.cos(radians) / 20000 * forceMagnitude,
             Math.sin(radians) / 20000 * forceMagnitude

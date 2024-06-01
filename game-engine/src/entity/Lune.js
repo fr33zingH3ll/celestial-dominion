@@ -8,6 +8,7 @@ class Lune extends StaticEntity {
     static getPrototypes() {
         return {
             lune: {
+                mass: 20,
                 model: "lune.glb",
                 radius: 60,
                 static: true

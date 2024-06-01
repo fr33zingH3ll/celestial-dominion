@@ -23,7 +23,6 @@ class Projectil extends LivingEntity {
         this.startPosition = playerPosition;
         this.track = null;
         this.delta_life = 0;
-
         if (this.game.inBack) {
             this.game.Events.on(this.game.engine, 'collisionStart', (event) => {
                 const pairs = event.pairs;
@@ -62,20 +61,21 @@ class Projectil extends LivingEntity {
         if (!this.game.inBack) return;
         this.delta_life += delta;
 
-        if (this.delta_life >= 2000) {
-            this.onDeath();
-            return;
-        }
-
         if (this.track) {
             const forceMagnitude = 10; // Ajuste la force en fonction de la masse
             const velocity = this.game.Vector.mult(this.game.Vector.create(
                 Math.cos(this.track),
                 Math.sin(this.track)
-            ), forceMagnitude);
+            ), 0.06674);
             
         
             this.game.Body.setVelocity(this.body, velocity);
+            this.track = false;
+        }
+
+        if (this.delta_life >= 2000) {
+            this.onDeath();
+            return;
         }
     }
 
@@ -87,7 +87,7 @@ class Projectil extends LivingEntity {
         return {
             base: {
                 hpMax: 1,
-                speed: 10,
+                speed: 0.5,
                 force: 5,
                 model: "Asteroid_1.glb",
                 vertices: Vertices.fromPath('2 0 2 2 0 2 0 0'),

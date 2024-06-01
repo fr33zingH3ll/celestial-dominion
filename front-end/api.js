@@ -56,7 +56,15 @@ class Socket {
      */
     sendClientShot() {
         const shot = this.proto.lookupType("ClientShot");
-        this.sendMessage({ clientShot: shot.create({ inutile: true }) });
+        this.sendMessage({ clientShot: shot.create({ dummy: true }) });
+    }
+
+    /**
+     * Send a client shot message.
+     */
+    sendClientOrbit(value) {
+        const shot = this.proto.lookupType("ClientOrbit");
+        this.sendMessage({ ClientOrbit: shot.create({ dummy: value }) });
     }
 
     /**
@@ -65,9 +73,9 @@ class Socket {
      * @param {number} rotation - The player's rotation.
      * @param {Object} velocity - The player's velocity.
      */
-    sendPlayerMove(position, rotation, velocity) {
+    sendPlayerMove(rotation, velocity) {
         const move = this.proto.lookupType("ClientPlayerMove");
-        this.sendMessage({ clientPlayerMove: move.create({ position, rotation, velocity }) });
+        this.sendMessage({ clientPlayerMove: move.create({ rotation, velocity }) });
     }
 
     /**

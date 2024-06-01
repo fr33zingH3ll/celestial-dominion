@@ -4,8 +4,21 @@ import { useEffect, useState } from 'react';
 
 import { get_all_of } from '../../Api.js';
 
+import { ModalPosts } from './ModalPosts.jsx';
+
 function HomePosts() {
     const [posts, setPosts] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [postId, setPostId] = useState();
+
+    const handleRowClick = (id) => {
+        setShowModal(true);
+        setPostId(id);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+    };
 
     useEffect(()=> {
         const fetchResource = async () => {
@@ -27,14 +40,20 @@ function HomePosts() {
             </thead>
             <tbody>
                 {posts.map((item, index) => (
-                    <tr key={item.id}>
+                    <tr key={item.id} onClick={() => handleRowClick(item.id)}>
                         <td>{index + 1}</td>
                         <td>{item.id}</td>
-                        <td>{item.username}</td>
+                        <td>{item.message}</td>
                     </tr>
                 ))}
             </tbody>
             </Table>
+
+            <ModalPosts 
+                showModal={showModal}
+                handleCloseModal={handleCloseModal}
+                postId={postId}
+            />
         </>
     );
 }

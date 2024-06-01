@@ -6,7 +6,7 @@ import DBManager from './DB.js';
  * Class for handling JSON Web Token (JWT) authentication.
  */
 class JsonWebTokenAuth {
-    constructor() {
+    constructor(db) {
         /**
          * Private key for signing JWTs.
          * @type {string}
@@ -17,7 +17,7 @@ class JsonWebTokenAuth {
          * Database manager instance.
          * @type {DBManager}
          */
-        this.db = new DBManager();
+        this.db = db;
     }
 
     /**

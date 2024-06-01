@@ -95,15 +95,13 @@ const get_message_by_id = async (req, res) => {
     }
 
     let message;
-    let result;
 
     try {
         message = await r.table('message').get(id).run(BDDmanager.conn);
-        result = await message.next();
     } catch(error) {
         return res.status(500).json(error.msg);
     }
-    return res.status(200).json({ result });
+    return res.status(200).json(message);
 }
 
 const new_message = async (req, res) => {
@@ -119,13 +117,21 @@ const new_message = async (req, res) => {
 const modify_message = async (req, res) => {};
 
 const delete_message = async (req, res) => {
-    const body = req.body;
+    const { id } = req.params;
+    console.log(id)
+
+    if (!id) {
+        return res.status(400).json({ error: "An id is required." });
+    }
+
+    let messageDeleted;
+
     try {
-        await r.table('message').delete(body.id).run(BDDmanager.conn);
+        messageDeleted = await r.table('message').get(id).delete().run(BDDmanager.conn);
     } catch(error) {
         return res.status(500).json(error.msg);
     }
-    return res.status(200).json({ success: "Suppression effectué." });
+    return res.status(200).json(messageDeleted);
 };
 
 /** ALL ABOUT POST */
@@ -150,15 +156,13 @@ const get_post_by_id = async (req, res) => {
     }
 
     let post;
-    let result;
 
     try {
         post = await r.table('post').get(id).run(BDDmanager.conn);
-        result = await post.next();
     } catch(error) {
         return res.status(500).json(error.msg);
     }
-    return res.status(200).json({ result });
+    return res.status(200).json(post);
 };
 
 const new_post = async (req, res) => {
@@ -204,15 +208,12 @@ const get_all_users = async (req, res) => {
 
 const get_user_by_id = async (req, res) => {
     const { id } = req.params;
-
-    console.log(id);
  
     if (!id) {
         return res.status(400).json({ error: "An id is required." });
     }
 
     let user;
-    let result;
 
     try {
         user = await r.table('user').get(id).without('password').run(BDDmanager.conn);
@@ -244,15 +245,14 @@ const get_report_by_id = async (req, res) => {
     }
 
     let report;
-    let result;
 
     try {
         report = await r.table('report').get(id).run(BDDmanager.conn);
-        result = await report.next();
+
     } catch(error) {
         return res.status(500).json(error.msg);
     }
-    return res.status(200).json({ result });
+    return res.status(200).json(report);
 };
 
 const new_report = async (req, res) => {

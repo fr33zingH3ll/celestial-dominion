@@ -4,24 +4,24 @@ import Form from 'react-bootstrap/Form';
 import { useEffect, useState } from 'react';
 import { get_of } from '../../Api';
 
-function ModalUsers(props) {
-    const [user, setUser] = useState();
+function ModalPosts(props) {
+    const [post, setPost] = useState();
 
     useEffect(() => {
-        const fetchUser = async () => {
-            const result = await get_of('user', props.userId);
-            setUser(result);
+        const fetchPost = async () => {
+            const result = await get_of('post', props.postId);
+            setPost(result);
         };
 
         if (props.showModal) {
-            fetchUser();
+            fetchPost();
         }
     }, [props.showModal]);
 
 
     return (
         <>
-            {user ? (
+            {post ? (
                 <Modal show={props.showModal} onHide={props.handleCloseModal}>
                     <Modal.Header closeButton>
                         <Modal.Title>Edit User</Modal.Title>
@@ -33,17 +33,17 @@ function ModalUsers(props) {
                                 <Form.Control
                                     type="text"
                                     name="id"
-                                    value={user.id}
+                                    value={post.id}
                                     readOnly
                                     disabled
                                 />
                             </Form.Group>
-                            <Form.Group controlId="formUsername">
-                                <Form.Label>Username</Form.Label>
+                            <Form.Group controlId="formPost">
+                                <Form.Label>Post</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    name="username"
-                                    value={user.username}
+                                    name="message"
+                                    value={post.message}
                                     readOnly
                                     disabled
                                 />
@@ -52,7 +52,7 @@ function ModalUsers(props) {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={props.handleCloseModal}>Close</Button>
-                        <Button variant="primary" onClick={() => handleSubmit(user)}>Save Changes</Button>
+                        <Button variant="primary" onClick={() => handleSubmit(message)}>Save Changes</Button>
                     </Modal.Footer>
                 </Modal>
             ) : <p>Loading...</p>}
@@ -60,4 +60,4 @@ function ModalUsers(props) {
     );
 }
 
-export { ModalUsers };
+export { ModalPosts };

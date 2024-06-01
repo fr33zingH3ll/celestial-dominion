@@ -3,6 +3,10 @@ import * as decomp from 'poly-decomp';
 
 import { Scene } from "./Scene.js";
 import { Entity } from "../entity/Entity.js";
+import { PlayerEntity } from "../entity/PlayerEntity.js";
+import { LivingEntity } from "../entity/LivingEntity.js";
+
+const G = 0.06674;
 
 class BackGameMaster extends Scene {
     constructor() {
@@ -25,11 +29,18 @@ class BackGameMaster extends Scene {
         this.maxDistance = 10; // La distance maximale pour qu'une entité soit considérée comme visible
         this.inBack = true;
 
+        this.Events.on(this.engine, 'beforeUpdate', () => {
+            // this.applyCustomGravity();
+		});
     }
 
     start() {
         super.start();
     }
+
+    isValidVector(vector) {
+		return vector && !isNaN(vector.x) && !isNaN(vector.y);
+	}
 
     /**
      * Ajoute une entité au pool et son corps physique au monde physique.
