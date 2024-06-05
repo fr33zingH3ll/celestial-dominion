@@ -102,11 +102,10 @@ class PlayerEntity extends LivingEntity {
                 if (this.controller.control_player.left_click) {
                     this.game.server.sendClientShot();
                 }
-                //this.managerHud.disableVisible();
+                this.managerHud.disableVisible();
             }else if(this.controller.control_player.open_menu == true){
-               
+                if(this.managerHud && this.id == this.managerHud.owner)this.managerHud.update();
             } 
-            if(this.managerHud && this.id == this.managerHud.owner)this.managerHud.update();
         }
         
     }

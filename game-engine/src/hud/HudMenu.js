@@ -1,13 +1,27 @@
 import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { HudButton } from './HudButton.js';
 
 class HudMenu {
     constructor(game) {
         this.game = game;
         
         this.material = new THREE.MeshBasicMaterial({ color: 0xff0000,transparent: true, opacity: 0.5 });
-        this.geometry = new THREE.PlaneGeometry(100, 50);
+        const width = window.innerWidth * 0.5; // 95% de la largeur de la fenêtre
+        const height = window.innerHeight * 0.5; // 95% de la hauteur de la fenêtre
+        //console.log(width,height);
+        this.geometry = new THREE.PlaneGeometry( 50, 50);
         this.model = new THREE.Mesh(this.geometry, this.material);
+
+
+        this.pool_buttton = [];
+        const hudbutton = new HudButton(this);
+        this.addPoolButton(hudbutton);
+        //this.pool_buttton.filter(button => button.load() );
+    }
+
+    addPoolButton(button){
+        this.pool_buttton.push(button);
     }
 
     load(){
@@ -24,23 +38,23 @@ class HudMenu {
         if(!player)return;
         this.game.playerEntity.hud_spherical.radius = radius;
         this.game.playerEntity.hud_spherical.theta = -radians; // l'angle horizontal
-        //this.game.playerEntity.hud_spherical.phi = Math.PI / 2.5; // angle vertical (90 degrés pour rester à hauteur du joueur)
+        this.game.playerEntity.hud_spherical.phi = Math.PI / 2.5; // angle vertical (90 degrés pour rester à hauteur du joueur)
 
         const newPosition = new THREE.Vector3();
         newPosition.setFromSpherical(this.game.playerEntity.hud_spherical);
         newPosition.add(player.position); // déplace la position relative au joueur
 
+        
         this.model.position.copy(newPosition);
-        this.model.lookAt(player.position);
+        this.model.lookAt(this.game.camera.position);
     }
 
     update() {
 
             this.model.rotation.y = -this.game.playerEntity.body.angle;
             this.rotateHudAroundPlayer(this.game.playerEntity.modelObject,10,this.game.playerEntity.controller.calculateRotationAngle());
-            
 
-            //his.model.rotation.x = Math.PI/2;
+   
             if ( !this.model.visible ) this.model.visible = true;
         
     } 
