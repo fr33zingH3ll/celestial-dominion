@@ -1,6 +1,7 @@
 import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 import { BackGameMaster } from "game-engine/src/gamemode/BackGameMaster.js";
 
+
 /**
  * FrontGameMaster instance.
  * Elle hérite des propriétés de BackGameMaster puisqu'elle doit elle aussi géré sa propre simulation. 
@@ -60,7 +61,6 @@ class FrontGameMaster extends BackGameMaster {
         for (const entity of this.pool) {
             entity.update_front(delta);
         }
-
         this.renderer.render(this.scene, this.camera);
     }
 }
