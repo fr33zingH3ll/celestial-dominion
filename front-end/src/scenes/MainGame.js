@@ -3,6 +3,7 @@ import entityNames from 'game-engine/src/entity/EntityList';
 import { Controller } from '../playercontroller/Controller';
 import { Socket } from '../../api';
 import { PlayerEntity } from 'game-engine/src/entity/PlayerEntity';
+import { ManagerHUD } from 'game-engine/src/hud/ManagerHUD.js';
 
 /**
  * Classe représentant le jeu principal.
@@ -59,13 +60,13 @@ class MainGame extends FrontGameMaster {
                 if (entity.id === this.playerId) {
                     this.playerEntity = entity;
                     this.playerEntity.controller = new Controller(this);
+                    this.playerEntity.managerHud = new ManagerHUD(this,this.playerEntity.id);                
                 }
             }
         });
 
         // Écoute les événements de mise à jour d'entité du serveur
         this.server.emitter.addEventListener('serverEntityUpdate', (event) => {
-            console.log()
             for (const datum of event.message.data) {
                 if (datum.entityId === this.playerId && this.playerEntity) {
                     datum.state.position = { ...this.playerEntity.body.position };
@@ -108,7 +109,7 @@ class MainGame extends FrontGameMaster {
         super.update(delta); // Appel de la méthode update() de la classe parente Scene3D
 
         if (this.playerEntity) {
-            this.server.sendPlayerMove(this.playerEntity.body.angle, this.playerEntity.velocity);
+            this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle, this.playerEntity.body.velocity);
         }
     }
 

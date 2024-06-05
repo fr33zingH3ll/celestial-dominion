@@ -17,12 +17,13 @@ class PlayerEntity extends LivingEntity {
         super(game, prototypeName);
 
         this.controller = null;
+        this.managerHud = null;
+        this.hud_spherical = new THREE.Spherical();
 
         // Initialise les propriétés spécifiques du joueur
         this.cooldown = 500;
         this.tempo_delta = 0;
         this.can_shot = false;
-        this.inOrbit = false;
     }
 
     /**
@@ -44,6 +45,21 @@ class PlayerEntity extends LivingEntity {
         this.game.Body.setAngle(this.body, -this.spherical.theta);
         camera.position.copy(newPosition);
         camera.lookAt(player.position);
+    }
+
+    /**
+     * Envoie les données de déplacement du joueur au serveur.
+     */
+    sendMove() {
+        const position = this.body.position;
+        const rotation = this.body.angle;
+
+        this.game.server.sendMessage({
+            clientEntityUpdate: {
+                position,
+                rotation,
+            }
+        });
     }
 
     /**
@@ -81,11 +97,18 @@ class PlayerEntity extends LivingEntity {
         }
 
         if (this.controller) {
-            this.velocity = this.move(this.controller.getMoveVector(this.spherical));
-            if (this.controller.control.left_click) {
-                this.game.server.sendClientShot();
-            }
+            if(this.controller.control_player.open_menu == null || this.controller.control_player.open_menu == false){
+                this.move(this.controller.getMoveVector(this.spherical));
+                if (this.controller.control_player.left_click) {
+                    this.game.server.sendClientShot();
+                }
+                //this.managerHud.disableVisible();
+            }else if(this.controller.control_player.open_menu == true){
+               
+            } 
+            if(this.managerHud && this.id == this.managerHud.owner)this.managerHud.update();
         }
+        
     }
 
     /**

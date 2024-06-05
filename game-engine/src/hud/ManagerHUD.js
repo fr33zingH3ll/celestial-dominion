@@ -15,16 +15,23 @@ class ManagerHUD {
         this.pool_hud.push(hud);
     }
 
+    disableVisible(){
+        const visibles = this.pool_hud.filter(e => e.model.visible );
+
+        for(const hud of visibles){
+            hud.model.visible = false;
+        }
+    }
     update() {
-        console.log(this.game.inBack);
+        
         if(this.game.inBack)return;
 
-        console.log("manager");
         for(const hud of this.pool_hud){
             
             hud.update();
         }
     } 
+
 }
 
 export { ManagerHUD };
