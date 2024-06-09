@@ -1,6 +1,7 @@
 import * as THREE from 'three'; // Importation de la bibliothèque Three.js
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { HudMenu } from './HudMenu.js';
+import { CustomMouse } from './customMouse.js';
 
 class ManagerHUD {
     constructor(game,id) {
@@ -8,6 +9,7 @@ class ManagerHUD {
         this.owner = id;
         this.pool_hud = [];
         this.addPoolHud(new HudMenu(this.game));
+        this.addPoolHud(new CustomMouse(this.game));
         this.pool_hud.filter(e => e.load() );
     }
 

@@ -78,6 +78,7 @@ class Entity {
         const previous = new THREE.Vector3(this.tempo_position.x, 0, this.tempo_position.y);
         const next = new THREE.Vector3(this.body.position.x, 0, this.body.position.y);
         this.dirty = previous.distanceTo(next) > velocityThreshold;
+        return previous.distanceTo(next) > velocityThreshold;
     }
 
     /**
@@ -96,14 +97,18 @@ class Entity {
                     this.modelObject = new THREE.Object3D();
                     this.modelObject.add(gltf.scene);
 
-                    // Création d'une géométrie pour la collision
                     const vertices = this.body.vertices.map(v => ({ x: v.x, y: v.y }));
+                    
                     const shape = new THREE.Shape(vertices);
                     const extrudeSettings = { steps: 2, depth: 10, bevelEnabled: false };
-                    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-                    geometry.center();
 
-                    // Création d'un maillage pour la collision
+                    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+                    geometry.computeBoundingBox();
+
+                    const center = new THREE.Vector3();
+                    geometry.boundingBox.getCenter(center);
+                    geometry.translate(-center.x, -center.y, -center.z);
+
                     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.5 });
                     const mesh = new THREE.Mesh(geometry, material);
                     this.collideBox = mesh;

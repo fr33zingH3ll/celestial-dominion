@@ -10,20 +10,21 @@ class Controller {
      */
     constructor(game) {
         this.game = game;
+        this.keysToPreventDefault = ['Escape', 'F1', 'F2', 'F3', 'F4', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'];
+        
 
-        this.keybind_player = {right: 'd', left: 'q', up: 'z', down: 's', orbit: 'a', left_click: 'mouseLeft', debug_mode: 'F1', open_menu : 'Escape'};
+        this.keybind_player = {right: 'd', left: 'q', up: 'z', down: 's', orbit: 'a', left_click: 'mouseLeft', debug_mode: 'F1', open_menu : 'Tab'};
         this.control_player = {right: false, left: false, up: false, down: false, orbit: false, left_click: false, open_menu: null};
 
         this.keybind_hud = {left_click: 'mouseLeft'};
         this.control_hud = {left_click: false};
 
-        this.mouseSensitivity = 0.002; // Sensibilité de la souris pour le mouvement horizontal
-        this.rotation = 0; // Rotation actuelle sur l'axe horizontal
+        this.mouseSensitivity = 0.002;
+        this.rotation = { x: 0, y: 0 };
 
-        // Ajout de l'événement click pour demander le verrouillage du pointeur
         this.game.renderer.domElement.addEventListener('click', () => {
             this.game.renderer.domElement.requestPointerLock();
-        });
+        }, false);
 
         this.setupEventListeners();
     }
@@ -32,8 +33,6 @@ class Controller {
     * Sets up event listeners for keyboard and mouse input.
     */
     setupEventListeners() {
-        window.addEventListener('keydown', this.handleKeyDown);
-        window.addEventListener('keyup', this.handleKeyUp);
         document.addEventListener('pointerlockchange', this.handlePointerLockChange);
     }
 
@@ -41,8 +40,6 @@ class Controller {
     * Removes event listeners for keyboard and mouse input.
     */
     removeEventListeners() {
-        window.removeEventListener('keydown', this.handleKeyDown);
-        window.removeEventListener('keyup', this.handleKeyUp);
         document.removeEventListener('pointerlockchange', this.handlePointerLockChange);
     }
 
@@ -70,6 +67,10 @@ class Controller {
         }else if(this.control_player.open_menu == true){
 
         }
+
+        if (this.keysToPreventDefault.includes(event.key)) {
+            event.preventDefault();
+        }
     }
 
     /**
@@ -77,6 +78,7 @@ class Controller {
     * @param {KeyboardEvent} event - The keyboard event object.
     */
     handleKeyUp = (event) => {
+        console.log(event.key)
         if(this.control_player.open_menu == null || this.control_player.open_menu == false){
             if (event.key === this.keybind_player.left) {
                 this.control_player.left = false;
@@ -99,8 +101,17 @@ class Controller {
             if (event.key === this.keybind_player.left_click) {
                 this.control_player.left_click = false;
             }
+            if (event.key === this.keybind_player.open_menu) {
+                this.control_player.open_menu = true;
+            }
         }else if(this.control_player.open_menu == true){
+            if (event.key === this.keybind_player.open_menu) {
+                this.control_player.open_menu = false;
+            }
+        }
 
+        if (this.keysToPreventDefault.includes(event.key)) {
+            event.preventDefault();
         }
     }
 
@@ -137,39 +148,47 @@ class Controller {
     }
 
     /**
-    * Handles pointer lock state changes.
-    */
-    handlePointerLockChange = () => {
-        if(this.control_player.open_menu == null){
-            this.control_player.open_menu = false;
-        } else{
-            this.control_player.open_menu = !this.control_player.open_menu;
-        }
-        if (document.pointerLockElement === this.game.renderer.domElement) {
-            console.log('Pointer lock active');
-            document.addEventListener('mousemove', this.handleMouseMove, false);
-            window.addEventListener('mousedown', this.handleMouseDown);
-            window.addEventListener('mouseup', this.handleMouseUp);
-        } else {
-            console.log('Pointer lock inactive');
-            document.removeEventListener('mousemove', this.handleMouseMove, false);
-        }
-    }
-
-    /**
     * Handles mousemove events to track mouse movement.
     * @param {MouseEvent} event - The mouse event object.
     */
     handleMouseMove = (event) => {
         const movementX = event.movementX;
+        const movementY = event.movementY;
+ 
+        this.rotation.x += movementX * this.mouseSensitivity;
+        this.rotation.y += movementY * this.mouseSensitivity;
+    }
 
-        this.rotation += movementX * this.mouseSensitivity;
+    /**
+    * Handles pointer lock state changes.
+    */
+    handlePointerLockChange = () => {
+        if (document.pointerLockElement === this.game.renderer.domElement) {
+            console.log('Pointer lock active');
+            document.addEventListener('keydown', this.handleKeyDown);
+            document.addEventListener('keyup', this.handleKeyUp);
+            document.addEventListener('mousemove', this.handleMouseMove, false);
+
+            window.addEventListener('mousedown', this.handleMouseDown);
+            window.addEventListener('mouseup', this.handleMouseUp);
+        } else {
+            console.log('Pointer lock inactive');
+            document.removeEventListener('keydown', this.handleKeyDown);
+            document.removeEventListener('keyup', this.handleKeyUp);
+            document.removeEventListener('mousemove', this.handleMouseMove, false);
+        }
     }
 
     /**
     * Calculates the rotation angle based on mouse movement.
     */
     calculateRotationAngle() {
+        return this.rotation;
+    }
+        /**
+    * Calculates the rotation angle based on mouse movement.
+    */
+    calculateMovementCustomMouse() {
         return this.rotation;
     }
 

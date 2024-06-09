@@ -23,6 +23,7 @@ class PlayerEntity extends LivingEntity {
         // Initialise les propriétés spécifiques du joueur
         this.cooldown = 500;
         this.tempo_delta = 0;
+        this.tempo_rotation = { x: 0, y: 0 };
         this.can_shot = false;
     }
 
@@ -92,12 +93,15 @@ class PlayerEntity extends LivingEntity {
     update_front(delta) {
         super.update_front(delta);
         if (this.game.inBack) return;
-        if (this.game.playerEntity && this.id == this.game.playerEntity.id && this.modelObject) {
-            this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.game.playerEntity.controller.calculateRotationAngle());
-        }
+
 
         if (this.controller) {
+            const vector = this.game.playerEntity.controller.calculateRotationAngle();
             if(this.controller.control_player.open_menu == null || this.controller.control_player.open_menu == false){
+                if (this.game.playerEntity && this.id == this.game.playerEntity.id && this.modelObject) {
+                    this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, vector.x);
+                    this.tempo_rotation = { ...vector };
+                }
                 this.move(this.controller.getMoveVector(this.spherical));
                 if (this.controller.control_player.left_click) {
                     this.game.server.sendClientShot();
@@ -105,6 +109,10 @@ class PlayerEntity extends LivingEntity {
                 this.managerHud.disableVisible();
             }else if(this.controller.control_player.open_menu == true){
                 if(this.managerHud && this.id == this.managerHud.owner)this.managerHud.update();
+                if (this.game.playerEntity && this.id == this.game.playerEntity.id && this.modelObject) {
+                    this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.tempo_rotation.x);
+                    this.controller.rotation = { ...this.tempo_rotation };
+                }
             } 
         }
         
