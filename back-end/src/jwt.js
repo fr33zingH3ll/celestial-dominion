@@ -42,7 +42,6 @@ class JsonWebTokenAuth {
                 res.error = "L'utilisateur n'existe pas.";
                 return res;
             }
-
             res.sub = user;
             return res;
         } catch (error) {

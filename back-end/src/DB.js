@@ -43,12 +43,12 @@ class DBManager {
      * @returns {Promise<void>}
      */
     async connect() {
-        console.log("Connection to the database.");
         this.conn = await r.connect({
             host: 'localhost',
             port: 28015,
             db: this.dbName,
-            // user: this.user, password: this.password
+            user: this.user, 
+            password: this.password
         });
     }
 

@@ -4,8 +4,8 @@ import * as argon2 from "argon2";
 import { JsonWebTokenAuth } from './src/jwt.js';
 import DBManager from './src/DB.js';
 
-const jwtService = new JsonWebTokenAuth();
 const BDDmanager = new DBManager();
+const jwtService = new JsonWebTokenAuth(BDDmanager);
 
 /** ALL ABOUT AUTH */
 
@@ -67,6 +67,7 @@ const token = async (req, res) => {
     } catch(error) {
         return res.status(500).json({ error: error.msg }); // Internal Server Error
     }
+    console.log(validation)
     if (validation.error) return res.status(401).json({ error: validation.error });
     console.log(validation);
     return res.status(200).json({ sub: validation.sub.username });

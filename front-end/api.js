@@ -136,9 +136,13 @@ export const login = async (username, password) => {
         method: "POST",
     });
 
+    const storage = localStorage.getItem('messages');
+    const messages = storage ? JSON.parse(storage) : [];
+    console.log(messages);
     const body = await result.json();
 
     if (!result.ok) {
+        
         throw new Error(body.error);
     }
 
@@ -174,6 +178,31 @@ export const register = async (username, password, confirm_password) => {
 	}
 
     login(username, password);
+};
+
+/**
+ * Effectue une requête de connexion.
+ * @param {string} username - Le nom d'utilisateur.
+ * @param {string} password - Le mot de passe.
+ * @returns {Promise<void>}
+ */
+export const verify = async (token) => {
+    const result = await request("/auth/token", {
+        body: JSON.stringify({ token }),
+        method: "POST",
+    });
+
+    const body = await result.json();
+
+    if (!result.ok) {
+        if (body.error == "jwt expired") {
+            localStorage.removeItem('token');
+            return;
+        }
+        throw new Error(body.error);
+    }
+
+    return body.sub;
 };
 
 /**
