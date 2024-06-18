@@ -1,53 +1,55 @@
-import * as THREE from 'three'; // Importation de la bibliothèque Three.js
-
+import { Circle } from './Forme';
 class CustomMouse {
     constructor(game) {
         this.game = game;
-
-        this.material = new THREE.MeshBasicMaterial({ color: 0xff0000,transparent: true, opacity: 0.5 });
-        const width = window.innerWidth * 0.5; // 95% de la largeur de la fenêtre
-        const height = window.innerHeight * 0.5; // 95% de la hauteur de la fenêtre
-        //console.log(width,height);
-        this.geometry = new THREE.PlaneGeometry( 5, 5);
-        this.model = new THREE.Mesh(this.geometry, this.material);
+        this.body = new Circle(2, 0 , 0 , 'rgba(0, 0, 0, 0.5)');
+        this.body.position = {x : this.center_X(),y : this.center_Y()};
+        this.targetPosition = { x: 0, y: 0 };
+        this.lerpFactor = 0.25; // Ajustez ce facteur pour modifier la vitesse d'interpolation
     }
 
-
-      /**
-     * Fait tourner la caméra autour du joueur selon un rayon et des radians spécifiés.
-     * @param {THREE.Object3D} player - Le joueur autour duquel la caméra doit tourner.
-     * @param {number} radius - Le rayon de rotation de la caméra par rapport au joueur.
-     * @param {number} radians - Les radians de rotation autour du joueur.
-     */
-    rotateHudAroundPlayer(player, radius, radians) {
-        if(!player)return;
-        this.game.playerEntity.hud_spherical.radius = radius;
-        this.game.playerEntity.hud_spherical.theta = -radians; // l'angle horizontal
-        this.game.playerEntity.hud_spherical.phi = Math.PI / 2.5; // angle vertical (90 degrés pour rester à hauteur du joueur)
-
-        const newPosition = new THREE.Vector3();
-        newPosition.setFromSpherical(this.game.playerEntity.hud_spherical);
-        newPosition.add(player.position); // déplace la position relative au joueur
-
+    normaliserVecteur(x, y) {
+        let norme = Math.sqrt(x * x + y * y);
+        if (norme === 0) return { x: 0, y: 0 };
         
-        this.model.position.copy(newPosition);
-        this.model.lookAt(this.game.camera.position);
+        return {
+            x: x / norme,
+            y: y / norme
+        };
     }
 
-    load(){
-        this.game.scene.add(this.model);
+    lerp(start, end, t) {
+        return start + (end - start) * t;
     }
 
-    update() {
-        if ( !this.model.visible ) this.model.visible = true;
-        if (this.game.playerEntity.isMoving()){
-            this.model.rotation.y = -this.game.playerEntity.body.angle;
-            this.rotateHudAroundPlayer(this.game.playerEntity.modelObject, 10, this.game.playerEntity.tempo_rotation.x);
-        }
-        
-    } 
+    center_X(){
+        return this.body.canvas.width / 2;
+    }
+    center_Y(){
+        return this.body.canvas.height / 2;
+    }
 
+    update() { 
+        if (!this.previousVector) this.previousVector = {x : 0, y : 0};
 
+        let vector = this.game.playerEntity.controller.calculateMovementCustomMouse();
+       
+        if (Math.abs(vector.x) >= 0.1 || Math.abs(vector.y) >= 0.1) { 
+            console.log(vector);
+            //vector = this.normaliserVecteur(vector.x, vector.y); 
+            this.targetPosition = {
+                x: this.body.position.x + vector.x * 20,
+                y: this.body.position.y + vector.y * 20
+            };
+        } 
+       
+        // Interpoler entre la position actuelle et la position cible
+        this.body.position.x = this.lerp(this.body.position.x, this.targetPosition.x, this.lerpFactor);
+        this.body.position.y = this.lerp(this.body.position.y, this.targetPosition.y, this.lerpFactor);
+
+        this.body.draw();
+        this.previousVector = vector;
+    }
 }
 
 export { CustomMouse };

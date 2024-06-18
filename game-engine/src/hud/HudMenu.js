@@ -7,8 +7,7 @@ class HudMenu {
         this.game = game;
         
         this.material = new THREE.MeshBasicMaterial({ color: 0xff0000,transparent: true, opacity: 0.5 });
-        const width = window.innerWidth * 0.5; // 95% de la largeur de la fenêtre
-        const height = window.innerHeight * 0.5; // 95% de la hauteur de la fenêtre
+
         //console.log(width,height);
         this.geometry = new THREE.PlaneGeometry( 50, 50);
         this.model = new THREE.Mesh(this.geometry, this.material);

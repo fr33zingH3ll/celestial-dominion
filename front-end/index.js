@@ -1,4 +1,4 @@
-import { message_update } from "./api.js";
+/*import { message_update } from "./api.js";
 
 
 const updates = await message_update();
@@ -13,3 +13,4 @@ for (const update of updates) {
 }
 
 divItem.scrollTop = divItem.scrollHeight;
+*/

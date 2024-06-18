@@ -113,6 +113,8 @@ class PlayerEntity extends LivingEntity {
                     this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.tempo_rotation.x);
                     this.controller.rotation = { ...this.tempo_rotation };
                 }
+                this.managerHud.enableVisible();
+                
             } 
         }
         
