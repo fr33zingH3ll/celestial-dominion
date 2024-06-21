@@ -39,21 +39,22 @@ class ManagerHUD {
         this.canvas.style.position = 'absolute';
         this.canvas.style.top = '0';
         this.canvas.style.left = '0';
-        this.canvas.style.width = '100%'
-        this.canvas.style.height = '100%'
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+        this.canvas.style.keyword = 'default';
     }
        
         
 
     update() {
-        
+       
         if(this.game.inBack)return;
 
         for(const hud of this.pool_hud){
             
             hud.update();
         }
-            
+         
     } 
 
 }
