@@ -11,10 +11,9 @@ class Controller {
     constructor(game) {
         this.game = game;
         this.keysToPreventDefault = ['Escape', 'F1', 'F2', 'F3', 'F4', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'];
-        
 
-        this.keybind_player = {right: 'd', left: 'q', up: 'z', down: 's', orbit: 'a', left_click: 'mouseLeft', debug_mode: 'F1', open_menu : 'Tab'};
-        this.control_player = {right: false, left: false, up: false, down: false, orbit: false, left_click: false, open_menu: null};
+        this.keybind_player = {right: 'd', left: 'q', up: 'z', down: 's', orbit: 'a', left_click: 'mouseLeft', debug_mode: 'F1', open_main_menu : 'Escape'};
+        this.control_player = {right: false, left: false, up: false, down: false, orbit: false, left_click: false, open_main_menu: null};
 
         this.keybind_hud = {left_click: 'mouseLeft'};
         this.control_hud = {left_click: false};
@@ -35,6 +34,10 @@ class Controller {
     */
     setupEventListeners() {
         document.addEventListener('pointerlockchange', this.handlePointerLockChange);
+        document.addEventListener('keydown', this.handleKeyDown);
+        document.addEventListener('keyup', this.handleKeyUp);
+        window.addEventListener('mousedown', this.handleMouseDown);
+        window.addEventListener('mouseup', this.handleMouseUp);
     }
 
     /**
@@ -42,6 +45,10 @@ class Controller {
     */
     removeEventListeners() {
         document.removeEventListener('pointerlockchange', this.handlePointerLockChange);
+        document.removeEventListener('keydown', this.handleKeyDown);
+        document.removeEventListener('keyup', this.handleKeyUp);
+        window.removeEventListener('mousedown', this.handleMouseDown);
+        window.removeEventListener('mouseup', this.handleMouseUp);
     }
 
     /**
@@ -49,7 +56,7 @@ class Controller {
     * @param {KeyboardEvent} event - The keyboard event object.
     */
     handleKeyDown = (event) => {
-        if(this.control_player.open_menu == null || this.control_player.open_menu == false){
+        if(this.control_player.open_main_menu == null || this.control_player.open_main_menu == false){
 
             if (event.key === this.keybind_player.left) {
                 this.control_player.left = true;
@@ -65,7 +72,7 @@ class Controller {
                 this.control_player.left_click = true;
             }
 
-        }else if(this.control_player.open_menu == true){
+        }else if(this.control_player.open_main_menu == true){
 
         }
 
@@ -79,8 +86,7 @@ class Controller {
     * @param {KeyboardEvent} event - The keyboard event object.
     */
     handleKeyUp = (event) => {
-        console.log(event.key)
-        if(this.control_player.open_menu == null || this.control_player.open_menu == false){
+        if(this.control_player.open_main_menu == null || this.control_player.open_main_menu == false){
             if (event.key === this.keybind_player.left) {
                 this.control_player.left = false;
             } else if (event.key === this.keybind_player.right) {
@@ -102,13 +108,10 @@ class Controller {
             if (event.key === this.keybind_player.left_click) {
                 this.control_player.left_click = false;
             }
-            if (event.key === this.keybind_player.open_menu) {
-                this.control_player.open_menu = true;
-                this.rotation = {x : 0, y : 0};
-            }
-        }else if(this.control_player.open_menu == true){
-            if (event.key === this.keybind_player.open_menu) {
-                this.control_player.open_menu = false;
+        }else if(this.control_player.open_main_menu == true){
+            // jouer uniquement quand un menu est ouvert.
+            if (event.key === this.keybind_player.open_main_menu) {
+                this.game.renderer.domElement.requestPointerLock();
             }
         }
 
@@ -122,11 +125,11 @@ class Controller {
     * @param {MouseEvent} event - The mouse event object.
     */
     handleMouseDown = (event) => {
-        if(this.control_player.open_menu == null || this.control_player.open_menu == false){
+        if(this.control_player.open_main_menu == null || this.control_player.open_main_menu == false){
             if (event.button === 0) { // Left mouse button
                 this.control_player.left_click = true;
             }
-        }else if(this.control_player.open_menu == true){
+        }else if(this.control_player.open_main_menu == true){
             if (event.button === 0) { // Left mouse button
                 this.control_hud.left_click = true;
             }
@@ -138,11 +141,11 @@ class Controller {
     * @param {MouseEvent} event - The mouse event object.
     */
     handleMouseUp = (event) => {
-        if(this.control_player.open_menu == null || this.control_player.open_menu == false){
+        if(this.control_player.open_main_menu == null || this.control_player.open_main_menu == false){
             if (event.button === 0) { // Left mouse button
                 this.control_player.left_click = false;
             }
-        }else if(this.control_player.open_menu == true){
+        }else if(this.control_player.open_main_menu == true){
             if (event.button === 0) { // Left mouse button
                 this.control_hud.left_click = false;
             }
@@ -170,16 +173,15 @@ class Controller {
     handlePointerLockChange = () => {
         if (document.pointerLockElement === this.game.renderer.domElement) {
             console.log('Pointer lock active');
-            document.addEventListener('keydown', this.handleKeyDown);
-            document.addEventListener('keyup', this.handleKeyUp);
-            document.addEventListener('mousemove', this.handleMouseMove, false);
 
-            window.addEventListener('mousedown', this.handleMouseDown);
-            window.addEventListener('mouseup', this.handleMouseUp);
+            this.control_player.open_main_menu = false;
+
+            document.addEventListener('mousemove', this.handleMouseMove, false);
         } else {
             console.log('Pointer lock inactive');
-            document.removeEventListener('keydown', this.handleKeyDown);
-            document.removeEventListener('keyup', this.handleKeyUp);
+
+            this.control_player.open_main_menu = true;
+
             document.removeEventListener('mousemove', this.handleMouseMove, false);
         }
     }

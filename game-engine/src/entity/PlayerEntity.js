@@ -97,7 +97,7 @@ class PlayerEntity extends LivingEntity {
 
         if (this.controller) {
             const vector = this.game.playerEntity.controller.calculateRotationAngle();
-            if(this.controller.control_player.open_menu == null || this.controller.control_player.open_menu == false){
+            if(this.controller.control_player.open_main_menu == null || this.controller.control_player.open_main_menu == false){
                 if (this.game.playerEntity && this.id == this.game.playerEntity.id && this.modelObject) {
                     this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, vector.x);
                     this.tempo_rotation = { ...vector };
@@ -107,7 +107,7 @@ class PlayerEntity extends LivingEntity {
                     this.game.server.sendClientShot();
                 }
                 this.managerHud.disableVisible();
-            }else if(this.controller.control_player.open_menu == true){
+            }else if(this.controller.control_player.open_main_menu == true){
                 if(this.managerHud && this.id == this.managerHud.owner)this.managerHud.update();
                 if (this.game.playerEntity && this.id == this.game.playerEntity.id && this.modelObject) {
                     this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, this.tempo_rotation.x);
