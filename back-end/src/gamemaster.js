@@ -11,6 +11,7 @@ import { Projectil } from "game-engine/src/entity/Projectil.js";
 
 import { getRandomPosition } from "game-engine/src/utils/functions.js";
 import { StaticEntity } from "game-engine/src/entity/StaticEntity.js";
+import { AutoSave } from "game-engine/src/saver/AutoSave.js";
 
 /**
  * Class representing the game master on the server side.
@@ -25,6 +26,11 @@ class GameMaster extends BackGameMaster {
          * @type {Server}
          */
         this.server = new Server(db);
+        /**
+         * The saver system.
+         * @type {AutoSave}
+         */
+        this.auto_saver = new AutoSave(this, db);
 
         // Création d'une instance de Asteroide avec des paramètres spécifiques et ajout à la scène
         
@@ -121,6 +127,7 @@ class GameMaster extends BackGameMaster {
      */
     update(delta) {
         super.update(delta);
+        this.auto_saver.update(delta);
 
         // Gestion des entités à mettre à jour
         const entitiesToUpdate = this.pool.filter((e) => e.dirty);
