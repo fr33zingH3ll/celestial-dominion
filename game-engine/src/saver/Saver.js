@@ -12,14 +12,14 @@ class Saver {
     }
 
     async save_entity(entity) {
-        console.log(entity.serializeState());
+        console.log(entity.prototypeName);
         let result;
         try {
             result = await r.table("entity").get(entity.id).run(this.db.conn);
             if (result === null) {
-                result = await r.table("entity").insert({id: entity.id, state: entity.serializeState() }).run(this.db.conn);
+                result = await r.table("entity").insert({id: entity.id, type: entity.prototypeName, state: entity.serializeState() }).run(this.db.conn);
             } else {
-                result = await r.table("entity").update({ state: entity.serializeState() }).run(this.db.conn);
+                result = await r.table("entity").filter({ id: entity.id }).update({ type: entity.prototypeName, state: entity.serializeState() }).run(this.db.conn);
             }
         } catch (error) {
             console.log(error);
