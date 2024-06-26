@@ -35,14 +35,13 @@ class JsonWebTokenAuth {
             res.error = error.message;
             return res;
         }
-
+        
         try {
             const user = await r.table('user').get(decrypt_token.sub).without('password').run(this.db.conn);
             if (!user) {
                 res.error = "L'utilisateur n'existe pas.";
                 return res;
             }
-
             res.sub = user;
             return res;
         } catch (error) {

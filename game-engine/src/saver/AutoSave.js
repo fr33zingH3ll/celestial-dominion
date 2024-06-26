@@ -1,3 +1,4 @@
+import { Projectil } from "../entity/Projectil.js";
 import { Saver } from "./Saver.js";
 
 class AutoSave extends Saver {
@@ -10,10 +11,11 @@ class AutoSave extends Saver {
     }
 
     auto_save() {
-        for (const entity of this.game.pool) {
+        const entites_to_save = this.game.pool.filter(entity => entity.type !== 'Projectil');
+        for (const entity of entites_to_save) {
             this.save_entity(entity);
         }
-        console.log("Auto save effectué.")
+        console.log("Auto save effectué.");
     }
 
     update(delta) {

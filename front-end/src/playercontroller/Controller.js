@@ -20,7 +20,6 @@ class Controller {
 
         this.mouseSensitivity = 0.002;
         this.rotation = { x: 0, y: 0 };
-        this.mouseMouvement = {x : 0, y : 0};
 
         this.game.renderer.domElement.addEventListener('click', () => {
             this.game.renderer.domElement.requestPointerLock();
@@ -162,9 +161,6 @@ class Controller {
  
         this.rotation.x += movementX * this.mouseSensitivity;
         this.rotation.y += movementY * this.mouseSensitivity;
-
-        this.mouseMouvement.x = movementX;
-        this.mouseMouvement.y = movementY;
     }
 
     /**
@@ -192,14 +188,6 @@ class Controller {
     calculateRotationAngle() {
         return this.rotation;
     }
-        /**
-    * Calculates the rotation angle based on mouse movement.
-    */
-    calculateMovementCustomMouse() {
-        return this.mouseMouvement;
-    }
-
-
 
     /**
     * Gets the movement vector based on the current control state and camera orientation.

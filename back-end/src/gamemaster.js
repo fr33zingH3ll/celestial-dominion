@@ -36,14 +36,26 @@ class GameMaster extends BackGameMaster {
         
         this.server.emitter.addEventListener('loginSuccess', (event) => {
             this.server.sendNewEntities(event.message.webSocket, this.pool);
-            const newPlayer = new PlayerEntity(this, "base");
+            const newPlayer = new PlayerEntity(this, "base", event.message.entity_id);
+            
+            // load a player by id
+            this.loadPlayerState(event.message.entity_id).then(player => {
+                // Utilisez 'player' ici
+                newPlayer.deserializeState(player.state);
 
-            newPlayer.connection = event.message;
-            event.message.entity = newPlayer;
-            this.addPool(newPlayer);
-            this.server.players[event.message.username].id = newPlayer.id;
+                newPlayer.connection = event.message;
+                event.message.entity = newPlayer;
 
-            this.server.callbackHandshake(event.message, newPlayer.id, newPlayer.body.position, newPlayer.body.angle);
+                this.addPool(newPlayer);
+                this.server.players[event.message.username].id = newPlayer.id;
+
+    
+                this.server.callbackHandshake(event.message, newPlayer.id, newPlayer.body.position, newPlayer.body.angle);
+                console.log(player.state.angle);
+            }).catch(error => {
+                // Gérez les erreurs ici
+                console.error(error);
+            });
         });
 
         this.server.emitter.addEventListener('clientPlayerMove', event => {
@@ -100,6 +112,11 @@ class GameMaster extends BackGameMaster {
         }
     }
 
+    async loadPlayerState(id) {
+        const result = await this.auto_saver.load_player(id);
+        return result;
+    }
+
     /**
      * Remove an entity from the pool and broadcast its removal.
      * @param {LivingEntity} entity - The entity to remove.
@@ -121,7 +138,6 @@ class GameMaster extends BackGameMaster {
 
         // Gestion des entités à mettre à jour
         const entitiesToUpdate = this.pool.filter((e) => e.dirty);
-        console.log(entitiesToUpdate);
         this.server.broadcastUpdates(entitiesToUpdate);
         entitiesToUpdate.forEach(e => e.dirty = false);
 

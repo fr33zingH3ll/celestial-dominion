@@ -45,6 +45,7 @@ class MainGame extends FrontGameMaster {
         // Écoute les événements de réponse de poignée de main
         this.server.emitter.addEventListener('handshakeResponse', event => {
             this.playerId = event.message.userId;
+            console.log(event.message);
         });
 
         // Écoute les événements de création d'entité du serveur
@@ -55,11 +56,14 @@ class MainGame extends FrontGameMaster {
                 entity.id = datum.entityId;
                 entity.deserializeState(datum.state);
 
+                console.log(datum.state)
+
                 this.addPool(entity);
 
                 if (entity.id === this.playerId) {
                     this.playerEntity = entity;
                     this.playerEntity.controller = new Controller(this);
+                    this.playerEntity.controller.rotation.x = datum.state.angle;
                     this.playerEntity.managerHud = new ManagerHUD(this,this.playerEntity.id);                
                 }
             }

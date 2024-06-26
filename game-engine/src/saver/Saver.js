@@ -6,6 +6,12 @@ class Saver {
         this.db = db;
     }
 
+    async load_player(entity_id) {
+        const entity = await r.table("entity").get(entity_id).run(this.db.conn);
+        console.log(entity.id)
+        return entity;
+    }
+
     async load_entities() {
         const entities = await r.table("entity").filter(r.row("type").ne("PlayerEntity")).run(this.db.conn);
         const result = await entities.toArray();

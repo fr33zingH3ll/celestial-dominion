@@ -13,8 +13,8 @@ class PlayerEntity extends LivingEntity {
      * @param {Object} game - L'instance du jeu.
      * @param {string} prototypeName - Le nom du prototype de l'entité.
      */
-    constructor(game, prototypeName) {
-        super(game, prototypeName);
+    constructor(game, prototypeName, id) {
+        super(game, prototypeName, id);
 
         this.controller = null;
         this.managerHud = null;
@@ -100,6 +100,7 @@ class PlayerEntity extends LivingEntity {
             if(this.controller.control_player.open_main_menu == null || this.controller.control_player.open_main_menu == false){
                 if (this.game.playerEntity && this.id == this.game.playerEntity.id && this.modelObject) {
                     this.rotateCameraAroundPlayer(this.game.camera, this.modelObject, 75, vector.x);
+                    console.log(vector.x)
                     this.tempo_rotation = { ...vector };
                 }
                 this.move(this.controller.getMoveVector(this.spherical));

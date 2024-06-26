@@ -125,6 +125,7 @@ class Server {
                     }
                     connection = {
                         username: result.sub.username,
+                        entity_id: result.sub.entity_id,
                         webSocket: ws,
                     };
                     // FIXME id in jwt as key
@@ -168,7 +169,7 @@ class Server {
      */
     callbackHandshake(connection, userId, initialPosition, initialRotation) {
         const res = this.proto.lookupType('HandshakeResponse');
-        console.log(connection.username)
+        console.log(connection.username, initialRotation);
 
         this.sendMessage(connection.webSocket, {
             handshakeResponse: res.create({

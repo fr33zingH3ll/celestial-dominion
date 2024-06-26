@@ -74,7 +74,6 @@ class Socket {
      * @param {Object} velocity - The player's velocity.
      */
     sendPlayerMove(rotation, velocity) {
-        console.log(rotation);
         const move = this.proto.lookupType("ClientPlayerMove");
         this.sendMessage({ clientPlayerMove: move.create({ rotation, velocity }) });
     }

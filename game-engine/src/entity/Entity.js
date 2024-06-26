@@ -35,7 +35,7 @@ class Entity {
      * @param {Game} game - L'instance du jeu.
      * @param {string} prototypeName - Le nom du prototype de l'entité.
      */
-    constructor(game, prototypeName) {
+    constructor(game, prototypeName, id = ID_COUNTER++) {
         this.game = game;
         this.prototypeName = prototypeName;
         this.entity_type = this.constructor.name;
@@ -49,7 +49,7 @@ class Entity {
         let static_body = false;
         let mass = 1;
 
-        this.id = ID_COUNTER++;
+        this.id = id;
         if (this.prototype.static) static_body = true;
         if (this.prototype.mass) mass = this.prototype.mass;
 

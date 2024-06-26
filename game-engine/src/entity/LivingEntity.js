@@ -10,8 +10,8 @@ class LivingEntity extends Entity {
      * @param {Object} game - L'instance du jeu.
      * @param {string} prototypeName - Le nom du prototype de l'entité.
      */
-    constructor(game, prototypeName) {
-        super(game, prototypeName);
+    constructor(game, prototypeName, id) {
+        super(game, prototypeName, id);
 
         // Initialise les points de vie maximum, les points de vie actuels, la vitesse et la force de l'entité
         this.hpMax = this.prototype.hpMax;
