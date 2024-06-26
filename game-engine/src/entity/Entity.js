@@ -38,6 +38,7 @@ class Entity {
     constructor(game, prototypeName) {
         this.game = game;
         this.prototypeName = prototypeName;
+        this.entity_type = this.constructor.name;
         this.angle = 0;
         this.spherical = new THREE.Spherical();
         this.collideBox;

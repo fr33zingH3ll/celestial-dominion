@@ -33,19 +33,19 @@ class Asteroide extends StaticEntity {
         return {
             asteroide_1: {
                 model: "Asteroid_1.glb",
-                radius: 8
+                radius: 8,
             },
             asteroide_2: {
                 model: "Asteroid_2.glb",
-                radius: 5
+                radius: 5,
             },
             asteroide_3: {
                 model: "Asteroid_3.glb",
-                radius: 8
+                radius: 8,
             },
             asteroide_4: {
                 model: "Asteroid_4.glb",
-                radius: 3
+                radius: 3,
             }
         };
     }

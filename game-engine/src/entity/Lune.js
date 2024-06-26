@@ -11,7 +11,8 @@ class Lune extends StaticEntity {
                 mass: 20,
                 model: "lune.glb",
                 radius: 60,
-                static: true
+                static: true,
+                entity_type: "lune"
             },
         };
     }

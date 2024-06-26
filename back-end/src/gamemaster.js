@@ -12,6 +12,7 @@ import { Projectil } from "game-engine/src/entity/Projectil.js";
 import { getRandomPosition } from "game-engine/src/utils/functions.js";
 import { StaticEntity } from "game-engine/src/entity/StaticEntity.js";
 import { AutoSave } from "game-engine/src/saver/AutoSave.js";
+import entityNames from "game-engine/src/entity/EntityList.js";
 
 /**
  * Class representing the game master on the server side.
@@ -26,29 +27,12 @@ class GameMaster extends BackGameMaster {
          * @type {Server}
          */
         this.server = new Server(db);
+        
         /**
          * The saver system.
          * @type {AutoSave}
          */
         this.auto_saver = new AutoSave(this, db);
-
-        // Création d'une instance de Asteroide avec des paramètres spécifiques et ajout à la scène
-        
-        for (let index = 1; index < 3; index++) {
-            const asteroid = new Asteroide(this,`Asteroide_'${index}'`);
-            const x = getRandomPosition(-1000, 0);
-            const y = getRandomPosition(-1000, 0);
-            Matter.Body.setPosition(asteroid.body, { x, y });
-            this.addPool(asteroid);
-        }
-
-        for (let index = 0; index < 1; index++) {
-            const lune = new Lune(this,'lune');
-            const x = getRandomPosition(-1000, 0);
-            const y = getRandomPosition(-1000, 0);
-            Matter.Body.setPosition(lune.body, { x, y });
-            this.addPool(lune);
-        }
         
         this.server.emitter.addEventListener('loginSuccess', (event) => {
             this.server.sendNewEntities(event.message.webSocket, this.pool);
@@ -66,7 +50,7 @@ class GameMaster extends BackGameMaster {
             const { message: { rotation, velocity }, connection: { entity } } = event.message;
 
             this.Body.setAngle(entity.body, rotation);
-            entity.velocity = velocity;
+            this.Body.setVelocity(entity.body, velocity);
             entity.dirty = true;
         });
 
@@ -107,6 +91,13 @@ class GameMaster extends BackGameMaster {
     async start() {
         super.start();
         await this.server.start();
+        const entities_saved = await this.auto_saver.load_entities();
+
+        for (const entity of entities_saved) {
+            const asteroid = new entityNames[entity.type](this,entity.prototype_name);
+            Matter.Body.setPosition(asteroid.body, this.Vector.create(entity.state.position.x, entity.state.position.y));
+            this.addPool(asteroid);
+        }
     }
 
     /**
@@ -130,6 +121,7 @@ class GameMaster extends BackGameMaster {
 
         // Gestion des entités à mettre à jour
         const entitiesToUpdate = this.pool.filter((e) => e.dirty);
+        console.log(entitiesToUpdate);
         this.server.broadcastUpdates(entitiesToUpdate);
         entitiesToUpdate.forEach(e => e.dirty = false);
 
