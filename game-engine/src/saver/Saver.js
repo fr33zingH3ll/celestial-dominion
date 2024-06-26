@@ -12,6 +12,7 @@ class Saver {
     }
 
     async save_entity(entity) {
+        console.log(entity.serializeState());
         let result;
         try {
             result = await r.table("entity").get(entity.id).run(this.db.conn);

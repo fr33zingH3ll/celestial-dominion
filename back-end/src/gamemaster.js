@@ -65,7 +65,6 @@ class GameMaster extends BackGameMaster {
         this.server.emitter.addEventListener('clientPlayerMove', event => {
             const { message: { rotation, velocity }, connection: { entity } } = event.message;
 
-            
             this.Body.setAngle(entity.body, rotation);
             entity.velocity = velocity;
             entity.dirty = true;

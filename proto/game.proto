@@ -79,8 +79,8 @@ message HandshakeResponse {
 
 // Mouvement du joueur côté client.
 message ClientPlayerMove {
-	float rotation = 2;    // Rotation du joueur (en radians).
-	Vector velocity = 3;   // Vitesse du joueur.
+	float rotation = 1;    // Rotation du joueur (en radians).
+	Vector velocity = 2;   // Vitesse du joueur.
 }
 
 // Mise à jour des entités côté serveur.

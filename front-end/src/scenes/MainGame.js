@@ -109,7 +109,7 @@ class MainGame extends FrontGameMaster {
         super.update(delta); // Appel de la méthode update() de la classe parente Scene3D
 
         if (this.playerEntity) {
-            this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle, this.playerEntity.body.velocity);
+            this.server.sendPlayerMove(this.playerEntity.body.angle, this.playerEntity.body.velocity);
         }
     }
 
