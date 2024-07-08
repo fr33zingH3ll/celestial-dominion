@@ -124,7 +124,7 @@ class Server {
      * Start the server.
      */
     async start() {
-        this.proto = await protobuf.load('../proto/game.proto');
+        this.proto = await protobuf.load('./proto/game.proto');
 
         this.server.listen(this.port, '127.0.0.1', () => {
             console.log(`Server is running at http://localhost:${this.port}`);
