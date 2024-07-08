@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd galactic-seekers
+            cd celestial-dominion
             git pull
             npm i
             pm2 restart galactic-seekers-game-server
