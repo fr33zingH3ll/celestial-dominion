@@ -2,7 +2,7 @@ import { Entity } from "../entity/Entity.js";
 import { EventDispatcher } from "../utils/EventDispatcher.js";
 
 /**
- * Classe représentant un mode de jeu générique utilisant Matter.js et PIXI.js.
+ * Classe représentant un mode de jeu générique utilisant Matter.js.
  */
 class Scene {
     /**
@@ -61,7 +61,7 @@ class Scene {
      */
     destroy() {
         // Parcourt toutes les entités dans le pool et les supprime une par une
-        for (const entity of this.pool) {
+        for (const entity of [...this.pool]) {
             this.removePool(entity);
         }
     }

@@ -24,10 +24,9 @@ class LivingEntity extends Entity {
      * @param {number} damage - Les dégâts à infliger.
      */
     damage(damage) {
-        // Réduit les points de vie de l'entité par les dégâts infligés
         this.hp -= damage;
+        this.dirty = true;
 
-        // Vérifie si les points de vie sont tombés à zéro ou moins, déclenche l'événement de mort
         if (this.hp <= 0) {
             this.onDeath();
         }

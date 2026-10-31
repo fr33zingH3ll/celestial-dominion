@@ -8,19 +8,23 @@ class Asteroide extends StaticEntity {
      * Crée une instance d'Asteroide.
      * @param {Object} game - L'instance du jeu.
      */
-    constructor(game) {
-        const prototypeName = Asteroide.getRandomPrototypeName();
+    /**
+     * @param {Object} game
+     * @param {string} prototypeName
+     */
+    constructor(game, prototypeName) {
         super(game, prototypeName);
     }
 
     /**
-     * Récupère un nom de prototype d'astéroïde aléatoire parmi les prototypes disponibles.
-     * @returns {string} - Le nom du prototype sélectionné.
+     * Choisit un prototype avec le générateur fourni.
+     * @param {() => number} rng
+     * @returns {string}
      */
-    static getRandomPrototypeName() {
-        const prototypes = Object.keys(Asteroide.getPrototypes());
-        const randomIndex = Math.floor(Math.random() * prototypes.length);
-        return prototypes[randomIndex];
+    static pickPrototype(rng) {
+        const names = Object.keys(Asteroide.getPrototypes());
+        const index = Math.min(names.length - 1, Math.floor(rng() * names.length));
+        return names[index];
     }
 
     /**
@@ -33,21 +37,25 @@ class Asteroide extends StaticEntity {
                 model: "Asteroid_1.glb",
                 height: 5,
                 width: 5,
+                static: true,
             },
             asteroide_2: {
                 model: "Asteroid_2.glb",
                 height: 5,
                 width: 5,
+                static: true,
             },
             asteroide_3: {
                 model: "Asteroid_3.glb",
                 height: 5,
                 width: 5,
+                static: true,
             },
             asteroide_4: {
                 model: "Asteroid_4.glb",
                 height: 5,
                 width: 5,
+                static: true,
             },
         };
     }

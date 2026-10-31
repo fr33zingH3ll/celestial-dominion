@@ -4,7 +4,15 @@ import { PlayerEntity } from "game-engine/src/entity/PlayerEntity.js";
 import { Asteroide } from "game-engine/src/entity/Asteroide.js";
 import { Server } from "./api.js";
 import { Projectil } from "game-engine/src/entity/Projectil.js";
-import { LivingEntity } from "game-engine/src/entity/LivingEntity.js";
+import { clampMove } from "game-engine/src/sim/move.js";
+import { applyPlayerCommand } from "game-engine/src/sim/command.js";
+import { createRng } from "game-engine/src/utils/Rng.js";
+
+const ASTEROID_COUNT = 60;
+const ASTEROID_SEED = 0xC0FFEE;
+const ASTEROID_SPAN = 400;
+const ASTEROID_CLEAR_RADIUS = 80;
+const PROJECTILE_SPAWN_OFFSET = 30;
 
 /**
  * Class representing the game master on the server side.
@@ -13,6 +21,7 @@ import { LivingEntity } from "game-engine/src/entity/LivingEntity.js";
 class BackGameMaster extends GameMaster {
     constructor() {
         super();
+        this.authoritative = true;
 
         /**
          * The server instance.
@@ -20,13 +29,17 @@ class BackGameMaster extends GameMaster {
          */
         this.server = new Server();
 
-        // Création d'une instance de Asteroide avec des paramètres spécifiques et ajout à la scène
-        for (let index = 0; index < 60; index++) {
-            const asteroid = new Asteroide(this);
-            const x = this.getRandomPosition(-100, 0);
-            const y = this.getRandomPosition(-100, 0);
+        const rng = createRng(ASTEROID_SEED);
+        for (let index = 0; index < ASTEROID_COUNT; index++) {
+            const asteroid = new Asteroide(this, Asteroide.pickPrototype(rng));
+            let x = 0;
+            let y = 0;
+            do {
+                x = rng() * ASTEROID_SPAN * 2 - ASTEROID_SPAN;
+                y = rng() * ASTEROID_SPAN * 2 - ASTEROID_SPAN;
+            } while (Math.hypot(x, y) < ASTEROID_CLEAR_RADIUS);
             Matter.Body.setPosition(asteroid.body, { x, y });
-            this.addPool(asteroid);    
+            this.addPool(asteroid);
         }
         
         this.server.emitter.addEventListener('loginSuccess', (event) => {
@@ -41,38 +54,47 @@ class BackGameMaster extends GameMaster {
             this.server.callbackHandshake(event.message, newPlayer.id, newPlayer.body.position, newPlayer.body.angle);
         });
 
-        this.server.emitter.addEventListener('clientPlayerMove', event => {
-            const { message: { position, rotation, velocity }, connection: { entity } } = event.message;
+        this.server.emitter.addEventListener('playerDisconnected', (event) => {
+            const entity = event.message.entity;
+            if (!entity) return;
+            this.removePool(entity);
+            entity.destroy();
+        });
 
-            this.Body.setPosition(entity.body, position);
-            this.Body.setAngle(entity.body, rotation);
-            this.Body.setVelocity(entity.body, velocity);
-            entity.dirty = true;
+        this.server.emitter.addEventListener('clientPlayerMove', event => {
+            const entity = event.message.connection.entity;
+            if (!entity?.body) return;
+
+            entity.command = {
+                move: clampMove(event.message.message.move),
+                rotation: Number(event.message.message.rotation),
+            };
         });
 
         this.server.emitter.addEventListener('clientShot', event => {
-            const player = this.getEntityById(event.message.connection.id);
-            const newProjectil = new Projectil(this, "base", event.message.connection.id);
+            const player = event.message.connection.entity;
+            if (!player?.tryShot()) return;
+
+            const newProjectil = new Projectil(this, "base", player.id);
             const playerPosition = player.body.position;
-            
+
             newProjectil.track = player.body.angle;
-            const offset = this.Vector.rotate({x: 0, y: -30}, newProjectil.track);
+            const offset = this.Vector.rotate({ x: 0, y: -PROJECTILE_SPAWN_OFFSET }, newProjectil.track);
             newProjectil.track -= Math.PI / 2;
 
             this.Body.setPosition(newProjectil.body, this.Vector.add(playerPosition, offset));
-
             this.addPool(newProjectil);
         });
     }
 
     /**
-     * Generate a random position between two values.
-     * @param {number} min - The minimum value.
-     * @param {number} max - The maximum value.
-     * @returns {number} A random number between min and max.
+     * Applique la dernière intention reçue, une fois par pas.
      */
-    getRandomPosition(min, max) {
-        return Math.random() * (max - min) + min;
+    applyCommands() {
+        for (const player of Object.values(this.server.players)) {
+            if (!player.entity?.command) continue;
+            applyPlayerCommand(this.Body, player.entity, player.entity.command);
+        }
     }
 
     /**
@@ -89,6 +111,7 @@ class BackGameMaster extends GameMaster {
      * @param {number} delta - The time since the last update.
      */
     update(delta) {
+        this.applyCommands();
         super.update(delta);
 
         // Gestion des entités à mettre à jour
@@ -106,7 +129,7 @@ class BackGameMaster extends GameMaster {
 
     /**
      * Remove an entity from the pool and broadcast its removal.
-     * @param {LivingEntity} entity - The entity to remove.
+     * @param {Object} entity - The entity to remove.
      */
     removePool(entity) {
         this.server.broadcastRemovedEntity(entity);

@@ -1,59 +1,36 @@
 import { Scene3D } from 'game-engine/src/gamemode/Scene3D.js';
+import { MAX_FRAME_MS } from 'game-engine/src/sim/tick.js';
 import entityNames from 'game-engine/src/entity/EntityList';
 import { Controller } from '../playercontroller/Controller';
-import { Socket } from '../../api';
-import { PlayerEntity } from 'game-engine/src/entity/PlayerEntity';
+import { EntityView } from '../view/EntityView.js';
 
 /**
- * Classe représentant le jeu principal.
- * Étend la classe Scene3D du moteur de jeu.
+ * Partie côté client. La physique affichée vient du serveur.
  */
 class MainGame extends Scene3D {
     /**
-     * Socket pour la communication avec le serveur.
-     * @type {Socket}
-     */
-    server;
-
-    /**
-     * ID du joueur actuel.
-     * @type {number}
-     */
-    playerId;
-
-    /**
-     * Nom du joueur actuel.
-     * @type {string}
-     */
-    playerName;
-
-    /**
-     * Entité du joueur actuel.
-     * @type {PlayerEntity}
-     */
-    playerEntity;
-
-    /**
-     * Crée une instance de MainGame.
-     * @param {Socket} server - Le socket pour la communication avec le serveur.
+     * @param {import('../../api.js').Socket} server
      */
     constructor(server) {
         super();
         this.server = server;
+        this.view = new EntityView(this);
+        this.stepSimulation = false;
+        this.playerId = undefined;
+        this.playerEntity = undefined;
 
-        // Écoute les événements de réponse de poignée de main
         this.server.emitter.addEventListener('handshakeResponse', event => {
             this.playerId = event.message.userId;
         });
 
-        // Écoute les événements de création d'entité du serveur
         this.server.emitter.addEventListener('serverEntityCreate', (event) => {
             for (const datum of event.message.data) {
                 const entityConstructor = entityNames[datum.type];
+                if (!entityConstructor) continue;
+
                 const entity = new entityConstructor(this, datum.prototype);
                 entity.id = datum.entityId;
                 entity.deserializeState(datum.state);
-
                 this.addPool(entity);
 
                 if (entity.id === this.playerId) {
@@ -63,68 +40,68 @@ class MainGame extends Scene3D {
             }
         });
 
-        // Écoute les événements de mise à jour d'entité du serveur
         this.server.emitter.addEventListener('serverEntityUpdate', (event) => {
             for (const datum of event.message.data) {
-                if (datum.entityId === this.playerId && this.playerEntity) {
-                    datum.state.position = { ...this.playerEntity.body.position };
-                    datum.state.angle = this.playerEntity.body.angle;
-                } else {
-                    const entity = this.pool.find((e) => e.id === datum.entityId);
-                    if (entity) {
-                        entity.deserializeState(datum.state);
-                    }
+                const entity = this.pool.find((candidate) => candidate.id === datum.entityId);
+                if (entity) {
+                    entity.deserializeState(datum.state);
                 }
             }
         });
 
-        // Écoute les événements de suppression d'entité du serveur
         this.server.emitter.addEventListener('serverEntityDelete', event => {
             const entity = this.getEntityById(event.message.entityId);
             if (entity) {
                 this.removePool(entity);
-                entity.destroy();
             } else {
-                console.warn("Told to delete unknown entity", event.message.id);
+                console.warn("Told to delete unknown entity", event.message.entityId);
             }
         });
     }
 
     /**
-     * Ajoute une entité à la piscine et la charge.
-     * @param {Object} entity - L'entité à ajouter.
+     * @param {Object} entity
      */
     addPool(entity) {
         super.addPool(entity);
-        entity.load();
+        this.view.attach(entity);
     }
 
     /**
-     * Met à jour le jeu.
-     * @param {number} delta - Le delta de temps depuis la dernière mise à jour.
+     * @param {Object} entity
+     */
+    removePool(entity) {
+        this.view.detach(entity);
+        entity.destroy();
+        super.removePool(entity);
+    }
+
+    /**
+     * @param {number} delta
      */
     update(delta) {
-        super.update(delta); // Appel de la méthode update() de la classe parente Scene3D
+        super.update(delta);
 
-        if (this.playerEntity) {
-            this.server.sendPlayerMove(this.playerEntity.body.position, this.playerEntity.body.angle, this.playerEntity.body.velocity);
+        if (this.playerEntity?.controller) {
+            const controller = this.playerEntity.controller;
+            this.server.sendPlayerMove(controller.getMoveVector(), controller.calculateRotationAngle());
+            if (controller.control.left_click) {
+                this.server.sendClientShot();
+            }
         }
     }
 
-    /**
-     * Démarre le jeu.
-     */
     start() {
-        super.start(); // Appel de la méthode start() de la classe parente Scene3D
-
-        // Fonction pour exécuter la boucle de jeu
-        const run = () => {
+        super.start();
+        let previous = performance.now();
+        const run = (now) => {
             window.requestAnimationFrame(run);
-            this.update(1000 / 60); // Appel de la méthode update() avec un delta de 1/60 seconde
+            const delta = Math.min(MAX_FRAME_MS, now - previous);
+            previous = now;
+            this.update(delta);
         };
-
-        run(); // Exécute la boucle de jeu
+        window.requestAnimationFrame(run);
     }
 }
 
-export { MainGame }; // Exportation de la classe MainGame pour une utilisation dans d'autres fichiers
+export { MainGame };

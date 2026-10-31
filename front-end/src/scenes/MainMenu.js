@@ -19,11 +19,7 @@ class MainMenu extends Scene2D {
      * @param {number} delta - Le delta de temps depuis la dernière mise à jour.
      */
     update(delta) {
-        super.update(delta); // Appel de la méthode update() de la classe parente Scene2D
-
-        for (const entity of this.pool) {
-            entity.update(delta); // Appel de la méthode update() pour chaque entité dans le pool
-        }
+        super.update(delta);
     }
     
     /**

@@ -158,11 +158,12 @@ class Controller {
     }
 
     /**
-    * Gets the movement vector based on the current control state and camera orientation.
-    * @param {THREE.Spherical} spherical - The spherical coordinates of the camera.
-    */
-    getMoveVector(spherical) {
-        const azimuth = spherical.theta;
+     * Direction voulue, dans le repère du jeu. Longueur nulle si aucune touche.
+     * L'azimut suit la visée souris, comme l'ancienne caméra.
+     * @returns {{ x: number, y: number }}
+     */
+    getMoveVector() {
+        const azimuth = -this.rotation;
 
         let x = 0;
         let y = 0;
@@ -178,6 +179,10 @@ class Controller {
         }
         if (this.control.left) {
             x -= 1;
+        }
+
+        if (x === 0 && y === 0) {
+            return { x: 0, y: 0 };
         }
 
         const controlVector = new THREE.Vector2(x, y).normalize();

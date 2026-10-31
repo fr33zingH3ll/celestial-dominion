@@ -24,6 +24,45 @@ class GameMaster extends Scene {
 
         // Accès au monde physique de Matter.js
         this.world = this.engine.world;
+        this.authoritative = false;
+        this.hitQueue = [];
+
+        this.Events.on(this.engine, 'collisionStart', (event) => {
+            if (!this.authoritative) return;
+
+            for (const pair of event.pairs) {
+                this.queueHit(pair.bodyA.entity, pair.bodyB.entity);
+                this.queueHit(pair.bodyB.entity, pair.bodyA.entity);
+            }
+        });
+    }
+
+    /**
+     * Mémorise un impact de projectile. Le traitement a lieu après le pas physique.
+     * @param {Entity} projectile
+     * @param {Entity} other
+     */
+    queueHit(projectile, other) {
+        if (!projectile?.isProjectile || !other || projectile === other || projectile.spent) return;
+        if (other.id === projectile.owner) return;
+
+        projectile.spent = true;
+        this.hitQueue.push({ projectile, other });
+    }
+
+    flushHits() {
+        const hits = this.hitQueue;
+        this.hitQueue = [];
+
+        for (const { projectile, other } of hits) {
+            if (!this.pool.includes(projectile)) continue;
+            if (this.pool.includes(other) && typeof other.damage === 'function' && other.id !== projectile.owner) {
+                other.damage(projectile.force);
+            }
+            if (this.pool.includes(projectile)) {
+                projectile.onDeath();
+            }
+        }
     }
 
     start() {
@@ -61,8 +100,8 @@ class GameMaster extends Scene {
     update(delta) {
         // Appel de la méthode update de la classe parente Scene
         super.update(delta);
-        // Met à jour le moteur physique de Matter.js avec le delta de temps
         this.Engine.update(this.engine, delta);
+        this.flushHits();
     }
 }
 

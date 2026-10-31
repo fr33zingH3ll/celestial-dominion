@@ -15,38 +15,12 @@ class Projectil extends LivingEntity {
     constructor(game, prototyName, id) {
         super(game, prototyName);
 
-        // Initialise les propriétés spécifiques du projectile
         this.owner = id;
+        this.isProjectile = true;
+        this.spent = false;
         this.startPosition = { x: this.body.position.x, y: this.body.position.y };
         this.distanceTraveled = 0;
         this.track = null;
-
-        // Écoute les événements de collision
-        this.game.Events.on(this.game.engine, 'collisionStart', (event) => {
-            const pairs = event.pairs;
-
-            // Boucle sur les paires de corps en collision
-            pairs.forEach((pair) => {
-                const { bodyA, bodyB } = pair;
-
-                const entityA = this.game.pool.find(e => e.body === bodyA);
-                const entityB = this.game.pool.find(e => e.body === bodyB);
-
-                if (entityA !== this && entityB !== this) {
-                    return;
-                }
-
-                let other;
-
-                if (entityA !== this) other = entityA;
-                else if (entityB !== this) other = entityB;
-
-                if (other.damage) {
-                    other.damage(this.force);
-                    this.onDeath();
-                }
-            });
-        });
     }
 
     /**
@@ -58,12 +32,11 @@ class Projectil extends LivingEntity {
 
         // Si le projectile a une trajectoire définie, le déplace dans cette direction
         if (this.track) {
-            // Crée un vecteur de vitesse en utilisant l'angle et la vitesse souhaitée
-            const forceMagnitude = 10; // Ajuste la force en fonction de la masse
+            const projectileSpeed = 10;
             const velocity = this.game.Vector.mult(this.game.Vector.create(
                 Math.cos(this.track),
                 Math.sin(this.track)
-            ), forceMagnitude);
+            ), projectileSpeed);
         
             // Applique la force ajustée au corps
             this.game.Body.setVelocity(this.body, velocity);
