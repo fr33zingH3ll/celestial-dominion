@@ -1,1 +1,5 @@
 node_modules
+.local/
+remote_user_mdp
+back-end/.env
+protocol_ai/
