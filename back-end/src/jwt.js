@@ -1,43 +1,42 @@
 import jwt from 'jsonwebtoken';
-import r from 'rethinkdb';
-import DBManager from './DB.js';
 
 /**
- * Class for handling JSON Web Token (JWT) authentication.
+ * Vérifie et signe les jetons. La clé vient de JWT_SECRET.
+ * La base est celle du serveur, pas une deuxième connexion.
  */
 class JsonWebTokenAuth {
-    constructor() {
-        /**
-         * Private key for signing JWTs.
-         * @type {string}
-         */
-        this.private_key = "une_string_au_pif";
-
-        /**
-         * Database manager instance.
-         * @type {DBManager}
-         */
-        this.db = new DBManager();
+    /**
+     * @param {import('./DB.js').default} db
+     */
+    constructor(db) {
+        this.private_key = process.env.JWT_SECRET;
+        if (!this.private_key) {
+            throw new Error('JWT_SECRET manquant dans back-end/.env.');
+        }
+        this.db = db;
     }
 
     /**
-     * Verify a JWT token.
-     * @param {string} token - The JWT token to verify.
-     * @returns {Promise<Object>} The result of the verification, containing either the user data or an error message.
+     * @param {string} token
+     * @returns {Promise<{ sub?: { id: string, username: string }, error?: string }>}
      */
     async jwtVerify(token) {
         let decrypt_token;
         const res = {};
 
         try {
-            decrypt_token = await jwt.verify(token, this.private_key);
+            decrypt_token = await jwt.verify(token, this.private_key, { algorithms: ['HS256'] });
         } catch (error) {
             res.error = error.message;
             return res;
         }
 
         try {
-            const user = await r.table('user').get(decrypt_token.sub).without('password').run(this.db.conn);
+            const users = await this.db.query(
+                'SELECT id, username FROM `user` WHERE id = ? LIMIT 1',
+                [decrypt_token.sub]
+            );
+            const user = users[0];
             if (!user) {
                 res.error = "L'utilisateur n'existe pas.";
                 return res;
@@ -52,13 +51,12 @@ class JsonWebTokenAuth {
     }
 
     /**
-     * Sign a payload to create a JWT token.
-     * @param {Object} payload - The payload to sign.
-     * @param {Object} options - The options for signing the token.
-     * @returns {string} The signed JWT token.
+     * @param {Object} payload
+     * @param {Object} options
+     * @returns {string}
      */
     jwtSign(payload, options) {
-        return jwt.sign(payload, this.private_key, options);
+        return jwt.sign(payload, this.private_key, { ...options, algorithm: 'HS256' });
     }
 }
 

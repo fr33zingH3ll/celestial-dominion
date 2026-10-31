@@ -45,7 +45,7 @@ message ServerEntityCreateDatum {
 // Enveloppe pour encapsuler différents types de messages.
 message MessageWrapper {
 	oneof message {
-		Error error = 0;                            // Message d'erreur.
+		Error error = 8;                            // Message d'erreur.
 
 		HandshakeRequest handshakeRequest = 1;      // Requête de poignée de main.
 		HandshakeResponse handshakeResponse = 2;    // Réponse à la poignée de main.
@@ -77,11 +77,12 @@ message HandshakeResponse {
 	float initialRotation = 4;        // Rotation initiale de l'entité (en radians).
 }
 
-// Mouvement du joueur côté client.
+// Intention de déplacement. Le serveur ignore position et velocity.
 message ClientPlayerMove {
-	Vector position = 1;   // Position du joueur.
-	float rotation = 2;    // Rotation du joueur (en radians).
-	Vector velocity = 3;   // Vitesse du joueur.
+	Vector position = 1;   // Ignoré. Conservé pour ne pas réutiliser le numéro.
+	float rotation = 2;    // Rotation visée par le joueur (en radians).
+	Vector velocity = 3;   // Ignoré. Conservé pour ne pas réutiliser le numéro.
+	Vector move = 4;       // Direction voulue. Le serveur ramène sa longueur à 1.
 }
 
 // Mise à jour des entités côté serveur.

@@ -1,18 +1,31 @@
 import Express from 'express';
 import cors from 'cors';
 import * as argon2 from "argon2";
-import r from 'rethinkdb';
+import { randomUUID } from 'node:crypto';
 import DBManager from './DB.js';
 import { JsonWebTokenAuth } from './jwt.js';
 import http from 'http'; // Module http inclus avec Node.js
 import WebSocket, { WebSocketServer } from 'ws';
 import protobuf from 'protobufjs';
+import { fileURLToPath } from 'node:url';
 import { Event } from 'game-engine/src/utils/Event.js';
 import { EventDispatcher } from 'game-engine/src/utils/EventDispatcher.js';
 import 'dotenv/config';
 
+const PROTO_PATH = fileURLToPath(new URL('../../proto/game.proto', import.meta.url));
+
 const API_PATH = "/api/v1";
 const API_AUTH_PATH = API_PATH + "/auth";
+const DEFAULT_CORS_ORIGINS = 'http://localhost:5173,http://127.0.0.1:5173,https://galactic-seeker.freezinghell.net';
+
+/**
+ * @param {Express.Response} res
+ * @param {number} status
+ * @param {string} message
+ */
+function sendError(res, status, message) {
+    return res.status(status).json({ error: message, erreur: message });
+}
 
 /**
  * Class representing the server.
@@ -41,14 +54,17 @@ class Server {
         this.message_queues = [];
 
         this.app = Express();
-        this.server = http.createServer(this.app); // Créez un serveur HTTP
-        this.wss = new WebSocketServer({ server: this.server }); // Créez un serveur WebSocket
-        this.jwtService = new JsonWebTokenAuth();
+        this.server = http.createServer(this.app);
+        this.wss = new WebSocketServer({ server: this.server, maxPayload: 16 * 1024 });
+        this.jwtService = new JsonWebTokenAuth(this.db);
 
         this.port = 3000;
-        // this.app.use(cors());
-        // Middleware pour traiter le corps des requêtes en JSON
-        this.app.use(Express.json());
+        const origins = (process.env.CORS_ORIGINS || DEFAULT_CORS_ORIGINS)
+            .split(',')
+            .map((origin) => origin.trim())
+            .filter(Boolean);
+        this.app.use(cors({ origin: origins }));
+        this.app.use(Express.json({ limit: '8kb' }));
 
         // Définir les routes ici
         this.app.get('/api/hello', this.handleHelloRequest.bind(this));
@@ -57,60 +73,73 @@ class Server {
             const body = req.body;
 
             if (!body.username || !body.password) {
-                return res.status(400).json({ erreur: "Un des champs est vide" }); // Bad Request
+                return sendError(res, 400, "Un des champs est vide");
             }
 
-            const users = await r.table('user').filter({ username: body.username }).run(this.db.conn);
-            let result;
             try {
-                result = await users.next();
+                const users = await this.db.query(
+                    'SELECT id, username, password FROM `user` WHERE username = ? LIMIT 1',
+                    [body.username]
+                );
+                const result = users[0];
+                if (!result || !await argon2.verify(result.password, body.password)) {
+                    return sendError(res, 401, "Mauvais mot de passe");
+                }
+
+                return res.status(200).json({
+                    token: this.jwtService.jwtSign({ sub: result.id }, { expiresIn: "1h" }),
+                });
             } catch (error) {
-                return res.status(500).json({ erreur: error.msg }); // Internal Server Error
+                return sendError(res, 500, "Erreur de connexion à la base de données");
             }
-
-            if (!await argon2.verify(result.password, body.password)) {
-                return res.status(401).json({ erreur: "Mauvais mot de passe" }); // Unauthorized
-            }
-
-            const options = {
-                expiresIn: "1h"
-            };
-
-            return res.status(200).json({ token: this.jwtService.jwtSign({ sub: result.id }, options) });
         });
 
         this.app.post(API_AUTH_PATH + "/register", async (req, res) => {
             const body = req.body;
 
             if (!body.username || !body.password) {
-                return res.status(400).json({ erreur: "Un des champs est vide" }); // Bad Request
+                return sendError(res, 400, "Un des champs est vide");
             }
 
-            const users = await r.table('user').filter({ username: body.username }).run(this.db.conn);
-            let result;
             try {
-                result = await users.next();
-                return res.status(409).json({ erreur: "Utilisateur déjà existant" }); // 409 Conflict
-            } catch (error) { }
+                const users = await this.db.query(
+                    'SELECT id FROM `user` WHERE username = ? LIMIT 1',
+                    [body.username]
+                );
+                if (users.length) {
+                    return sendError(res, 409, "Utilisateur déjà existant");
+                }
 
-            const password = await argon2.hash(body.password);
-            await r.table('user').insert({ username: body.username, password: password }).run(this.db.conn);
-            return res.status(201).json({ res: "Enregistrement terminé" }); // 201 Created
+                const password = await argon2.hash(body.password);
+                await this.db.query(
+                    'INSERT INTO `user` (id, username, password) VALUES (?, ?, ?)',
+                    [randomUUID(), body.username, password]
+                );
+                return res.status(201).json({ res: "Enregistrement terminé" });
+            } catch (error) {
+                if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
+                    return sendError(res, 409, "Utilisateur déjà existant");
+                }
+                return sendError(res, 500, "Erreur de connexion à la base de données");
+            }
         });
 
-        this.app.post(API_PATH + "/report", async (req, res) => {
+        this.app.post(API_PATH + "/report", this.requireAuth.bind(this), async (req, res) => {
             const body = req.body;
 
             if (!body.type || !body.description) {
-                return res.status(400).json({ error: "Le report n'est pas complet. Erreur dans l'enregistrement de votre report." }); // Bad Request
+                return sendError(res, 400, "Le report n'est pas complet. Erreur dans l'enregistrement de votre report.");
             }
 
             const type = body.type;
             const description = body.description;
             try {
-                await r.table('report').insert({ type: type, description: description }).run(this.db.conn);
+                await this.db.query(
+                    'INSERT INTO report (id, type, description) VALUES (?, ?, ?)',
+                    [randomUUID(), type, description]
+                );
             } catch (error) {
-                return res.status(500).json({ error: "Une erreur est survenue lors de l'enregistrement de votre votre report." })
+                return sendError(res, 500, "Une erreur est survenue lors de l'enregistrement de votre votre report.");
             }
 
             return res.status(201).json({ succes: "L'enregistrement de votre report a bien été effectué." }); // 201 Created
@@ -124,11 +153,34 @@ class Server {
      * Start the server.
      */
     async start() {
-        this.proto = await protobuf.load('./proto/game.proto');
+        await this.db.connecting;
+        this.proto = await protobuf.load(PROTO_PATH);
 
         this.server.listen(this.port, '127.0.0.1', () => {
             console.log(`Server is running at http://localhost:${this.port}`);
         });
+    }
+
+    /**
+     * Exige un JWT Bearer. Le front envoie déjà Authorization.
+     * @param {Express.Request} req
+     * @param {Express.Response} res
+     * @param {Express.NextFunction} next
+     */
+    async requireAuth(req, res, next) {
+        const header = req.headers.authorization || '';
+        const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+        if (!token) {
+            return sendError(res, 401, 'Jeton manquant');
+        }
+
+        const result = await this.jwtService.jwtVerify(token);
+        if (result.error) {
+            return sendError(res, 401, result.error);
+        }
+
+        req.user = result.sub;
+        next();
     }
 
     /**
@@ -161,16 +213,23 @@ class Server {
                     if (result.error) {
                         console.warn("Closing connection for invalid token.");
                         const error = this.proto.lookupType('Error');
-                        this.sendMessage(ws, { error: error.create({ error: result.error }) }, () => {
+                        this.sendMessage(ws, { error: error.create({ message: result.error }) }, () => {
                             ws.close();
                         });
                         return;
                     }
+                    const previous = this.players[result.sub.username];
+                    if (previous && previous.webSocket !== ws) {
+                        previous.replaced = true;
+                        delete this.players[previous.username];
+                        this.emitter.dispatchEvent(new Event('playerDisconnected', previous));
+                        previous.webSocket.close();
+                    }
+
                     connection = {
                         username: result.sub.username,
                         webSocket: ws,
                     };
-                    // FIXME id in jwt as key
                     this.players[connection.username] = connection;
 
                     this.emitter.dispatchEvent(new Event('loginSuccess', connection));
@@ -181,7 +240,7 @@ class Server {
                 } else {
                     console.warn("Closing connection for invalid handshake");
                     const error = this.proto.lookupType('Error');
-                    this.sendMessage(ws, { error }, () => {
+                    this.sendMessage(ws, { error: error.create({ message: 'Poignée de main manquante' }) }, () => {
                         ws.close();
                     });
                 }
@@ -195,10 +254,11 @@ class Server {
         ws.on('close', () => {
             console.log('WebSocket disconnected');
 
-            if (connection) {
-                this.emitter.dispatchEvent(new Event('playerDisconnected', connection));
+            if (!connection || connection.replaced) return;
+            if (this.players[connection.username] === connection) {
                 delete this.players[connection.username];
             }
+            this.emitter.dispatchEvent(new Event('playerDisconnected', connection));
         });
     }
 

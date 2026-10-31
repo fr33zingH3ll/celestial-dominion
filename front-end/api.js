@@ -66,9 +66,9 @@ class Socket {
      * @param {number} rotation - The player's rotation.
      * @param {Object} velocity - The player's velocity.
      */
-    sendPlayerMove(position, rotation, velocity) {
-        const move = this.proto.lookupType("ClientPlayerMove");
-        this.sendMessage({ clientPlayerMove: move.create({ position, rotation, velocity }) });
+    sendPlayerMove(move, rotation) {
+        const moveMessage = this.proto.lookupType("ClientPlayerMove");
+        this.sendMessage({ clientPlayerMove: moveMessage.create({ move, rotation }) });
     }
 
     /**
@@ -132,7 +132,7 @@ export const login = async (username, password) => {
     const body = await result.json();
 
     if (!result.ok) {
-        throw new Error(body.error);
+        throw new Error(body.error || body.erreur || "Erreur");
     }
 
     if (body.erreur) {
@@ -163,10 +163,10 @@ export const register = async (username, password, confirm_password) => {
 	const body = await result.json();
 
 	if (!result.ok) {
-		throw new Error(body.error);
+		throw new Error(body.error || body.erreur || "Erreur");
 	}
 
-    login(username, password);
+    await login(username, password);
 };
 
 /**
@@ -184,7 +184,7 @@ export const report = async (type, description) => {
     const body = await result.json();
 
     if (!result.ok) {
-        throw new Error(body.error);
+        throw new Error(body.error || body.erreur || "Erreur");
     }
 };
 
