@@ -3,6 +3,9 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig ({
+    // Pages HTML distinctes : une URL inconnue doit répondre 404,
+    // pas la page d'accueil. Firefox refuse un module dont le corps est du HTML.
+    appType: 'mpa',
     server: {
         // Le système est souvent à la limite des instances inotify (EMFILE au watch).
         watch: {
