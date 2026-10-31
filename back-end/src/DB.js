@@ -1,4 +1,5 @@
-import r from 'rethinkdb';
+import mariadb from 'mariadb';
+import 'dotenv/config';
 
 /**
  * Class representing the database manager.
@@ -9,33 +10,39 @@ class DBManager {
          * The name of the database.
          * @type {string}
          */
-        this.dbName = 'galactik-seeker';
+        this.dbName = process.env.DB_NAME || 'galactik-seeker';
 
         /**
-         * The tables in the database.
-         * @type {Array<string>}
+         * MariaDB host.
+         * @type {string}
          */
-        this.tables = ['user', 'report'];
+        this.host = process.env.DB_HOST || '100.70.202.121';
+
+        /**
+         * MariaDB port.
+         * @type {number}
+         */
+        this.port = Number(process.env.DB_PORT || 3306);
 
         /**
          * The database user.
          * @type {string}
          */
-        this.user = 'fr33zingH3ll';
+        this.user = process.env.DB_USER;
 
         /**
          * The database password.
          * @type {string}
          */
-        this.password = 'ziJY2jq6329MBu';
+        this.password = process.env.DB_PASSWORD;
 
         /**
-         * The database connection.
-         * @type {r.Connection}
+         * Connection pool.
+         * @type {mariadb.Pool}
          */
-        this.conn;
+        this.pool;
 
-        this.connect();
+        this.connecting = this.connect();
     }
 
     /**
@@ -43,29 +50,39 @@ class DBManager {
      * @returns {Promise<void>}
      */
     async connect() {
-        console.log("Connection to the database.");
-        this.conn = await r.connect({
-            host: 'localhost',
-            port: 28015,
-            db: this.dbName,
-            // user: this.user, password: this.password
+        if (!this.user || !this.password) {
+            throw new Error('DB_USER et DB_PASSWORD sont requis dans back-end/.env.');
+        }
+
+        console.log(`Connection to the database ${this.host}.`);
+        this.pool = mariadb.createPool({
+            host: this.host,
+            port: this.port,
+            user: this.user,
+            password: this.password,
+            database: this.dbName,
+            connectionLimit: 5,
+            bigIntAsNumber: true,
         });
+
+        const conn = await this.pool.getConnection();
+        try {
+            await conn.query('SELECT 1');
+        } finally {
+            conn.release();
+        }
     }
 
-    // /**
-    //  * Setup the database.
-    //  * @returns {Promise<void>}
-    //  */
-    // async setupDabatbase() {
-    //     // Créer la base de données
-    //     const dbList = r.dbList().run(this.conn);
-    //     try {
-    //         await r.dbCreate(this.dbName).run(this.conn);
-    //         console.log(`Database '${this.dbName}' created.`);
-    //     } catch (error) {
-    //         console.log(`Database creattion '${this.dbName}' failed : `+error.msg);
-    //     }
-    // }
+    /**
+     * Run a parameterized query.
+     * @param {string} sql
+     * @param {Array} params
+     * @returns {Promise<Array>}
+     */
+    async query(sql, params = []) {
+        await this.connecting;
+        return this.pool.query(sql, params);
+    }
 }
 
 export default DBManager;
