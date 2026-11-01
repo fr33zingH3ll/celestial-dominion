@@ -75,6 +75,7 @@ Règles optionnelles, chargeables sans toucher au cœur.
 
 Obligatoire.
 
+- [x] Coque arrêtée — rendu du plateau, fichiers et code — `front-end/editor.html`, `game-engine/src/editor/`
 - [ ] Ouverture d’un plateau
 - [ ] Pose et inspection d’une pièce
 - [ ] Édition d’un prefab
