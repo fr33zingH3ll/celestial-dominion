@@ -11,16 +11,35 @@
             <strong>Éditeur</strong>
             <button id="play" type="button">Lecture</button>
             <button id="stop" type="button" disabled>Stop</button>
+            <button id="undo" type="button">Annuler</button>
             <span id="status" class="status">Arrêté</span>
         </header>
         <div class="workspace">
-            <aside>
-                <h2>Fichiers</h2>
-                <nav id="files"></nav>
+            <aside class="docks">
+                <section>
+                    <h2>Scène</h2>
+                    <nav id="scene"></nav>
+                </section>
+                <section>
+                    <h2>Fichiers</h2>
+                    <nav id="files"></nav>
+                </section>
             </aside>
             <div class="stage">
                 <section class="viewport">
                     <h2>Jeu</h2>
+                    <div class="tools">
+                        <button id="add-pawn" type="button">Pion</button>
+                        <input id="card-face" value="As" aria-label="Face de la carte" />
+                        <button id="add-card" type="button">Carte</button>
+                        <input id="die-faces" type="number" min="2" value="6" aria-label="Faces du dé" />
+                        <button id="add-die" type="button">Dé</button>
+                        <input id="zone-name" placeholder="Nouvelle zone" aria-label="Nom de zone" />
+                        <button id="add-zone" type="button">Zone</button>
+                        <button id="shuffle" type="button">Mélanger</button>
+                        <button id="draw" type="button">Piocher</button>
+                        <button id="roll" type="button">Lancer</button>
+                    </div>
                     <div id="viewport"></div>
                 </section>
                 <section class="script">
@@ -34,6 +53,12 @@
                     </div>
                 </section>
             </div>
+            <aside class="inspector">
+                <h2>Inspecteur</h2>
+                <form id="inspector"></form>
+                <p id="notice" class="notice"></p>
+                <p class="hint">Glisser pour tourner, molette pour zoomer, clic pour choisir.</p>
+            </aside>
         </div>
         <script type="module" src="/editor.js"></script>
     </body>

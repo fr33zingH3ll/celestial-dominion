@@ -55,25 +55,38 @@ header button:disabled {
 
 .workspace {
     display: grid;
-    grid-template-columns: 260px 1fr;
+    grid-template-columns: 240px minmax(0, 1fr) 270px;
     min-height: 0;
 }
 
-aside, .viewport, .script {
+.docks, .inspector, .viewport, .script {
     min-height: 0;
     min-width: 0;
 }
 
-aside {
+.docks {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: 1fr 1fr;
     background: #22262d;
     border-right: 1px solid #2c313a;
 }
 
+.docks section {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 0;
+}
+
+.inspector {
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    background: #22262d;
+    border-left: 1px solid #2c313a;
+}
+
 .stage {
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1.45fr 0.8fr;
     min-height: 0;
 }
 
@@ -88,13 +101,13 @@ h2 {
     border-bottom: 1px solid #2c313a;
 }
 
-#files {
+#files, #scene {
     overflow: auto;
     padding: 6px 0 12px;
     font-size: 13px;
 }
 
-.folder, .file {
+.folder, .file, .tree-item {
     display: block;
     width: 100%;
     padding: 3px 10px;
@@ -105,7 +118,7 @@ h2 {
     cursor: pointer;
 }
 
-.file.selected { background: #334155; }
+.file.selected, .tree-item.selected { background: #334155; }
 
 .folder { color: #c5d0e0; }
 
@@ -117,7 +130,73 @@ h2 {
 
 .viewport {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto 1fr;
+}
+
+.tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    padding: 6px 10px;
+    border-bottom: 1px solid #2c313a;
+}
+
+.tools input {
+    width: 88px;
+}
+
+.tools input,
+.tools button,
+#inspector input,
+#inspector select,
+#inspector button {
+    background: #1a1d24;
+    color: #d5d8df;
+    border: 1px solid #3a4250;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+.tools button,
+#inspector button { cursor: pointer; }
+
+.tools button:disabled,
+#inspector button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+#inspector {
+    overflow: auto;
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 10px 12px;
+}
+
+#inspector p { margin: 0; font-size: 13px; }
+
+#inspector label {
+    display: grid;
+    gap: 4px;
+    font-size: 12px;
+    color: #9aa3b2;
+}
+
+.notice {
+    margin: 0;
+    padding: 0 12px;
+    min-height: 1.2em;
+    color: #e0b4b4;
+    font-size: 12px;
+}
+
+.hint {
+    margin: 0;
+    padding: 0 12px 10px;
+    color: #6d7686;
+    font-size: 12px;
 }
 
 #viewport {
