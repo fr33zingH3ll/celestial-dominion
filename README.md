@@ -63,7 +63,7 @@ Règles optionnelles, chargeables sans toucher au cœur.
 
 ## platform/
 
-- [ ] Abstractions navigateur (fenêtre, temps, stockage, réseau)
+- [x] Abstractions navigateur — `game-engine/src/platform/` (fenêtre, temps, stockage, réseau)
 - [x] Accès directs encore en place — WebSocket et `localStorage` dans `front-end/`, Vite pour le client
 
 ## main/
