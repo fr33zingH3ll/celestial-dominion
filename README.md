@@ -59,7 +59,7 @@ Règles optionnelles, chargeables sans toucher au cœur.
 
 ## renderers/
 
-- [ ] PixiRenderer — crée l’application Pixi, affiche plateau et pièces, ne décide aucun coup
+- [x] PixiRenderer — `game-engine/src/renderers/PixiRenderer.js`. Il affiche le plateau et joue la file. Il ne déplace pas les pièces. Dans Node sans canvas, `createPixiApplication` s'arrête sur le renderer Pixi.
 
 ## platform/
 
@@ -82,7 +82,7 @@ Obligatoire.
 
 ## vendor/
 
-- [ ] PixiJS déclaré comme dépendance de rendu
+- [x] PixiJS déclaré comme dépendance de rendu — `game-engine` et `front-end`, PixiJS 7
 - [ ] Matter.js absent des dépendances
 - [ ] Three.js absent des dépendances
 
