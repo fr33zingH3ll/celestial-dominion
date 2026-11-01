@@ -8,8 +8,8 @@ import http from 'http'; // Module http inclus avec Node.js
 import WebSocket, { WebSocketServer } from 'ws';
 import protobuf from 'protobufjs';
 import { fileURLToPath } from 'node:url';
-import { Event } from 'game-engine/src/utils/Event.js';
-import { EventDispatcher } from 'game-engine/src/utils/EventDispatcher.js';
+import { Event } from 'game-engine/src/core/events/Event.js';
+import { EventDispatcher } from 'game-engine/src/core/events/EventDispatcher.js';
 import { logServerError } from './guard.js';
 import 'dotenv/config';
 

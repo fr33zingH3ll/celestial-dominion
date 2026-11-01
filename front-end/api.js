@@ -1,6 +1,6 @@
 import protobuf from 'protobufjs';
-import { EventDispatcher } from 'game-engine/src/utils/EventDispatcher';
-import { Event } from 'game-engine/src/utils/Event';
+import { EventDispatcher } from 'game-engine/src/core/events/EventDispatcher';
+import { Event } from 'game-engine/src/core/events/Event';
 
 /**
  * Class representing a WebSocket connection.

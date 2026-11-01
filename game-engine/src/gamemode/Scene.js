@@ -1,5 +1,5 @@
 import { Entity } from "../entity/Entity.js";
-import { EventDispatcher } from "../utils/EventDispatcher.js";
+import { EventDispatcher } from "../core/events/EventDispatcher.js";
 
 /**
  * Classe représentant un mode de jeu générique utilisant Matter.js.

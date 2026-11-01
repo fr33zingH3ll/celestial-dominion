@@ -6,7 +6,7 @@ import { Server } from "./api.js";
 import { Projectil } from "game-engine/src/entity/Projectil.js";
 import { clampMove } from "game-engine/src/sim/move.js";
 import { applyPlayerCommand } from "game-engine/src/sim/command.js";
-import { createRng } from "game-engine/src/utils/Rng.js";
+import { createRng } from "game-engine/src/core/maths/Rng.js";
 
 const ASTEROID_COUNT = 60;
 const ASTEROID_SEED = 0xC0FFEE;
