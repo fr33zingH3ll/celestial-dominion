@@ -1,6 +1,6 @@
 # Moteur — jeu de société
 
-Architecture cible : un jeu de société. Pas de physique, pas de Matter.js. Le rendu passe uniquement par PixiJS.
+Architecture cible : un jeu de société. Pas de physique, pas de Matter.js. La vue de jeu est en 3D avec Three.js. Le renderer Pixi reste dans le dépôt.
 
 Une case cochée veut dire que le comportement existe déjà pour ce jeu de société. Le code du jeu spatial (vaisseaux, tirs, astéroïdes, Matter.js, Three.js) est hors cible : il ne coche rien ici.
 
@@ -22,7 +22,7 @@ engine/
 ## Décisions
 
 - [x] Pas de Matter.js, pas de serveur de physique
-- [x] Un seul rendu : PixiJS. Pas de Three.js, pas de WebGPURenderer maison
+- [x] Le rendu de jeu de l'éditeur est en 3D, avec Three.js — `front-end/editor.js`
 - [ ] Matter.js et Three.js retirés du dépôt
 
 ## core/
@@ -75,7 +75,8 @@ Règles optionnelles, chargeables sans toucher au cœur.
 
 Obligatoire.
 
-- [x] Coque arrêtée — rendu du plateau, fichiers et code — `front-end/editor.html`, `game-engine/src/editor/`
+- [x] Coque — vue 3D, fichiers avec flèches, code coloré — `front-end/editor.html`, `game-engine/src/editor/`
+- [x] Lecture d'une scène vide — le bouton Lecture lance la boucle 3D sans pièce
 - [ ] Ouverture d’un plateau
 - [ ] Pose et inspection d’une pièce
 - [ ] Édition d’un prefab
