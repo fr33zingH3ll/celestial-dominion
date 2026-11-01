@@ -22,6 +22,7 @@
 - Modules optionnels : cartes, dés, chargement et déchargement sans modifier le cœur.
 - Renderer Pixi : affiche le plateau et les pièces, joue la file d'affichage, ne déplace pas une pièce.
 - Plateforme navigateur : fenêtre, temps, stockage et réseau, testables sans navigateur.
+- Bootstrap et boucle : une image affiche le plateau et envoie les coups, sans pas physique.
 
 ### Modifié
 

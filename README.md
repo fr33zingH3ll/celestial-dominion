@@ -68,8 +68,8 @@ Règles optionnelles, chargeables sans toucher au cœur.
 
 ## main/
 
-- [ ] Bootstrap unique
-- [ ] Boucle qui affiche et envoie les coups, sans pas physique
+- [x] Bootstrap unique — `game-engine/src/main/Bootstrap.js`
+- [x] Boucle qui affiche et envoie les coups, sans pas physique — `game-engine/src/main/Loop.js`
 
 ## editor/
 
