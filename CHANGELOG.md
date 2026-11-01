@@ -25,6 +25,7 @@
 - Bootstrap et boucle : une image affiche le plateau et envoie les coups, sans pas physique.
 - Éditeur : vue 3D, lecture d'une scène vide, flèches dans l'arborescence et surlignage du code.
 - Éditeur de plateau : arbre, inspecteur, pions, cartes, dés, zones, prefabs, annulation, et partie d'essai qui mélange, pioche et lance.
+- Le README décrit le but : créer des jeux de cartes et de plateau, puis les exporter en site web.
 
 ### Modifié
 
