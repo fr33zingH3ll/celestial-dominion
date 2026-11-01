@@ -20,7 +20,8 @@ class LivingEntity extends Entity {
     }
 
     /**
-     * Inflige des dégâts à l'entité vivante.
+     * Retire des points de vie et marque l'entité `dirty`, même si elle survit,
+     * pour que les clients reçoivent les points de vie restants.
      * @param {number} damage - Les dégâts à infliger.
      */
     damage(damage) {
@@ -42,7 +43,9 @@ class LivingEntity extends Entity {
     }
 
     /**
-     * Déplace l'entité vivante dans une direction donnée par un vecteur.
+     * Pousse le corps dans la direction du vecteur.
+     * Le diviseur 20000 ramène `speed` à une force Matter.js sur un pas d'environ 33 ms.
+     * Un vecteur nul ne freine pas : l'arrêt du vaisseau est fait par `applyPlayerCommand`.
      * @param {Object} vector - Le vecteur de direction du déplacement.
      */
     move(vector) {

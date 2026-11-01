@@ -2,7 +2,9 @@ import mariadb from 'mariadb';
 import 'dotenv/config';
 
 /**
- * Class representing the database manager.
+ * Pool MariaDB partagé par les routes et la vérification des jetons.
+ * Hôte, port, utilisateur, mot de passe et base viennent de l'environnement :
+ * DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME.
  */
 class DBManager {
     constructor() {

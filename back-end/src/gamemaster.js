@@ -15,7 +15,10 @@ const ASTEROID_CLEAR_RADIUS = 80;
 const PROJECTILE_SPAWN_OFFSET = 30;
 
 /**
- * Class representing the game master on the server side.
+ * Partie autoritaire.
+ * Un message de déplacement ne fait que mémoriser `entity.command`.
+ * `update` applique cette intention une fois par pas et la garde
+ * si le message suivant n'arrive pas.
  * @extends GameMaster
  */
 class BackGameMaster extends GameMaster {
@@ -65,6 +68,8 @@ class BackGameMaster extends GameMaster {
             const entity = event.message.connection.entity;
             if (!entity?.body) return;
 
+            // Dernière intention connue. Elle n'est pas appliquée ici :
+            // le pas serveur s'en charge une seule fois.
             entity.command = {
                 move: clampMove(event.message.message.move),
                 rotation: Number(event.message.message.rotation),
@@ -88,7 +93,9 @@ class BackGameMaster extends GameMaster {
     }
 
     /**
-     * Applique la dernière intention reçue, une fois par pas.
+     * Applique la dernière intention de chaque joueur connecté.
+     * Elle n'est pas effacée : une touche maintenue continue d'agir
+     * même si un message WebSocket a été perdu.
      */
     applyCommands() {
         for (const player of Object.values(this.server.players)) {

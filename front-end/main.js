@@ -1,3 +1,8 @@
+/**
+ * Point d'entrée du client.
+ * Un jeton dans localStorage ouvre la partie. Sinon, la page d'accueil.
+ * L'adresse du WebSocket vient de VITE_WEB_SOCKET_URI.
+ */
 import "./main.css";
 import { Socket } from "./api";
 import { MainGame } from "./src/scenes/MainGame.js";

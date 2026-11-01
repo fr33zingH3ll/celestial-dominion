@@ -39,6 +39,9 @@ class PlayerEntity extends LivingEntity {
     }
 
     /**
+     * Avance le délai entre deux tirs.
+     * Un contrôleur local envoie le tir. Le joueur du serveur n'en a pas :
+     * son tir arrive par le message réseau et `tryShot`.
      * @param {number} delta
      */
     update(delta) {

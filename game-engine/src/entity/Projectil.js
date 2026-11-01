@@ -3,7 +3,9 @@ import Matter from "matter-js";
 const { Vertices } = Matter;
 
 /**
- * Représente un projectile dans le jeu, héritant de la classe LivingEntity.
+ * Projectile.
+ * `spent` empêche de compter deux fois le même impact.
+ * Chaque pas réécrit la vitesse : un corps statique ne l'arrête que si la collision le retire.
  */
 class Projectil extends LivingEntity {
     /**
@@ -32,6 +34,7 @@ class Projectil extends LivingEntity {
 
         // Si le projectile a une trajectoire définie, le déplace dans cette direction
         if (this.track) {
+            // Vitesse fixe, réappliquée à chaque pas.
             const projectileSpeed = 10;
             const velocity = this.game.Vector.mult(this.game.Vector.create(
                 Math.cos(this.track),

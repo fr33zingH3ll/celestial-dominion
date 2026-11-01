@@ -3,6 +3,11 @@ import Matter from "matter-js";
 import * as decomp from 'poly-decomp';
 import { Entity } from "../entity/Entity.js";
 
+/**
+ * Simulation Matter.js partagée par le client et le serveur.
+ * `authoritative` n'est vrai que sur le serveur : lui seul enregistre les collisions.
+ * Les impacts sont mis en file pendant le pas, puis traités par `flushHits`.
+ */
 class GameMaster extends Scene {
     constructor() {
         super();
@@ -50,6 +55,12 @@ class GameMaster extends Scene {
         this.hitQueue.push({ projectile, other });
     }
 
+    /**
+     * Traite les impacts après le pas physique.
+     * Le projectile est retiré même si l'autre corps n'a pas de `damage`,
+     * sinon un astéroïde statique le laisse passer.
+     * Les dégâts ne partent que si la cible est encore dans le pool.
+     */
     flushHits() {
         const hits = this.hitQueue;
         this.hitQueue = [];

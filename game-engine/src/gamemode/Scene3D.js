@@ -2,7 +2,9 @@ import * as THREE from 'three';
 import { GameMaster } from "./GameMaster.js";
 
 /**
- * Vue 3D. La simulation Matter.js est un GameMaster séparé, pas la classe elle-même.
+ * Affichage Three.js branché sur un `GameMaster` séparé.
+ * `stepSimulation === false` n'avance pas Matter.js : la partie en ligne
+ * se contente d'afficher les états reçus du serveur.
  */
 class Scene3D {
     constructor() {
@@ -55,6 +57,7 @@ class Scene3D {
     }
 
     /**
+     * Avance la physique seulement si `stepSimulation` n'est pas false, puis dessine.
      * @param {number} delta
      */
     update(delta) {

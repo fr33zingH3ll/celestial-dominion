@@ -5,7 +5,9 @@ import { Controller } from '../playercontroller/Controller';
 import { EntityView } from '../view/EntityView.js';
 
 /**
- * Partie côté client. La physique affichée vient du serveur.
+ * Partie affichée.
+ * `stepSimulation` est false : ce client ne fait pas avancer Matter.js.
+ * Le clic envoie un tir à chaque image ; le serveur le limite avec `tryShot`.
  */
 class MainGame extends Scene3D {
     /**
