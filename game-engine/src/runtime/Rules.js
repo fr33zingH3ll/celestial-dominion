@@ -12,6 +12,14 @@ export class Rules {
         this.rules.sort((left, right) => right.priority - left.priority);
     }
 
+    remove(rule) {
+        const index = this.rules.indexOf(rule);
+        if (index === -1) {
+            throw new Error('règle absente');
+        }
+        this.rules.splice(index, 1);
+    }
+
     list() {
         return this.rules.slice();
     }
