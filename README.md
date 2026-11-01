@@ -43,11 +43,11 @@ engine/
 
 ## scene/
 
-- [ ] Plateau
-- [ ] Case
-- [ ] Pièce
-- [ ] Zone (main, pioche, défausse, marché)
-- [ ] Prefab de pièce ou de plateau
+- [x] Plateau — `game-engine/src/scene/Scene.js`
+- [x] Case — `game-engine/src/scene/Cell.js`
+- [x] Pièce — `game-engine/src/scene/Piece.js`
+- [x] Zone (main, pioche, défausse, marché) — `game-engine/src/scene/Zone.js`
+- [x] Prefab de pièce ou de plateau — `game-engine/src/scene/Prefab.js`
 
 ## modules/
 
