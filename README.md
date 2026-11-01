@@ -76,11 +76,8 @@ Règles optionnelles, chargeables sans toucher au cœur.
 Obligatoire.
 
 - [x] Coque — vue 3D, fichiers avec flèches, code coloré — `front-end/editor.html`, `game-engine/src/editor/`
-- [x] Lecture d'une scène vide — le bouton Lecture lance la boucle 3D sans pièce
-- [ ] Ouverture d’un plateau
-- [ ] Pose et inspection d’une pièce
-- [ ] Édition d’un prefab
-- [ ] Partie d’essai depuis l’éditeur
+- [x] Plateau — arbre de scène, inspecteur, zones, pions, cartes, dés, prefabs et annulation — `game-engine/src/editor/Board.js`
+- [x] Partie d’essai — mélanger, piocher et lancer un dé, puis retrouver le plateau à l’arrêt
 
 ## vendor/
 

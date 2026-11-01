@@ -24,6 +24,7 @@
 - Plateforme navigateur : fenêtre, temps, stockage et réseau, testables sans navigateur.
 - Bootstrap et boucle : une image affiche le plateau et envoie les coups, sans pas physique.
 - Éditeur : vue 3D, lecture d'une scène vide, flèches dans l'arborescence et surlignage du code.
+- Éditeur de plateau : arbre, inspecteur, pions, cartes, dés, zones, prefabs, annulation, et partie d'essai qui mélange, pioche et lance.
 
 ### Modifié
 
