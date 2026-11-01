@@ -9,7 +9,9 @@
     <body>
         <header>
             <strong>Éditeur</strong>
-            <span class="status">Arrêté</span>
+            <button id="play" type="button">Lecture</button>
+            <button id="stop" type="button" disabled>Stop</button>
+            <span id="status" class="status">Arrêté</span>
         </header>
         <div class="workspace">
             <aside>
@@ -25,7 +27,10 @@
                     <h2 id="script-name">Script</h2>
                     <div class="code">
                         <pre id="gutter" aria-hidden="true">1</pre>
-                        <textarea id="code" spellcheck="false" aria-label="Éditeur de code"></textarea>
+                        <div class="sheet">
+                            <pre id="highlight" aria-hidden="true"></pre>
+                            <textarea id="code" spellcheck="false" aria-label="Éditeur de code"></textarea>
+                        </div>
                     </div>
                 </section>
             </div>

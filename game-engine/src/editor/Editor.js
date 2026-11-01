@@ -22,6 +22,16 @@ export class Editor {
             throw new Error('aucun fichier');
         }
         this.buffers.set(this.selected, String(text));
+    }
+
+    play() {
+        if (this.running) {
+            throw new Error('boucle déjà lancée');
+        }
+        this.running = true;
+    }
+
+    stop() {
         this.running = false;
     }
 

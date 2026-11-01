@@ -25,6 +25,20 @@ header {
     border-bottom: 1px solid #2c313a;
 }
 
+header button {
+    border: 1px solid #3a4250;
+    background: #2a3140;
+    color: #d5d8df;
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+}
+
+header button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
 .status {
     margin-left: auto;
     padding: 2px 8px;
@@ -32,6 +46,11 @@ header {
     background: #3a2a2a;
     color: #e0b4b4;
     font-size: 12px;
+}
+
+.status.running {
+    background: #1e3a2a;
+    color: #b7e0c2;
 }
 
 .workspace {
@@ -90,19 +109,27 @@ h2 {
 
 .folder { color: #c5d0e0; }
 
-#viewport {
-    height: calc(100% - 33px);
+.arrow {
+    display: inline-block;
+    width: 1em;
+    color: #9aa3b2;
+}
+
+.viewport {
     display: grid;
-    place-items: center;
-    background:
-        linear-gradient(#1a1d24, #1a1d24),
-        #1a1d24;
-    overflow: auto;
+    grid-template-rows: auto 1fr;
+}
+
+#viewport {
+    min-height: 0;
+    background: #1a1d24;
+    overflow: hidden;
 }
 
 #viewport canvas {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 .script {
@@ -118,27 +145,51 @@ h2 {
     min-height: 0;
 }
 
-#gutter, #code {
+.sheet {
+    position: relative;
+    min-height: 0;
+    background: #1a1d24;
+}
+
+#gutter, #highlight, #code {
     margin: 0;
-    padding: 8px 0;
-    overflow: auto;
     font-family: "Cascadia Code", "Source Code Pro", monospace;
     font-size: 13px;
     line-height: 1.45;
-    background: #1a1d24;
-    color: #d7dbe3;
+    tab-size: 4;
 }
 
 #gutter {
-    padding-right: 8px;
+    padding: 8px 8px 8px 0;
+    overflow: hidden;
     text-align: right;
     color: #6d7686;
+    background: #1a1d24;
+}
+
+#highlight, #code {
+    position: absolute;
+    inset: 0;
+    padding: 8px 10px;
+    white-space: pre;
+    overflow: auto;
+}
+
+#highlight {
+    color: #d7dbe3;
+    pointer-events: none;
 }
 
 #code {
-    padding-left: 10px;
     border: 0;
     resize: none;
     outline: none;
-    white-space: pre;
+    color: transparent;
+    caret-color: #f2f4f8;
+    background: transparent;
 }
+
+.hl-keyword { color: #c792ea; }
+.hl-string { color: #c3e88d; }
+.hl-comment { color: #6d7686; font-style: italic; }
+.hl-number { color: #f78c6c; }
