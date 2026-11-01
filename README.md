@@ -35,11 +35,11 @@ engine/
 
 ## runtime/
 
-- [ ] Rules — légalité d’un coup, application, annulation
-- [ ] Turn — ordre des joueurs, phase, fin de tour
-- [ ] Rendering — file d’affichage Pixi, séparée des règles
-- [ ] Audio
-- [ ] Input — pointer sur une case ou une pièce, pas un vaisseau
+- [x] Rules — `game-engine/src/runtime/Rules.js` (légalité, application, annulation)
+- [x] Turn — `game-engine/src/runtime/Turn.js`
+- [x] Rendering — file de commandes `game-engine/src/runtime/RenderQueue.js`, séparée des règles. Pixi les lira dans `renderers/`
+- [x] Audio — demandes de son `game-engine/src/runtime/AudioCue.js`. La sortie haut-parleur reste à brancher
+- [x] Input — `game-engine/src/runtime/Input.js`, une pièce avant la case
 
 ## scene/
 

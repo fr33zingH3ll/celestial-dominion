@@ -12,6 +12,7 @@ Lis `protocol_ai/PROTOCOL_DEV_FEATURE_GAME_ENGINE.txt`, phase 4. Ne versionne pa
 La suite actuelle est `npm test`, via `node --test`, sur :
 - `game-engine/src/sim/move.test.js`
 - `game-engine/src/core/maths/Rng.test.js`
+- `game-engine/src/runtime/runtime.test.js`
 - `game-engine/src/gamemode/hits.test.js`
 
 À faire :

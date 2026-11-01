@@ -17,6 +17,7 @@
 ### Ajouté
 
 - Module `core` : vecteurs, interpolation, grille de cases, objet identifié, cache de références et bus d'événements annulable.
+- Module `runtime` : légalité d'un coup, annulation, tours, file d'affichage, demandes de son et pointer de case.
 
 ### Modifié
 
