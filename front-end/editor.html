@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <script src="/clear-sw.js"></script>
+        <title>Éditeur</title>
+        <link rel="stylesheet" href="/editor.css" />
+    </head>
+    <body>
+        <header>
+            <strong>Éditeur</strong>
+            <span class="status">Arrêté</span>
+        </header>
+        <div class="workspace">
+            <aside>
+                <h2>Fichiers</h2>
+                <nav id="files"></nav>
+            </aside>
+            <div class="stage">
+                <section class="viewport">
+                    <h2>Jeu</h2>
+                    <div id="viewport"></div>
+                </section>
+                <section class="script">
+                    <h2 id="script-name">Script</h2>
+                    <div class="code">
+                        <pre id="gutter" aria-hidden="true">1</pre>
+                        <textarea id="code" spellcheck="false" aria-label="Éditeur de code"></textarea>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <script type="module" src="/editor.js"></script>
+    </body>
+</html>

@@ -1,4 +1,4 @@
-import { Application, Container } from 'pixi.js';
+import { Application, Container, Graphics } from 'pixi.js';
 
 export const CELL_SIZE = 64;
 
@@ -65,9 +65,28 @@ export class PixiRenderer {
         }
         const node = new Container();
         node.kind = kind;
+        this.#paint(node, kind);
         this.application.stage.addChild(node);
         this.nodes.set(key, node);
         return node;
+    }
+
+    #paint(node, kind) {
+        if (typeof document === 'undefined' || (kind !== 'cell' && kind !== 'piece')) {
+            return;
+        }
+        const graphic = new Graphics();
+        if (kind === 'cell') {
+            graphic.lineStyle(1, 0x46556c);
+            graphic.beginFill(0x2c3544);
+            graphic.drawRect(1, 1, CELL_SIZE - 2, CELL_SIZE - 2);
+        } else {
+            graphic.lineStyle(2, 0xf0d48a);
+            graphic.beginFill(0xd7b15e);
+            graphic.drawCircle(CELL_SIZE / 2, CELL_SIZE / 2, 18);
+        }
+        graphic.endFill();
+        node.addChild(graphic);
     }
 
     #remove(key) {

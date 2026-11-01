@@ -21,6 +21,7 @@ export default defineConfig ({
                 register: resolve(__dirname, 'register.html'),
                 report: resolve(__dirname, 'report.html'),
                 home: resolve(__dirname, 'home.html'),
+                editor: resolve(__dirname, 'editor.html'),
             },
         },
     },

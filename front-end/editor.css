@@ -1,0 +1,144 @@
+:root {
+    color: #d5d8df;
+    background: #1b1e24;
+    font-family: "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: grid;
+    grid-template-rows: 42px 1fr;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 14px;
+    background: #15181d;
+    border-bottom: 1px solid #2c313a;
+}
+
+.status {
+    margin-left: auto;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #3a2a2a;
+    color: #e0b4b4;
+    font-size: 12px;
+}
+
+.workspace {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 0;
+}
+
+aside, .viewport, .script {
+    min-height: 0;
+    min-width: 0;
+}
+
+aside {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    background: #22262d;
+    border-right: 1px solid #2c313a;
+}
+
+.stage {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    min-height: 0;
+}
+
+h2 {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #9aa3b2;
+    border-bottom: 1px solid #2c313a;
+}
+
+#files {
+    overflow: auto;
+    padding: 6px 0 12px;
+    font-size: 13px;
+}
+
+.folder, .file {
+    display: block;
+    width: 100%;
+    padding: 3px 10px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.file.selected { background: #334155; }
+
+.folder { color: #c5d0e0; }
+
+#viewport {
+    height: calc(100% - 33px);
+    display: grid;
+    place-items: center;
+    background:
+        linear-gradient(#1a1d24, #1a1d24),
+        #1a1d24;
+    overflow: auto;
+}
+
+#viewport canvas {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.script {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border-top: 1px solid #2c313a;
+    background: #1e2229;
+}
+
+.code {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    min-height: 0;
+}
+
+#gutter, #code {
+    margin: 0;
+    padding: 8px 0;
+    overflow: auto;
+    font-family: "Cascadia Code", "Source Code Pro", monospace;
+    font-size: 13px;
+    line-height: 1.45;
+    background: #1a1d24;
+    color: #d7dbe3;
+}
+
+#gutter {
+    padding-right: 8px;
+    text-align: right;
+    color: #6d7686;
+}
+
+#code {
+    padding-left: 10px;
+    border: 0;
+    resize: none;
+    outline: none;
+    white-space: pre;
+}
