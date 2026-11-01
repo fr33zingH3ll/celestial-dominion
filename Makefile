@@ -1,4 +1,4 @@
-# Lance Galactic Seekers : frontend Vite + backend (http://127.0.0.1:3000).
+# Lance Celestial Dominion : éditeur Vite + API (http://127.0.0.1:3000).
 # Le backend utilise MariaDB sur 100.70.202.121.
 
 .DEFAULT_GOAL := dev

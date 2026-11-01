@@ -10,7 +10,6 @@ Tu es l'agent Testeur. L'orchestrateur est l'agent parent. Tu ne mergés pas et 
 Lis `protocol_ai/PROTOCOL_DEV_FEATURE_GAME_ENGINE.txt`, phase 4. Ne versionne pas ce fichier.
 
 La suite actuelle est `npm test`, via `node --test`, sur :
-- `game-engine/src/sim/move.test.js`
 - `game-engine/src/core/maths/Rng.test.js`
 - `game-engine/src/runtime/runtime.test.js`
 - `game-engine/src/scene/scene.test.js`
@@ -20,7 +19,6 @@ La suite actuelle est `npm test`, via `node --test`, sur :
 - `game-engine/src/main/main.test.js`
 - `game-engine/src/editor/editor.test.js`
 - `game-engine/src/editor/board.test.js`
-- `game-engine/src/gamemode/hits.test.js`
 
 À faire :
 - Couvrir le comportement nouveau : cas nominal, limites, erreurs.

@@ -4,9 +4,9 @@ Créer des jeux de cartes et de plateau dans le navigateur, puis exporter chaque
 
 ## Où on en est
 
-Le moteur de plateau et un éditeur local sont en place. On compose un plateau, on pose des pions, des cartes et des dés, et on essaie la partie seul sur la machine. Le jeu ne sort pas encore de cet éditeur : il n’est pas enregistré, pas exporté, et personne ne peut rejoindre une session hébergée par un joueur.
+Le moteur de plateau et un éditeur local sont en place. On compose un plateau, on pose des pions, des cartes et des dés, et on essaie la partie seul sur la machine. Le site, l’enregistrement des jeux et les parties à plusieurs ne sont pas encore là.
 
-L’ancien jeu spatial (vaisseaux, tirs, Matter.js) est encore dans le dépôt. Il ne fait pas partie de ce but.
+Le jeu spatial (vaisseaux, Matter.js, physique) est retiré du moteur. Les paquets s’appellent `celestial-dominion`. Le dépôt GitHub actuel reste `fr33zingH3ll/celestial-dominion` tant qu’un nouveau dépôt n’est pas créé.
 
 ### Déjà utilisable
 
@@ -20,14 +20,36 @@ L’ancien jeu spatial (vaisseaux, tirs, Matter.js) est encore dans le dépôt. 
 - Boucle qui affiche le plateau et envoie un coup, sans physique — `game-engine/src/main/`
 - Comptes, jetons et MariaDB — `back-end/src/`. Ils servent encore l’ancien jeu, pas les plateaux
 
-### Encore à faire pour le but
+### Tâches
 
-1. Un jeu est un document de configuration. L’interface le modifie, le fichier est écrit en arrière-plan.
-2. Les règles, la taille du plateau et la place des zones se règlent dans l’interface, sans éditer le code du moteur.
-3. Créer, enregistrer et rouvrir plusieurs jeux.
-4. Exporter un jeu en site web statique, prêt à déposer sur un hébergement.
-5. Multijoueur : le joueur qui lance la partie héberge la session, les autres la rejoignent.
-6. Retirer le jeu spatial (Matter.js, vaisseaux, projectiles, astéroïdes).
+Le produit est un site. Chaque personne y crée des jeux, les range dans son compte, les importe, les exporte, et les lance en partie.
+
+**Site**
+
+1. Page d’accueil : nouveau jeu, mes jeux, importer, exporter.
+2. Un jeu est un fichier JSON : nom, plateau, zones et leur place, pièces, règles, nombre de joueurs.
+3. L’éditeur ouvre ce JSON et le réécrit. Le code du moteur ne se modifie pas pour décrire un jeu.
+4. Importer ce JSON depuis le disque. Exporter le même JSON.
+5. Export web : un dossier `index.html` + moteur + JSON, que l’on copie sur un hébergement.
+6. Cloud : avec le compte, enregistrer le JSON, lister les jeux, les rouvrir, les supprimer. La base et les comptes existent déjà, la table des jeux non.
+
+**Éditeur**
+
+7. Règles à l’écran : déplacer une pièce (distance, cases ou zone), piocher, mélanger, lancer un dé, activer ou désactiver la règle.
+8. Déplacer une zone dans la vue 3D, et retrouver cette place dans le JSON.
+9. Choisir le jeu ouvert dans la liste du compte, sans changer de page de code.
+
+**Multijoueur**
+
+10. Même règles pour les deux modes. L’autorité applique le coup et renvoie l’état. Les autres n’envoient qu’un coup.
+11. Serveur dédié : le site ouvre une session, donne un code, les joueurs rejoignent ce code.
+12. Auto-hébergement : le navigateur de l’hôte est l’autorité. Il affiche une adresse. Les autres s’y connectent.
+13. Salon : liste des joueurs, l’hôte démarre, l’arrêt ferme la session.
+
+**Dépôt**
+
+14. Retirer les messages de l’ancien jeu dans `proto/game.proto` et `back-end/src/api.js` quand le protocole de session existe.
+15. Pousser ce dépôt nettoyé vers un nouveau dépôt GitHub. Le lien SSH manque encore.
 
 ## Essayer
 
@@ -58,7 +80,7 @@ engine/
 
 - [x] Pas de Matter.js dans le nouveau moteur, pas de serveur de physique
 - [x] La vue de l’éditeur est en 3D, avec Three.js — `front-end/editor.js`
-- [ ] Matter.js retiré du dépôt
+- [x] Matter.js retiré des dépendances du moteur, du site et du serveur
 - [ ] Export web d’un jeu
 - [ ] Session hébergée par un joueur
 
@@ -116,11 +138,10 @@ engine/
 - [x] Lancement local — `make`
 - [ ] Messages de partie adaptés au plateau — `proto/game.proto` décrit encore le jeu spatial
 
-### À retirer avec le jeu spatial
+### Ancien jeu, encore dans le serveur
 
-- `game-engine/src/gamemode/` et Matter.js
-- `game-engine/src/entity/`
-- `game-engine/src/sim/`
-- `front-end/src/view/EntityView.js` et `front-end/src/playercontroller/Controller.js`
+- `proto/game.proto` décrit encore les vaisseaux et les tirs
+- `back-end/src/api.js` parle encore ce protocole sur le WebSocket
+- Les comptes et MariaDB restent : ils serviront au stockage des jeux
 
 Cocher une case quand le comportement du jeu de société est là. Ne pas cocher une brique du jeu spatial.
