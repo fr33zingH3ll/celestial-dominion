@@ -14,6 +14,7 @@ La suite actuelle est `npm test`, via `node --test`, sur :
 - `game-engine/src/core/maths/Rng.test.js`
 - `game-engine/src/runtime/runtime.test.js`
 - `game-engine/src/scene/scene.test.js`
+- `game-engine/src/modules/modules.test.js`
 - `game-engine/src/gamemode/hits.test.js`
 
 À faire :

@@ -53,9 +53,9 @@ engine/
 
 Règles optionnelles, chargeables sans toucher au cœur.
 
-- [ ] Cartes
-- [ ] Dés
-- [ ] Chargement et déchargement d’un module
+- [x] Cartes — `game-engine/src/modules/Cards.js`
+- [x] Dés — `game-engine/src/modules/Dice.js`
+- [x] Chargement et déchargement d’un module — `game-engine/src/modules/Modules.js`
 
 ## renderers/
 
