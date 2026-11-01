@@ -14,6 +14,11 @@
 - Firefox peut ouvrir le jeu : le service worker d'une autre application sur le port 5173 est retiré, et une URL de module inconnue ne renvoie plus la page HTML.
 - Une erreur de pas, de socket, de jeton ou de base est journalisée. Le processus continue d'écouter et ne relance pas la partie.
 
+### Ajouté
+
+- Module `core` : vecteurs, interpolation, grille de cases, objet identifié, cache de références et bus d'événements annulable.
+
 ### Modifié
 
 - Les règles de simulation, de session et de boucle serveur sont décrites à côté du code.
+- Le générateur aléatoire et le bus d'événements vivent dans `game-engine/src/core/`.

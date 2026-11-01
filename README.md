@@ -1,49 +1,106 @@
-# Galatik Seekers
+# Moteur — jeu de société
 
-Bienvenue dans l'univers de Galactic Seekers, un jeu vidéo où vous avez le pouvoir de créer votre propre destinée. Explorez un monde riche en possibilités, façonnez votre vie selon vos aspirations et incarnez la personne que vous rêvez d'être. Ce projet ambitieux est construit avec les technologies de pointe que sont Matter.js et Pixi.js, et il est structuré en trois parties distinctes : la Game Engine (moteur de jeu), le Frontend et le Backend.
+Architecture cible : un jeu de société. Pas de physique, pas de Matter.js. Le rendu passe uniquement par PixiJS.
 
-## Partie Commune - Moteur de Jeu
+Une case cochée veut dire que le comportement existe déjà pour ce jeu de société. Le code du jeu spatial (vaisseaux, tirs, astéroïdes, Matter.js, Three.js) est hors cible : il ne coche rien ici.
 
-La Game Engine constitue le cœur du projet, fournissant les mécanismes essentiels pour donner vie à l'univers de Galactic Seekers. Avec Matter.js, nous créons un monde physique réaliste, permettant aux joueurs d'interagir de manière fluide avec leur environnement. Cette partie du projet est dédiée à la logique du jeu, aux mécanismes de collision, et à la gestion des entités.
+L’éditeur n’est pas optionnel.
 
-## Partie Frontend
-
-La partie Frontend offre une expérience immersive aux joueurs. En utilisant Pixi.js, nous concevons des graphismes et des animations captivants pour donner vie à l'univers de Galactic Seekers. Les joueurs peuvent explorer des mondes fascinants, interagir avec d'autres personnages, et poursuivre leurs objectifs dans un environnement visuellement stimulant.
-
-## Partie Backend
-
-Le Backend est la force motrice qui soutient l'ensemble du jeu. Cette partie gère la logique côté serveur, l'authentification des utilisateurs, la gestion des bases de données, et la synchronisation des actions des joueurs. Avec une architecture solide, le Backend garantit une expérience de jeu cohérente et sécurisée.
-
-Le futur de Galactic Seekers promet encore davantage d'innovations, notamment avec l'introduction d'un lobby permettant aux joueurs de choisir leurs serveurs, de nouvelles fonctionnalités, et bien plus encore.
-
-
-## Rejoignez-nous dans l'aventure Galactic Seekers et façonnez votre destinée ! 🚀✨
-
-
-## Installation
-
-Node.js est une dépendance indispensable pour le projet Galactic Seekers. Assurez-vous de suivre les étapes ci-dessous pour installer Node.js avant de procéder à l'installation du projet.
-
-1. Linux
-
-```bash
-# Utilisez votre gestionnaire de paquets (par exemple, apt)
-sudo apt update
-sudo apt install nodejs
+```text
+engine/
+├── core/                 Math, Object, EventBus, Assets, Utils
+├── runtime/              Rules, Turn, Rendering, Input, Audio
+├── scene/                Plateau, Case, Pièce, Zone, Prefab
+├── modules/              Règles optionnelles (cartes, dés, enchères…)
+├── renderers/            PixiRenderer
+├── platform/             Abstractions navigateur
+├── main/                 Bootstrap et boucle de jeu
+├── editor/               Obligatoire
+└── vendor/               PixiJS, sans Matter.js
 ```
 
-2. Windows 
-Téléchargez et installez Node.js à partir du site officiel : [Télécharger Node.js](https://nodejs.org/en)
+## Décisions
 
-### Exemple d'Installation
+- [x] Pas de Matter.js, pas de serveur de physique
+- [x] Un seul rendu : PixiJS. Pas de Three.js, pas de WebGPURenderer maison
+- [ ] Matter.js et Three.js retirés du dépôt
 
-```bash
-# Clone le référentiel depuis GitHub
-git clone git@github.com:fr33zingH3ll/galactic-seekers.git
+## core/
 
-# Accédez au répertoire du projet
-cd votre-projet
+- [x] Math — `game-engine/src/core/maths/` (`Vector`, `Interpolation`, `Grid`, distances Manhattan et Tchebychev)
+- [x] Object — `game-engine/src/core/objects/GameObject.js`
+- [x] EventBus minimal — `game-engine/src/core/events/Event.js`, `EventDispatcher.js`
+- [ ] Assets — cache de références dans `game-engine/src/core/assets/AssetCache.js`. Le chargement Pixi attend que PixiJS soit une dépendance
+- [x] Générateur déterministe — `game-engine/src/core/maths/Rng.js` (dés et pioches reproductibles)
 
-# Installez les dépendances
-./install.sh
-```
+## runtime/
+
+- [ ] Rules — légalité d’un coup, application, annulation
+- [ ] Turn — ordre des joueurs, phase, fin de tour
+- [ ] Rendering — file d’affichage Pixi, séparée des règles
+- [ ] Audio
+- [ ] Input — pointer sur une case ou une pièce, pas un vaisseau
+
+## scene/
+
+- [ ] Plateau
+- [ ] Case
+- [ ] Pièce
+- [ ] Zone (main, pioche, défausse, marché)
+- [ ] Prefab de pièce ou de plateau
+
+## modules/
+
+Règles optionnelles, chargeables sans toucher au cœur.
+
+- [ ] Cartes
+- [ ] Dés
+- [ ] Chargement et déchargement d’un module
+
+## renderers/
+
+- [ ] PixiRenderer — crée l’application Pixi, affiche plateau et pièces, ne décide aucun coup
+
+## platform/
+
+- [ ] Abstractions navigateur (fenêtre, temps, stockage, réseau)
+- [x] Accès directs encore en place — WebSocket et `localStorage` dans `front-end/`, Vite pour le client
+
+## main/
+
+- [ ] Bootstrap unique
+- [ ] Boucle qui affiche et envoie les coups, sans pas physique
+
+## editor/
+
+Obligatoire.
+
+- [ ] Ouverture d’un plateau
+- [ ] Pose et inspection d’une pièce
+- [ ] Édition d’un prefab
+- [ ] Partie d’essai depuis l’éditeur
+
+## vendor/
+
+- [ ] PixiJS déclaré comme dépendance de rendu
+- [ ] Matter.js absent des dépendances
+- [ ] Three.js absent des dépendances
+
+## Autour du moteur, déjà en place
+
+- [x] Comptes, jetons, rapports — `back-end/src/`
+- [x] MariaDB — `back-end/src/DB.js`
+- [x] Lancement local — `make`
+- [ ] Messages de partie adaptés au plateau — `proto/game.proto` décrit encore le jeu spatial
+
+## Hors cible, à retirer
+
+- `game-engine/src/gamemode/GameMaster.js` et Matter.js
+- `game-engine/src/entity/` (vaisseau, projectile, astéroïde)
+- `game-engine/src/gamemode/Scene3D.js` et Three.js
+- `game-engine/src/sim/` (force, vitesse, pas physique)
+- `front-end/src/view/EntityView.js` et `front-end/src/playercontroller/Controller.js`
+
+## Comment mettre à jour ce fichier
+
+Cocher une case quand le comportement du jeu de société est là. Remplacer le chemin le jour où le code entre dans `engine/`. Ne pas recocher une brique du jeu spatial.
