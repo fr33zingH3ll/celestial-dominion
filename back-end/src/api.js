@@ -10,6 +10,7 @@ import protobuf from 'protobufjs';
 import { fileURLToPath } from 'node:url';
 import { Event } from 'game-engine/src/utils/Event.js';
 import { EventDispatcher } from 'game-engine/src/utils/EventDispatcher.js';
+import { logServerError } from './guard.js';
 import 'dotenv/config';
 
 const PROTO_PATH = fileURLToPath(new URL('../../proto/game.proto', import.meta.url));
@@ -147,17 +148,58 @@ class Server {
 
         // Gérez les connexions WebSocket
         this.wss.on('connection', this.handleWebSocketConnection.bind(this));
+        this.wss.on('error', (error) => logServerError('websocket-server', error));
+
+        // Dernier recours HTTP : une route async qui jette doit répondre, pas tuer le processus.
+        this.app.use((error, req, res, next) => {
+            logServerError('http', error);
+            if (res.headersSent) {
+                next(error);
+                return;
+            }
+            const invalid = error?.type === 'entity.parse.failed';
+            sendError(res, invalid ? 400 : 500, invalid ? 'Requête illisible' : 'Erreur interne');
+        });
     }
 
     /**
-     * Start the server.
+     * Ouvre le port même si la base ou le proto manquent.
+     * @returns {Promise<boolean>} vrai si le port écoute.
      */
     async start() {
-        await this.db.connecting;
-        this.proto = await protobuf.load(PROTO_PATH);
+        try {
+            await this.db.connecting;
+        } catch (error) {
+            logServerError('database', error);
+        }
 
-        this.server.listen(this.port, '127.0.0.1', () => {
-            console.log(`Server is running at http://localhost:${this.port}`);
+        try {
+            this.proto = await protobuf.load(PROTO_PATH);
+        } catch (error) {
+            logServerError('proto', error);
+            this.proto = null;
+        }
+
+        this.listening = await this.listen();
+        return this.listening;
+    }
+
+    /**
+     * @returns {Promise<boolean>}
+     */
+    listen() {
+        return new Promise((resolve) => {
+            const onError = (error) => {
+                logServerError('http', error);
+                resolve(false);
+            };
+            this.server.once('error', onError);
+            this.server.listen(this.port, '127.0.0.1', () => {
+                this.server.off('error', onError);
+                this.server.on('error', (error) => logServerError('http', error));
+                console.log(`Server is running at http://localhost:${this.port}`);
+                resolve(true);
+            });
         });
     }
 
@@ -168,19 +210,26 @@ class Server {
      * @param {Express.NextFunction} next
      */
     async requireAuth(req, res, next) {
-        const header = req.headers.authorization || '';
-        const token = header.startsWith('Bearer ') ? header.slice(7) : '';
-        if (!token) {
-            return sendError(res, 401, 'Jeton manquant');
-        }
+        try {
+            const header = req.headers.authorization || '';
+            const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+            if (!token) {
+                return sendError(res, 401, 'Jeton manquant');
+            }
 
-        const result = await this.jwtService.jwtVerify(token);
-        if (result.error) {
-            return sendError(res, 401, result.error);
-        }
+            const result = await this.jwtService.jwtVerify(token);
+            if (result.error) {
+                return sendError(res, 401, result.error);
+            }
 
-        req.user = result.sub;
-        next();
+            req.user = result.sub;
+            next();
+        } catch (error) {
+            logServerError('auth', error);
+            if (!res.headersSent) {
+                sendError(res, 500, 'Erreur interne');
+            }
+        }
     }
 
     /**
@@ -197,6 +246,12 @@ class Server {
      * @param {WebSocket} ws - The WebSocket connection.
      */
     handleWebSocketConnection(ws) {
+        ws.on('error', (error) => logServerError('websocket', error));
+        if (!this.proto) {
+            ws.close();
+            return;
+        }
+
         console.log('WebSocket connected');
         const wrap = this.proto.lookupType('MessageWrapper');
 
@@ -254,11 +309,15 @@ class Server {
         ws.on('close', () => {
             console.log('WebSocket disconnected');
 
-            if (!connection || connection.replaced) return;
-            if (this.players[connection.username] === connection) {
-                delete this.players[connection.username];
+            try {
+                if (!connection || connection.replaced) return;
+                if (this.players[connection.username] === connection) {
+                    delete this.players[connection.username];
+                }
+                this.emitter.dispatchEvent(new Event('playerDisconnected', connection));
+            } catch (error) {
+                logServerError('websocket-close', error);
             }
-            this.emitter.dispatchEvent(new Event('playerDisconnected', connection));
         });
     }
 
@@ -360,9 +419,14 @@ class Server {
      * @param {Function} [cb] - Optional callback to execute after sending the message.
      */
     sendMessage(ws, msg, cb) {
-        const wrap = this.proto.lookupType('MessageWrapper');
+        if (!this.proto || !ws || ws.readyState !== WebSocket.OPEN) return;
 
-        ws.send(wrap.encode(wrap.create(msg)).finish(), cb);
+        try {
+            const wrap = this.proto.lookupType('MessageWrapper');
+            ws.send(wrap.encode(wrap.create(msg)).finish(), cb);
+        } catch (error) {
+            logServerError('websocket-send', error);
+        }
     }
 }
 

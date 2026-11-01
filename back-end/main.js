@@ -1,23 +1,29 @@
 import { BackGameMaster } from "./src/gamemaster.js";
+import { advanceGame, installProcessGuards, logServerError } from "./src/guard.js";
 import { MAX_CATCHUP_STEPS, SERVER_TICK_MS } from "game-engine/src/sim/tick.js";
 
+/**
+ * Le processus reste là si le démarrage ou un pas échoue.
+ * La boucle ne redémarre pas toute seule.
+ */
+installProcessGuards();
+
 (async () => {
-	const game = new BackGameMaster();
-	await game.start();
-	let last = Date.now();
-	let accumulator = 0;
-	setInterval(() => {
-		const now = Date.now();
-		accumulator += now - last;
-		last = now;
-		let steps = 0;
-		while (accumulator >= SERVER_TICK_MS && steps < MAX_CATCHUP_STEPS) {
-			game.update(SERVER_TICK_MS);
-			accumulator -= SERVER_TICK_MS;
-			steps += 1;
-		}
-		if (steps === MAX_CATCHUP_STEPS) {
-			accumulator = 0;
-		}
-	}, SERVER_TICK_MS);
+	let game;
+	try {
+		game = new BackGameMaster();
+		const listening = await game.start();
+		if (!listening) return;
+
+		let last = Date.now();
+		let accumulator = 0;
+		setInterval(() => {
+			const now = Date.now();
+			const elapsed = now - last;
+			last = now;
+			accumulator = advanceGame(game, accumulator, elapsed, SERVER_TICK_MS, MAX_CATCHUP_STEPS);
+		}, SERVER_TICK_MS);
+	} catch (error) {
+		logServerError('start', error);
+	}
 })();

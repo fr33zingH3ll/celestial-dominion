@@ -7,7 +7,7 @@
         "back-end"
     ],
     "scripts": {
-        "test": "node --test game-engine/src/sim/move.test.js game-engine/src/sim/command.test.js game-engine/src/utils/Rng.test.js game-engine/src/gamemode/hits.test.js"
+        "test": "node --test game-engine/src/sim/move.test.js game-engine/src/sim/command.test.js game-engine/src/utils/Rng.test.js game-engine/src/gamemode/hits.test.js back-end/src/guard.test.js"
     },
     "dependencies": {
         "argon2": "^0.40.1",

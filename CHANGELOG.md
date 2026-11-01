@@ -12,3 +12,4 @@
 - Login et inscription répondent 409 ou 500 au lieu de laisser tomber la requête.
 - Le pas serveur rattrape un retard court au lieu de dériver avec `setInterval`.
 - Firefox peut ouvrir le jeu : le service worker d'une autre application sur le port 5173 est retiré, et une URL de module inconnue ne renvoie plus la page HTML.
+- Une erreur de pas, de socket, de jeton ou de base est journalisée. Le processus continue d'écouter et ne relance pas la partie.

@@ -9,11 +9,11 @@ class JsonWebTokenAuth {
      * @param {import('./DB.js').default} db
      */
     constructor(db) {
-        this.private_key = process.env.JWT_SECRET;
-        if (!this.private_key) {
-            throw new Error('JWT_SECRET manquant dans back-end/.env.');
-        }
+        this.private_key = process.env.JWT_SECRET || '';
         this.db = db;
+        if (!this.private_key) {
+            console.error('JWT_SECRET manquant dans back-end/.env. L\'authentification répondra une erreur.');
+        }
     }
 
     /**
@@ -21,6 +21,10 @@ class JsonWebTokenAuth {
      * @returns {Promise<{ sub?: { id: string, username: string }, error?: string }>}
      */
     async jwtVerify(token) {
+        if (!this.private_key) {
+            return { error: 'JWT_SECRET manquant' };
+        }
+
         let decrypt_token;
         const res = {};
 
@@ -56,6 +60,9 @@ class JsonWebTokenAuth {
      * @returns {string}
      */
     jwtSign(payload, options) {
+        if (!this.private_key) {
+            throw new Error('JWT_SECRET manquant');
+        }
         return jwt.sign(payload, this.private_key, { ...options, algorithm: 'HS256' });
     }
 }

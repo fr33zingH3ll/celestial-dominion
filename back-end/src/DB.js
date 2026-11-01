@@ -1,5 +1,6 @@
 import mariadb from 'mariadb';
 import 'dotenv/config';
+import { logServerError } from './guard.js';
 
 /**
  * Class representing the database manager.
@@ -64,6 +65,7 @@ class DBManager {
             connectionLimit: 5,
             bigIntAsNumber: true,
         });
+        this.pool.on('error', (error) => logServerError('database', error));
 
         const conn = await this.pool.getConnection();
         try {
