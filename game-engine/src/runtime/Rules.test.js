@@ -103,3 +103,17 @@ test('une règle sans nom ou sans fonctions est refusée', () => {
     assert.throws(() => new Rule({ name: '', legal() {}, apply() {}, undo() {} }), /nom de règle requis/);
     assert.throws(() => new Rule({ name: 'incomplète', legal() {} }), /règle incomplète/);
 });
+
+test('remove retire la règle ajoutée', () => {
+    const rules = new Rules();
+    const rule = new Rule({
+        name: 'temporaire',
+        legal: () => true,
+        apply: () => null,
+        undo: () => {},
+    });
+    rules.add(rule);
+    rules.remove(rule);
+    assert.deepEqual(rules.list(), []);
+    assert.throws(() => rules.remove(rule), /règle absente/);
+});
