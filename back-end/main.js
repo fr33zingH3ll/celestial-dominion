@@ -1,3 +1,9 @@
+/**
+ * Boucle du serveur de jeu.
+ * Le temps réel est accumulé, puis converti en pas fixes de SERVER_TICK_MS.
+ * Au-delà de MAX_CATCHUP_STEPS, le retard est abandonné pour éviter
+ * une suite de pas qui ne rattrape jamais l'horloge.
+ */
 import { BackGameMaster } from "./src/gamemaster.js";
 import { advanceGame, installProcessGuards, logServerError } from "./src/guard.js";
 import { MAX_CATCHUP_STEPS, SERVER_TICK_MS } from "game-engine/src/sim/tick.js";

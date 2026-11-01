@@ -31,6 +31,7 @@ class Socket {
         await this.awaitOpen();
         
         // Handle incoming messages
+        // Un message illisible renvoie au menu : continuer afficherait un état faux.
         this.socket.addEventListener("message", (event) => {
             try {
                 const wrap = this.proto.lookupType('MessageWrapper');
@@ -46,6 +47,7 @@ class Socket {
         });
         
         // Handle WebSocket close event
+        // Toute fermeture retire le jeton. Une coupure réseau demande une nouvelle connexion.
         this.socket.addEventListener('close', () => {
             logout();
         });

@@ -102,5 +102,5 @@ message ServerEntityDelete {
 
 // Déclenchement d'un tir côté client.
 message ClientShot {
-	bool inutile = 1;  // Champ inutilisé (juste pour l'exemple).
+	bool inutile = 1;  // Présent pour que le message protobuf ne soit pas vide. La valeur n'est pas lue.
 }

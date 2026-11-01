@@ -57,10 +57,10 @@ class Scene {
     }
 
     /**
-     * Détruit toutes les entités présentes dans le pool.
+     * Retire toutes les entités du pool.
+     * La copie est nécessaire : `removePool` modifie `pool` pendant le parcours.
      */
     destroy() {
-        // Parcourt toutes les entités dans le pool et les supprime une par une
         for (const entity of [...this.pool]) {
             this.removePool(entity);
         }

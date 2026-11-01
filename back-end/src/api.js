@@ -20,6 +20,8 @@ const API_AUTH_PATH = API_PATH + "/auth";
 const DEFAULT_CORS_ORIGINS = 'http://localhost:5173,http://127.0.0.1:5173,https://galactic-seeker.freezinghell.net';
 
 /**
+ * Répond avec `error` et `erreur`.
+ * Les deux clés restent : d'anciens écrans lisent l'une ou l'autre.
  * @param {Express.Response} res
  * @param {number} status
  * @param {string} message
@@ -91,6 +93,7 @@ class Server {
                     token: this.jwtService.jwtSign({ sub: result.id }, { expiresIn: "1h" }),
                 });
             } catch (error) {
+                // Express 4 laisse échapper un rejet async : le try est obligatoire.
                 return sendError(res, 500, "Erreur de connexion à la base de données");
             }
         });
@@ -118,6 +121,8 @@ class Server {
                 );
                 return res.status(201).json({ res: "Enregistrement terminé" });
             } catch (error) {
+                // Express 4 laisse échapper un rejet async : le try est obligatoire.
+                // ER_DUP_ENTRY couvre deux inscriptions simultanées du même nom.
                 if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
                     return sendError(res, 409, "Utilisateur déjà existant");
                 }
@@ -273,6 +278,8 @@ class Server {
                         });
                         return;
                     }
+                    // Une nouvelle socket du même compte remplace l'ancienne.
+                    // `replaced` empêche sa fermeture de retirer la session neuve.
                     const previous = this.players[result.sub.username];
                     if (previous && previous.webSocket !== ws) {
                         previous.replaced = true;
@@ -309,6 +316,8 @@ class Server {
         ws.on('close', () => {
             console.log('WebSocket disconnected');
 
+            // La socket déjà remplacée a retiré son entité.
+            // On ne retire l'entrée que si elle désigne encore cette connexion.
             try {
                 if (!connection || connection.replaced) return;
                 if (this.players[connection.username] === connection) {

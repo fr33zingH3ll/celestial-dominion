@@ -4,6 +4,11 @@ var ID_COUNTER = 0;
 
 const VELOCITY_THRESHOLD = 0.05;
 
+/**
+ * Corps Matter.js et état à synchroniser.
+ * `dirty` demande une mise à jour réseau. `newborn` demande une création.
+ * Ce module ne charge pas Three.js : le serveur l'importe aussi.
+ */
 class Entity {
     /**
      * Indique si l'état de l'entité a été modifié durant ce tick.
@@ -52,6 +57,10 @@ class Entity {
         this.model = this.prototype.model;
     }
 
+    /**
+     * Passe `dirty` à vrai si le corps a bougé depuis le pas précédent.
+     * Le seuil ignore le tremblement numérique de Matter.js.
+     */
     isMoving() {
         const dx = this.body.position.x - this.tempo_position.x;
         const dy = this.body.position.y - this.tempo_position.y;
